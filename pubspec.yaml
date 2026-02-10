@@ -1,0 +1,165 @@
+name: earnwise_app
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  flutter_rating_bar: ^4.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/pngs/
+    - assets/jpgs/
+    - assets/fonts/
+    - assets/fonts/playfair/
+    - assets/fonts/urbanist/
+
+  fonts:
+    - family: Urbanist
+      fonts:
+        # Thin (w100)
+        - asset: assets/fonts/urbanist/Urbanist-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/urbanist/Urbanist-ThinItalic.ttf
+          weight: 100
+          style: italic
+        
+        # ExtraLight (w200)
+        - asset: assets/fonts/urbanist/Urbanist-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/urbanist/Urbanist-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        
+        # Light (w300)
+        - asset: assets/fonts/urbanist/Urbanist-Light.ttf
+          weight: 300
+        - asset: assets/fonts/urbanist/Urbanist-LightItalic.ttf
+          weight: 300
+          style: italic
+        
+        # Regular (w400)
+        - asset: assets/fonts/urbanist/Urbanist-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/urbanist/Urbanist-Italic.ttf
+          weight: 400
+          style: italic
+        
+        # Medium (w500)
+        - asset: assets/fonts/urbanist/Urbanist-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/urbanist/Urbanist-MediumItalic.ttf
+          weight: 500
+          style: italic
+        
+        # SemiBold (w600)
+        - asset: assets/fonts/urbanist/Urbanist-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/urbanist/Urbanist-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        
+        # Bold (w700)
+        - asset: assets/fonts/urbanist/Urbanist-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/urbanist/Urbanist-BoldItalic.ttf
+          weight: 700
+          style: italic
+        
+        # ExtraBold (w800)
+        - asset: assets/fonts/urbanist/Urbanist-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/urbanist/Urbanist-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        
+        # Black (w900)
+        - asset: assets/fonts/urbanist/Urbanist-Black.ttf
+          weight: 900
+        - asset: assets/fonts/urbanist/Urbanist-BlackItalic.ttf
+          weight: 900
+          style: italic
+
+    - family: Playfair
+      fonts:
+        # Thin (w100)
+        - asset: assets/fonts/playfair/PlayfairDisplay-Regular.ttf
+          weight: 100
+        - asset: assets/fonts/playfair/PlayfairDisplay-Italic.ttf
+          weight: 100
+          style: italic
+        
+        # ExtraLight (w200)
+        - asset: assets/fonts/playfair/PlayfairDisplay-Regular.ttf
+          weight: 200
+        - asset: assets/fonts/playfair/PlayfairDisplay-Italic.ttf
+          weight: 200
+          style: italic
+        
+        # Light (w300)
+        - asset: assets/fonts/playfair/PlayfairDisplay-Regular.ttf
+          weight: 300
+        - asset: assets/fonts/playfair/PlayfairDisplay-Italic.ttf
+          weight: 300
+          style: italic
+        
+        # Regular (w400)
+        - asset: assets/fonts/playfair/PlayfairDisplay-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/playfair/PlayfairDisplay-Italic.ttf
+          weight: 400
+          style: italic
+        
+        # Medium (w500)
+        - asset: assets/fonts/playfair/PlayfairDisplay-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/playfair/PlayfairDisplay-MediumItalic.ttf
+          weight: 500
+          style: italic
+        
+        # SemiBold (w600)
+        - asset: assets/fonts/playfair/PlayfairDisplay-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/playfair/PlayfairDisplay-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        
+        # Bold (w700)
+        - asset: assets/fonts/playfair/PlayfairDisplay-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/playfair/PlayfairDisplay-BoldItalic.ttf
+          weight: 700
+          style: italic
+        
+        # ExtraBold (w800)
+        - asset: assets/fonts/playfair/PlayfairDisplay-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/playfair/PlayfairDisplay-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        
+        # Black (w900)
+        - asset: assets/fonts/playfair/PlayfairDisplay-Black.ttf
+          weight: 900
+        - asset: assets/fonts/playfair/PlayfairDisplay-BlackItalic.ttf
+          weight: 900
+          style: italic
