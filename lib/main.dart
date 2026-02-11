@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           title: 'EarnWise',
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
-          themeMode: ThemeMode.light,
+          themeMode: ThemeMode.dark,
           home: OnboardingScreen()
         );
       }

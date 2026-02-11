@@ -1,9 +1,7 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
-import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/explore/screens/category_experts_screen.dart';
 import 'package:earnwise_app/presentation/features/explore/widgets/category_item.dart';
-import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +16,6 @@ class ExploreScreen extends StatefulWidget {
 class _ExploreScreenState extends State<ExploreScreen> {
   @override
   Widget build(BuildContext context) {
-    var brightness = Theme.of(context).brightness;
-    bool isDarkMode = brightness == Brightness.dark;
-
     final categories = [
       "Accounting",
       "Investing",
@@ -62,7 +57,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
               padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(20)),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 1.4,
+                childAspectRatio: 2.1,
                 mainAxisSpacing: 20,
                 crossAxisSpacing: 20,
               ),

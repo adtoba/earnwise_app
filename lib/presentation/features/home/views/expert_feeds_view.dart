@@ -55,7 +55,7 @@ class ExpertFeedsView extends StatelessWidget {
               "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
               "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
             ];
-            final visibleImages = images.take(4).toList();
+            final visibleImages = images.take(1).toList();
 
             return ExpertFeedItem(
               userImageUrl: "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",

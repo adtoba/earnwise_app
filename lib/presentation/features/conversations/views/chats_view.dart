@@ -1,5 +1,8 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/presentation/features/conversations/screens/chat_screen.dart';
+import 'package:earnwise_app/presentation/features/conversations/screens/expert_chat_screen.dart';
 import 'package:earnwise_app/presentation/features/conversations/widgets/conversation_item.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +20,10 @@ class ChatsView extends StatelessWidget {
           lastMessage: "My name is John Doe. I am a software engineer and I am looking for a job.", 
           time: "12:00 PM", 
           isVerified: true, 
-          isRead: i % 2 == 0 ? false : true
+          isRead: i % 2 == 0 ? false : true,
+          onTap: () {
+            push(ChatScreen());
+          }
         );
       },
       separatorBuilder: (c, i) => YMargin(25),

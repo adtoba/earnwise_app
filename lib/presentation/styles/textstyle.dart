@@ -1,9 +1,10 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TextStyles {
 
-  static String? fontFamily = "Urbanist";
+  static String? fontFamily = "Inter";
 
   static TextStyle h1Bold = TextStyle(
     fontSize: config.sp(48),

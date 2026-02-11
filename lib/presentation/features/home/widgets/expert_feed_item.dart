@@ -23,122 +23,135 @@ class ExpertFeedItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         color: Colors.transparent,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: Column(
           children: [
-            CircleAvatar(
-              radius: config.sw(15),
-              backgroundImage: NetworkImage("https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80"),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: config.sw(20),
+                  backgroundImage: NetworkImage("https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80"),
+                ),
+                XMargin(10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              userName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyles.largeSemiBold,
+                            ),
+                          ),
+                          XMargin(5),
+                          Icon(
+                            Icons.verified,
+                            color: Colors.blue,
+                            size: 15,
+                          ),
+                        ],
+                      ),
+                      Text(
+                        "Business Consultant",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyles.xSmallMedium,
+                      ),
+                    ],
+                  ),
+                ),
+                XMargin(10),
+                Text(
+                  time,
+                  style: TextStyles.smallRegular.copyWith(
+                    fontFamily: TextStyles.fontFamily,
+                    color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+                  ),
+                ),
+                XMargin(10),
+                Icon(Icons.more_horiz),
+                YMargin(10),
+              ],
             ),
-            XMargin(10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        userName,
-                        style: TextStyles.largeSemiBold,
-                      ),
-                      XMargin(5),
-                      Icon(
-                        Icons.verified, 
-                        color: Colors.blue,
-                        size: 15,
-                      ),
-                      XMargin(10),
-                      Text(
-                        time,
-                        style: TextStyles.smallRegular.copyWith(
-                          fontFamily: TextStyles.fontFamily,
-                          color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
-                        ),
-                      ),
-                      XMargin(10),
-                      Spacer(),
-                      Icon(Icons.more_horiz)
-                    ],
+            YMargin(10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  text,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyles.mediumRegular.copyWith(
+                    fontFamily: TextStyles.fontFamily,
+                    color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                   ),
-                  Text(
-                    text,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyles.mediumRegular.copyWith(
-                      fontFamily: TextStyles.fontFamily,
-                      color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+                ),
+                YMargin(10),
+                if (images?.isNotEmpty ?? false)...[
+                  Container(
+                    decoration: BoxDecoration(
+                      color: isDarkMode ? Palette.darkFillColor : Palette.lightFillColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.all(10),
+                    height: config.sh(200),
+                    width: double.infinity,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        const spacing = 5.0;
+                        final imageCount = images?.length ?? 0;
+                        final crossAxisCount = imageCount == 1 ? 1 : 2;
+                        final rows = imageCount <= 2 ? 1 : 2;
+                        final totalSpacing = spacing * (crossAxisCount - 1);
+                        final totalRunSpacing = spacing * (rows - 1);
+                        final cellWidth = (constraints.maxWidth - totalSpacing) / crossAxisCount;
+                        final cellHeight = (constraints.maxHeight - totalRunSpacing) / rows;
+                        final childAspectRatio = cellWidth / cellHeight;
+                        return GridView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          padding: EdgeInsets.zero,
+                          itemCount: imageCount,
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount,
+                            mainAxisSpacing: spacing,
+                            crossAxisSpacing: spacing,
+                            childAspectRatio: childAspectRatio,
+                          ),
+                          itemBuilder: (c, i) => ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              images?[i] ?? "",
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  YMargin(10),
-                  if (images?.isNotEmpty ?? false)...[
-                    Container(
-                      decoration: BoxDecoration(
-                        color: isDarkMode ? Palette.darkFillColor : Palette.lightFillColor,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: EdgeInsets.all(10),
-                      height: config.sh(200),
-                      width: double.infinity,
-
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          const spacing = 5.0;
-                          final imageCount = images?.length ?? 0;
-                          final crossAxisCount = imageCount == 1 ? 1 : 2;
-                          final rows = imageCount <= 2 ? 1 : 2;
-                          final totalSpacing = spacing * (crossAxisCount - 1);
-                          final totalRunSpacing = spacing * (rows - 1);
-                          final cellWidth = (constraints.maxWidth - totalSpacing) / crossAxisCount;
-                          final cellHeight = (constraints.maxHeight - totalRunSpacing) / rows;
-                          final childAspectRatio = cellWidth / cellHeight;
-
-                          return GridView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: EdgeInsets.zero,
-                            itemCount: imageCount,
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: crossAxisCount,
-                              mainAxisSpacing: spacing,
-                              crossAxisSpacing: spacing,
-                              childAspectRatio: childAspectRatio,
-                            ),
-                            itemBuilder: (c, i) => ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                images?[i] ?? "",
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                ],
+                YMargin(10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(Icons.favorite_border),
+                    XMargin(5),
+                    Text("100"),
+                    XMargin(20),
+                    Icon(Icons.comment_outlined, size: 20),
+                    XMargin(5),
+                    Text("5"),
+                    XMargin(20),
+                    Icon(Icons.ios_share, size: 20),
                   ],
-                  YMargin(10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Icon(Icons.favorite_border),
-                      XMargin(5),
-                      Text("100"),
-        
-                      XMargin(20),
-        
-                      Icon(Icons.comment_outlined, size: 20),
-                      XMargin(5),
-                      Text("5"),
-        
-                      XMargin(20),
-        
-                      Icon(Icons.ios_share, size: 20),
-                    ],
-                  )
-                ]
-              ),
+                )
+              ]
             ),
           ],
         ),

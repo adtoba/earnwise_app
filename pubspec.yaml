@@ -16,6 +16,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flutter_rating_bar: ^4.0.1
+  google_fonts: ^6.2.0
+  font_awesome_flutter: ^10.12.0
 
 dev_dependencies:
   flutter_test:
@@ -161,5 +163,67 @@ flutter:
         - asset: assets/fonts/playfair/PlayfairDisplay-Black.ttf
           weight: 900
         - asset: assets/fonts/playfair/PlayfairDisplay-BlackItalic.ttf
+          weight: 900
+          style: italic
+    
+    - family: Inter
+      fonts:
+        # Thin (w100)
+        - asset: assets/fonts/inter/Inter_18pt-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/inter/Inter_18pt-ThinItalic.ttf
+          weight: 100
+          style: italic
+        
+        # ExtraLight (w200)
+        - asset: assets/fonts/inter/Inter_18pt-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/inter/Inter_18pt-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        
+        # Light (w300)
+        - asset: assets/fonts/inter/Inter_18pt-Light.ttf
+          weight: 300
+        - asset: assets/fonts/inter/Inter_18pt-LightItalic.ttf
+          weight: 300
+          style: italic
+        
+        # Regular (w400)
+        - asset: assets/fonts/inter/Inter_18pt-Regular.ttf
+          weight: 400
+        
+        # Medium (w500)
+        - asset: assets/fonts/inter/Inter_18pt-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/inter/Inter_18pt-MediumItalic.ttf
+          weight: 500
+          style: italic
+        
+        # SemiBold (w600)
+        - asset: assets/fonts/inter/Inter_18pt-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/inter/Inter_18pt-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        
+        # Bold (w700)
+        - asset: assets/fonts/inter/Inter_18pt-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/inter/Inter_18pt-BoldItalic.ttf
+          weight: 700
+          style: italic
+        
+        # ExtraBold (w800)
+        - asset: assets/fonts/inter/Inter_18pt-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/inter/Inter_18pt-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        
+        # Black (w900)
+        - asset: assets/fonts/inter/Inter_18pt-Black.ttf
+          weight: 900
+        - asset: assets/fonts/inter/Inter_18pt-BlackItalic.ttf
           weight: 900
           style: italic
