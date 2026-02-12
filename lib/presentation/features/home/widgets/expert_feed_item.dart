@@ -138,20 +138,56 @@ class ExpertFeedItem extends StatelessWidget {
                 ],
                 YMargin(10),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Icon(Icons.favorite_border),
-                    XMargin(5),
-                    Text("100"),
-                    XMargin(20),
-                    Icon(Icons.comment_outlined, size: 20),
-                    XMargin(5),
-                    Text("5"),
-                    XMargin(20),
-                    Icon(Icons.ios_share, size: 20),
+                    FeedAction(
+                      icon: Icons.favorite_border,
+                      label: "100",
+                      onTap: () {},
+                    ),
+                    XMargin(12),
+                    FeedAction(
+                      icon: Icons.comment_outlined,
+                      label: "5",
+                      onTap: () {},
+                    ),
+                    Spacer(),
+                    FeedAction(
+                      icon: Icons.ios_share,
+                      label: "Share",
+                      onTap: () {},
+                    ),
                   ],
                 )
               ]
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class FeedAction extends StatelessWidget {
+  const FeedAction({super.key, required this.icon, required this.label, required this.onTap});
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
+          children: [
+            Icon(icon, size: 20),
+            XMargin(6),
+            Text(
+              label,
+              style: TextStyles.smallSemiBold,
             ),
           ],
         ),

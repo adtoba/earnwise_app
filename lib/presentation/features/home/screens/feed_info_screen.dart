@@ -1,6 +1,7 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/home/widgets/comment_item.dart';
+import 'package:earnwise_app/presentation/features/home/widgets/expert_feed_item.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
@@ -27,7 +28,7 @@ class _FeedInfoScreenState extends State<FeedInfoScreen> {
         automaticallyImplyLeading: true,
         centerTitle: true,
         title: Text(
-          "Feed"
+          "Post"
         )
       ),
       body: Container(
@@ -116,21 +117,24 @@ class _FeedInfoScreenState extends State<FeedInfoScreen> {
                 ),
               YMargin(20),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(Icons.favorite_border),
-                  XMargin(5),
-                  Text("100"),
-                
-                  XMargin(20),
-                
-                  Icon(Icons.comment_outlined, size: 20),
-                  XMargin(5),
-                  Text("5"),
-                
-                  XMargin(20),
-                
-                  Icon(Icons.ios_share, size: 20),
+                  FeedAction(
+                    icon: Icons.favorite_border,
+                    label: "100",
+                    onTap: () {},
+                  ),
+                  XMargin(12),
+                  FeedAction(
+                    icon: Icons.comment_outlined,
+                    label: "5",
+                    onTap: () {},
+                  ),
+                  Spacer(),
+                  FeedAction(
+                    icon: Icons.ios_share,
+                    label: "Share",
+                    onTap: () {},
+                  ),
                 ],
               ),
               YMargin(10),
@@ -145,7 +149,6 @@ class _FeedInfoScreenState extends State<FeedInfoScreen> {
               YMargin(20),
               ListView.separated(
                 shrinkWrap: true,
-                padding: EdgeInsets.symmetric(horizontal: config.sw(10)),
                 itemBuilder: (c, i) => CommentItem(
                   userImageUrl: "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
                   userName: "Albert Einstein",
@@ -165,7 +168,7 @@ class _FeedInfoScreenState extends State<FeedInfoScreen> {
           padding: EdgeInsets.only(
             left: config.sw(20),
             right: config.sw(20),
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
             top: config.sh(10),
           ),
           child: SearchTextField(

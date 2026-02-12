@@ -23,10 +23,10 @@ class SuggestedExpertsView extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  "Top Experts",
+                  "Top Rated Experts",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyles.h5Bold.copyWith(
+                  style: TextStyles.xLargeSemiBold.copyWith(
                     fontFamily: TextStyles.fontFamily,
                   ),
                 ),

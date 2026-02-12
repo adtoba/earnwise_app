@@ -22,4 +22,6 @@ class Palette {
 
   static const Color borderDark = Color(0xff35383F);
   static const Color borderLight = Color(0xffEEEEEE);
+
+  static const Color ratingStar = Color(0xffFF9F29);
 }

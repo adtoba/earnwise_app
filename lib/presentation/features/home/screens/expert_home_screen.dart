@@ -1,15 +1,10 @@
-import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
-import 'package:earnwise_app/presentation/features/home/views/expert_feeds_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/expert_home_analytics_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/expert_home_wallet_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/expert_scheduled_calls.dart';
-import 'package:earnwise_app/presentation/features/home/views/suggested_experts_view.dart';
-import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
-import 'package:earnwise_app/presentation/widgets/primary_textfield.dart';
-import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ExpertHomeScreen extends StatefulWidget {
   const ExpertHomeScreen({super.key});
@@ -37,7 +32,7 @@ class _ExpertHomeScreenState extends State<ExpertHomeScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(FontAwesomeIcons.bell),
             onPressed: () {}
           )
         ],

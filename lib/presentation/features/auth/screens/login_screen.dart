@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyles.mediumSemiBold,
               ),
             ),
-            YMargin(40)
+            YMargin(60)
           ],
         ),
       ),

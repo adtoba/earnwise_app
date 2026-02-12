@@ -2,6 +2,10 @@ import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/dashboard/screens/dashboard_screen.dart';
+import 'package:earnwise_app/presentation/features/expert/screens/set_rates_screen.dart';
+import 'package:earnwise_app/presentation/features/profile/screens/profile_screen.dart';
+import 'package:earnwise_app/presentation/features/settings/screens/expert_details_screen.dart';
+import 'package:earnwise_app/presentation/features/settings/screens/expert_reviews_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +80,9 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
                   ),
                 ),
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    push(ProfileScreen());
+                  },
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: borderColor),
                     foregroundColor: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
@@ -113,17 +119,32 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
             title: "Expert Details",
             icon: Icons.person_outline,
             isDarkMode: isDarkMode,
+            onTap: () {
+              push(ExpertDetailsScreen());
+            },
           ),
           _SettingsTile(
-            title: "Prices",
+            title: "Your Rates",
             icon: Icons.sell_outlined,
             isDarkMode: isDarkMode,
+            onTap: () {
+              push(SetRatesScreen());
+            },
           ),
           _SettingsTile(
             title: "Set Availability",
             icon: Icons.calendar_today_outlined,
             isDarkMode: isDarkMode,
+            showDivider: true,
+          ),
+          _SettingsTile(
+            title: "Ratings & Reviews",
+            icon: Icons.star_border,
+            isDarkMode: isDarkMode,
             showDivider: false,
+            onTap: () {
+              push(ExpertReviewsScreen());
+            },
           ),
           YMargin(20),
           _SettingsSectionTitle(
@@ -139,12 +160,6 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
             title: "Transactions",
             icon: Icons.receipt_long_outlined,
             isDarkMode: isDarkMode,
-          ),
-          _SettingsTile(
-            title: "Ratings & Reviews",
-            icon: Icons.star_border,
-            isDarkMode: isDarkMode,
-            showDivider: false,
           ),
           YMargin(20),
           _SettingsSectionTitle(
@@ -167,6 +182,31 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
             isDarkMode: isDarkMode,
             showDivider: false,
           ),
+          YMargin(20),
+          _SettingsSectionTitle(
+            title: "Legal",
+            isDarkMode: isDarkMode,
+          ),
+          _SettingsTile(
+            title: "Terms & Conditions",
+            icon: Icons.description_outlined,
+            isDarkMode: isDarkMode,
+          ),
+          _SettingsTile(
+            title: "Privacy Policy",
+            icon: Icons.privacy_tip_outlined,
+            isDarkMode: isDarkMode,
+            showDivider: false,
+          ),
+          YMargin(20),
+          TextButton.icon(
+            onPressed: () {},
+            icon: Icon(Icons.logout, color: Colors.red.shade400),
+            label: Text(
+              "Logout",
+              style: TextStyles.mediumSemiBold.copyWith(color: Colors.red.shade400),
+            ),
+          ),
         ],
       ),
     );
@@ -179,12 +219,14 @@ class _SettingsTile extends StatelessWidget {
     required this.icon,
     required this.isDarkMode,
     this.showDivider = true,
+    this.onTap,
   });
 
   final String title;
   final IconData icon;
   final bool isDarkMode;
   final bool showDivider;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +253,7 @@ class _SettingsTile extends StatelessWidget {
             Icons.chevron_right,
             color: secondaryTextColor,
           ),
-          onTap: () {},
+          onTap: onTap,
         ),
         if (showDivider)
           Divider(
@@ -264,6 +306,10 @@ Color _iconColor(IconData icon, bool isDarkMode) {
       return isDarkMode ? const Color(0xFF5EEAD4) : const Color(0xFF0F766E);
     case Icons.lock_outline:
       return isDarkMode ? const Color(0xFFA3E635) : const Color(0xFF3F6212);
+    case Icons.description_outlined:
+      return isDarkMode ? const Color(0xFF93C5FD) : const Color(0xFF3B82F6);
+    case Icons.privacy_tip_outlined:
+      return isDarkMode ? const Color(0xFFFBCFE8) : const Color(0xFFDB2777);
     case Icons.support_agent_outlined:
       return isDarkMode ? const Color(0xFFFDA4AF) : const Color(0xFFE11D48);
     default:

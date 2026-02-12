@@ -46,12 +46,21 @@ class _SignupScreenState extends State<SignupScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Full Name',
+              'First Name',
               style: TextStyles.mediumMedium,
             ),
             YMargin(10),
             SearchTextField(
-              hint: "John Doe",
+              hint: "John",
+            ),
+            YMargin(10),
+            Text(
+              'Last Name',
+              style: TextStyles.mediumMedium,
+            ),
+            YMargin(10),
+            SearchTextField(
+              hint: "Doe",
             ),
             YMargin(10),
             Text(
@@ -107,31 +116,31 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
       bottomNavigationBar: Padding(
-          padding: EdgeInsets.symmetric(horizontal: config.sw(10)),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              YMargin(10),
-              PrimaryButton(
-                text: "Continue", 
-                onPressed: () {
-                  push(DashboardScreen());
-                }
+        padding: EdgeInsets.symmetric(horizontal: config.sw(10)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            YMargin(10),
+            PrimaryButton(
+              text: "Continue", 
+              onPressed: () {
+                push(DashboardScreen());
+              }
+            ),
+            YMargin(20),
+            InkWell(
+              onTap: () {
+                pop();
+              },
+              child: Text(
+                "Already have an account? Login",
+                style: TextStyles.mediumSemiBold,
               ),
-              YMargin(20),
-              InkWell(
-                onTap: () {
-                  pop();
-                },
-                child: Text(
-                  "Already have an account? Login",
-                  style: TextStyles.mediumSemiBold,
-                ),
-              ),
-              YMargin(40)
-            ],
-          ),
-        )
+            ),
+            YMargin(60)
+          ],
+        ),
+      )
     );
   }
 }

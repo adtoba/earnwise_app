@@ -7,14 +7,14 @@ import 'package:earnwise_app/presentation/widgets/primary_button.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
 
-class BecomeExpertScreen extends StatefulWidget {
-  const BecomeExpertScreen({super.key});
+class ExpertDetailsScreen extends StatefulWidget {
+  const ExpertDetailsScreen({super.key});
 
   @override
-  State<BecomeExpertScreen> createState() => _BecomeExpertScreenState();
+  State<ExpertDetailsScreen> createState() => _ExpertDetailsScreenState();
 }
 
-class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
+class _ExpertDetailsScreenState extends State<ExpertDetailsScreen> {
   String? _gender;
   String? _country;
   String? _state;
@@ -55,7 +55,7 @@ class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          "Become an Expert",
+          "Expert Details",
           style: TextStyles.largeBold.copyWith(
             color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
           ),
@@ -64,103 +64,6 @@ class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
         children: [
-          _SectionBlock(
-            title: "Profile",
-            borderColor: sectionBorderColor,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: config.sw(32),
-                      backgroundColor: Palette.primary.withOpacity(0.15),
-                      child: const Icon(Icons.camera_alt, color: Palette.primary),
-                    ),
-                    XMargin(12),
-                    Expanded(
-                      child: Text(
-                        "Upload a clear profile photo",
-                        style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        "Upload",
-                        style: TextStyles.smallSemiBold.copyWith(color: Palette.primary),
-                      ),
-                    ),
-                  ],
-                ),
-                YMargin(16),
-                _LabeledField(label: "First name", child: _textField(hint: "John")),
-                YMargin(12),
-                _LabeledField(label: "Last name", child: _textField(hint: "Doe")),
-                YMargin(12),
-                _LabeledField(
-                  label: "Gender",
-                  child: _dropdownField(
-                    context: context,
-                    value: _gender,
-                    hint: "Select gender",
-                    items: _genders,
-                    onChanged: (value) => setState(() => _gender = value),
-                  ),
-                ),
-                YMargin(20),
-                _LabeledField(
-                  label: "Date of birth",
-                  child: _textField(hint: "DD / MM / YYYY"),
-                ),
-              ],
-            ),
-          ),
-          YMargin(16),
-          _SectionBlock(
-            title: "Contact & Location",
-            borderColor: sectionBorderColor,
-            child: Column(
-              children: [
-                _LabeledField(label: "Phone number", child: _textField(hint: "+234 801 234 5678")),
-                YMargin(12),
-                _LabeledField(
-                  label: "Country",
-                  child: _dropdownField(
-                    context: context,
-                    value: _country,
-                    hint: "Select country",
-                    items: _countries,
-                    onChanged: (value) => setState(() => _country = value),
-                  ),
-                ),
-                YMargin(12),
-                _LabeledField(
-                  label: "State",
-                  child: _dropdownField(
-                    context: context,
-                    value: _state,
-                    hint: "Select state",
-                    items: _states,
-                    onChanged: (value) => setState(() => _state = value),
-                  ),
-                ),
-                YMargin(12),
-                _LabeledField(
-                  label: "City",
-                  child: _dropdownField(
-                    context: context,
-                    value: _city,
-                    hint: "Select city",
-                    items: _cities,
-                    onChanged: (value) => setState(() => _city = value),
-                  ),
-                ),
-                YMargin(12),
-                _LabeledField(label: "Zip code", child: _textField(hint: "100001")),
-              ],
-            ),
-          ),
-          YMargin(16),
           _SectionBlock(
             title: "Expertise",
             borderColor: sectionBorderColor,
@@ -247,65 +150,6 @@ class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
               ],
             ),
           ),
-          YMargin(16),
-          _SectionBlock(
-            title: "Availability",
-            borderColor: sectionBorderColor,
-            child: Column(
-              children: [
-                _LabeledField(label: "Working days", child: _textField(hint: "Mon - Fri")),
-                YMargin(12),
-                _LabeledField(label: "Working hours", child: _textField(hint: "9:00 AM - 5:00 PM")),
-                YMargin(12),
-                _LabeledField(label: "Time zone", child: _textField(hint: "GMT +1")),
-              ],
-            ),
-          ),
-          YMargin(16),
-          _SectionBlock(
-            title: "Rates",
-            borderColor: sectionBorderColor,
-            child: Column(
-              children: [
-                RateRowInline(
-                  title: "Text/Audio response",
-                  subtitle: "(Min. \$10 per response)",
-                  hint: "\$10 / response",
-                  isDarkMode: isDarkMode,
-                  showDivider: true,
-                ),
-                RateRowInline(
-                  title: "Video response",
-                  subtitle: "(Min. \$20 per response)",
-                  hint: "\$20 / response",
-                  isDarkMode: isDarkMode,
-                  showDivider: true,
-                ),
-                RateRowInline(
-                  title: "Video call",
-                  subtitle: "(Min. \$1 per minute)",
-                  hint: "\$1 / minute",
-                  isDarkMode: isDarkMode,
-                  showDivider: false,
-                ),
-              ],
-            ),
-          ),
-          YMargin(20),
-          // ElevatedButton(
-          //   onPressed: () {},
-          //   style: ElevatedButton.styleFrom(
-          //     backgroundColor: Palette.primary,
-          //     foregroundColor: Colors.white,
-          //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          //     padding: EdgeInsets.symmetric(vertical: config.sh(14)),
-          //   ),
-          //   child: Text(
-          //     "Submit for Review",
-          //     style: TextStyles.mediumSemiBold.copyWith(color: Colors.white),
-          //   ),
-          // ),
-          // YMargin(20),
         ],
       ),
       persistentFooterButtons: [

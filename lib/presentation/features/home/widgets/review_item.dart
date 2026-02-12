@@ -25,6 +25,7 @@ class ReviewItem extends StatelessWidget {
               allowHalfRating: true,
               itemCount: 5,
               itemSize: 20,
+              ignoreGestures: true,
               itemBuilder: (context, index) => Icon(Icons.star, color: Color(0xffFF9F29)),
               onRatingUpdate: (rating) {
                 print(rating);

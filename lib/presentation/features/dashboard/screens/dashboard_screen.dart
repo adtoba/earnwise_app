@@ -2,7 +2,8 @@ import 'package:earnwise_app/presentation/features/conversations/screens/convers
 import 'package:earnwise_app/presentation/features/explore/screens/explore_screen.dart';
 import 'package:earnwise_app/presentation/features/home/screens/expert_home_screen.dart';
 import 'package:earnwise_app/presentation/features/home/screens/home_screen.dart';
-import 'package:earnwise_app/presentation/features/profile/screens/settings_screen.dart';
+import 'package:earnwise_app/presentation/features/settings/screens/settings_screen.dart';
+import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -43,21 +44,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onPageChanged,
+        selectedLabelStyle: TextStyles.mediumRegular,
+        unselectedLabelStyle: TextStyles.mediumRegular,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.house),
+            icon: Icon(FontAwesomeIcons.house, size: 20,),
+            tooltip: "Home",
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.compass),
+            icon: Icon(FontAwesomeIcons.compass, size: 20,),
+            tooltip: "Explore",
             label: 'Explore',
           ),
           BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.message),
+            icon: Icon(FontAwesomeIcons.message, size: 20,),
+            tooltip: "Connects",
             label: 'Connects',
           ),
           BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.gear),
+            icon: Icon(FontAwesomeIcons.gear, size: 20,),
+            tooltip: "Settings",
             label: 'Settings',
           ),
         ],

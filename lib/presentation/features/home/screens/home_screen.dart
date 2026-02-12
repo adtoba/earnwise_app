@@ -9,6 +9,7 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/primary_textfield.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,14 +35,14 @@ class _HomeScreenState extends State<HomeScreen> {
             fontFamily: TextStyles.fontFamily,
           ),
         ),
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(Icons.settings),
-        //     onPressed: () {
-        //       push(ExpertDashboardScreen());
-        //     }
-        //   )
-        // ],
+        actions: [
+          IconButton(
+            icon: Icon(FontAwesomeIcons.bell),
+            onPressed: () {
+              
+            }
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

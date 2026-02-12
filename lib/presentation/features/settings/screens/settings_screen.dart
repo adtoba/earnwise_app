@@ -2,6 +2,9 @@ import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/expert/screens/become_expert_screen.dart';
+import 'package:earnwise_app/presentation/features/expert/views/become_expert_modal.dart';
+import 'package:earnwise_app/presentation/features/profile/screens/profile_screen.dart';
+import 'package:earnwise_app/presentation/features/settings/screens/favorite_experts_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/features/dashboard/screens/expert_dashboard_screen.dart';
@@ -77,7 +80,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    push(ProfileScreen());
+                  },
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: borderColor),
                     foregroundColor: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
@@ -121,16 +126,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
             isDarkMode: isDarkMode,
           ),
           _SettingsTile(
-            title: "Favorite Experts",
+            title: "Saved Experts",
             icon: Icons.favorite_border,
             isDarkMode: isDarkMode,
-          ),
-          _SettingsTile(
-            title: "My Consultations",
-            icon: Icons.calendar_today_outlined,
-            isDarkMode: isDarkMode,
             showDivider: false,
+            onTap: () {
+              push(const FavoriteExpertsScreen());
+            },
           ),
+          // _SettingsTile(
+          //   title: "My Consultations",
+          //   icon: Icons.calendar_today_outlined,
+          //   isDarkMode: isDarkMode,
+          //   showDivider: false,
+          // ),
           YMargin(20),
           _SettingsSectionTitle(
             title: "Expert",
@@ -142,7 +151,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             isDarkMode: isDarkMode,
             showDivider: false,
             onTap: () {
-              push(BecomeExpertScreen());
+              showModalBottomSheet(
+                context: context, 
+                isScrollControlled: true,
+                builder: (context) => BecomeExpertModal()
+              );
             }
           ),
           YMargin(20),
@@ -166,6 +179,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
             isDarkMode: isDarkMode,
             showDivider: false,
           ),
+          YMargin(20),
+          _SettingsSectionTitle(
+            title: "Legal",
+            isDarkMode: isDarkMode,
+          ),
+          _SettingsTile(
+            title: "Terms & Conditions",
+            icon: Icons.description_outlined,
+            isDarkMode: isDarkMode,
+          ),
+          _SettingsTile(
+            title: "Privacy Policy",
+            icon: Icons.privacy_tip_outlined,
+            isDarkMode: isDarkMode,
+            showDivider: false,
+          ),
+          YMargin(20),
+          TextButton.icon(
+            onPressed: () {},
+            icon: Icon(Icons.logout, color: Colors.red.shade400),
+            label: Text(
+              "Logout",
+              style: TextStyles.mediumSemiBold.copyWith(color: Colors.red.shade400),
+            ),
+          ),
+          
         ],
       ),
     );
@@ -262,6 +301,10 @@ Color _iconColor(IconData icon, bool isDarkMode) {
       return isDarkMode ? const Color(0xFF5EEAD4) : const Color(0xFF0F766E);
     case Icons.lock_outline:
       return isDarkMode ? const Color(0xFFA3E635) : const Color(0xFF3F6212);
+    case Icons.description_outlined:
+      return isDarkMode ? const Color(0xFF93C5FD) : const Color(0xFF3B82F6);
+    case Icons.privacy_tip_outlined:
+      return isDarkMode ? const Color(0xFFFBCFE8) : const Color(0xFFDB2777);
     case Icons.support_agent_outlined:
       return isDarkMode ? const Color(0xFFFDA4AF) : const Color(0xFFE11D48);
     default:

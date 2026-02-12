@@ -69,81 +69,79 @@ class _SearchTextFieldState extends State<SearchTextField> {
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
-    return SizedBox(
-      height: config.sh(56),
-      child: TextFormField(
-        controller: widget.controller,
-        onChanged: widget.onChanged,
-        onTap: widget.onTap,
-        focusNode: widget.focusNode,
-        obscureText: widget.obscureText,
-        keyboardType: widget.keyboardType,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        inputFormatters: widget.inputFormatters,
-        textCapitalization: widget.textCapitalization ?? TextCapitalization.none,
-        enabled: widget.enabled,
-        style: TextStyles.largeSemiBold,
-        textInputAction: widget.textInputAction,
-        maxLines: widget.maxLines,
-        validator: widget.validator,
-        onEditingComplete: widget.onEditingComplete,
-        onFieldSubmitted: (String val) {
-          FocusScope.of(context).requestFocus(widget.nextNode);
-        },
-        decoration: InputDecoration(
-          hintText: widget.hint,
-          labelText: widget.label,
-          isDense: widget.isDense,
-          suffixIcon: Padding(
-            padding: EdgeInsets.only(left: widget.suffix != null ? config.sw(16) : 0, right: widget.suffix != null ? config.sw(16) : 0),
-            child: widget.suffix,
-          ),
-          prefixIcon: Padding(
-            padding: EdgeInsets.only(left: widget.prefix != null ? config.sw(16) : 0, right: widget.prefix != null ? config.sw(16) : 0),
-            child: widget.prefix,
-          ),
-          prefixIconConstraints: BoxConstraints(
-            minWidth: config.sw(20),
-            minHeight: config.sh(20),
-            maxWidth: config.sw(80),
-            maxHeight: config.sh(80),
-          ),
-          suffixIconConstraints: BoxConstraints(
-            minWidth: config.sw(20),
-            minHeight: config.sh(20),
-            maxWidth: config.sw(56),
-            maxHeight: config.sh(56),
-          ),
-          floatingLabelBehavior: widget.floatingLabelBehavior,
-          suffixIconColor: isDarkMode ? const Color(0xffD9C6FF) : const Color(0xff9CA3AF),
-          labelStyle: TextStyle(
-            fontSize: config.sp(15),
-          ),
-          hintStyle: TextStyles.mediumRegular.copyWith(
-            // color:Color(0xff9E9E9E),
-          ),
-          errorStyle: TextStyle(
-            fontSize: config.sp(14),
-          ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16),
-          filled: true,
-          fillColor: isDarkMode ? Palette.darkFillColor : Palette.lightFillColor,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none
-          ),
-          focusColor: Palette.primary,
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Colors.red),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Colors.red),
-          ),
+    return TextFormField(
+      controller: widget.controller,
+      onChanged: widget.onChanged,
+      onTap: widget.onTap,
+      focusNode: widget.focusNode,
+      obscureText: widget.obscureText,
+      keyboardType: widget.keyboardType,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      inputFormatters: widget.inputFormatters,
+      textCapitalization: widget.textCapitalization ?? TextCapitalization.none,
+      enabled: widget.enabled,
+      style: TextStyles.largeSemiBold,
+      textInputAction: widget.textInputAction,
+      maxLines: widget.maxLines,
+      validator: widget.validator,
+      onEditingComplete: widget.onEditingComplete,
+      onFieldSubmitted: (String val) {
+        FocusScope.of(context).requestFocus(widget.nextNode);
+      },
+      decoration: InputDecoration(
+        hintText: widget.hint,
+        labelText: widget.label,
+        isDense: widget.isDense,
+        suffixIcon: Padding(
+          padding: EdgeInsets.only(left: widget.suffix != null ? config.sw(16) : 0, right: widget.suffix != null ? config.sw(16) : 0),
+          child: widget.suffix,
+        ),
+        prefixIcon: Padding(
+          padding: EdgeInsets.only(left: widget.prefix != null ? config.sw(16) : 0, right: widget.prefix != null ? config.sw(16) : 0),
+          child: widget.prefix,
+        ),
+        prefixIconConstraints: BoxConstraints(
+          minWidth: config.sw(20),
+          minHeight: config.sh(20),
+          maxWidth: config.sw(80),
+          maxHeight: config.sh(80),
+        ),
+        suffixIconConstraints: BoxConstraints(
+          minWidth: config.sw(20),
+          minHeight: config.sh(20),
+          maxWidth: config.sw(56),
+          maxHeight: config.sh(56),
+        ),
+        floatingLabelBehavior: widget.floatingLabelBehavior,
+        suffixIconColor: isDarkMode ? const Color(0xffD9C6FF) : const Color(0xff9CA3AF),
+        labelStyle: TextStyle(
+          fontSize: config.sp(15),
+        ),
+        hintStyle: TextStyles.mediumRegular.copyWith(
+          // color:Color(0xff9E9E9E),
+        ),
+        errorStyle: TextStyle(
+          fontSize: config.sp(14),
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: widget.maxLines == 1 ? 0 : 16),
+        filled: true,
+        fillColor: isDarkMode ? Palette.darkFillColor : Palette.lightFillColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none
+        ),
+        focusColor: Palette.primary,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Palette.primary),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.red),
         ),
       ),
     );

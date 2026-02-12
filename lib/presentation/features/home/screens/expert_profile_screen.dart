@@ -23,6 +23,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           "Jose Martinez",
           style: TextStyles.largeBold,
