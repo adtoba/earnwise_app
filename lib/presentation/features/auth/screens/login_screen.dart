@@ -7,6 +7,7 @@ import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/primary_button.dart';
 import 'package:earnwise_app/presentation/widgets/primary_textfield.dart';
+import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,8 +18,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool _isObscure = true;
+
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -39,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
               style: TextStyles.mediumMedium,
             ),
             YMargin(10),
-            PrimaryTextField(
+            SearchTextField(
               hint: "johndoe@gmail.com",
             ),
             YMargin(10),
@@ -48,9 +53,22 @@ class _LoginScreenState extends State<LoginScreen> {
               style: TextStyles.mediumMedium,
             ),
             YMargin(10),
-            PrimaryTextField(
+            SearchTextField(
               hint: "********",
-              obscureText: true,
+              obscureText: _isObscure,
+              suffix: IconButton(
+                onPressed: () {
+                  setState(() {
+                    _isObscure = !_isObscure;
+                  });
+                },
+                icon: Icon(
+                  _isObscure ? Icons.visibility : Icons.visibility_off, 
+                  color: isDarkMode 
+                    ? Palette.textGreyscale700Dark 
+                    : Palette.textGreyscale700Light
+                ),
+              ),
             ),  
             YMargin(10),
             Row(
@@ -71,32 +89,32 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
       ),
-      persistentFooterButtons: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: config.sw(10)),
-          child: Column(
-            children: [
-              YMargin(10),
-              PrimaryButton(
-                text: "Continue", 
-                onPressed: () {
-                  push(DashboardScreen());
-                }
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            YMargin(10),
+            PrimaryButton(
+              text: "Continue", 
+              onPressed: () {
+                push(DashboardScreen());
+              }
+            ),
+            YMargin(20),
+            InkWell(
+              onTap: () {
+                push(SignupScreen());
+              },
+              child: Text(
+                "Don't have an account? Sign Up",
+                style: TextStyles.mediumSemiBold,
               ),
-              YMargin(10),
-              InkWell(
-                onTap: () {
-                  push(SignupScreen());
-                },
-                child: Text(
-                  "Don't have an account? Sign Up",
-                  style: TextStyles.mediumSemiBold,
-                ),
-              )
-            ],
-          ),
-        )
-      ],
+            ),
+            YMargin(40)
+          ],
+        ),
+      ),
     );
   }
 }

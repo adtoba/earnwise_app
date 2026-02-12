@@ -6,6 +6,7 @@ import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/primary_button.dart';
 import 'package:earnwise_app/presentation/widgets/primary_textfield.dart';
+import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -18,7 +19,8 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
 
   bool _isChecked = false;
-
+  bool _isObscure = true;
+  
   void _toggleCheckbox(bool? value) {
     setState(() {
       _isChecked = value ?? false;
@@ -26,6 +28,8 @@ class _SignupScreenState extends State<SignupScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -46,7 +50,7 @@ class _SignupScreenState extends State<SignupScreen> {
               style: TextStyles.mediumMedium,
             ),
             YMargin(10),
-            PrimaryTextField(
+            SearchTextField(
               hint: "John Doe",
             ),
             YMargin(10),
@@ -55,7 +59,7 @@ class _SignupScreenState extends State<SignupScreen> {
               style: TextStyles.mediumMedium,
             ),
             YMargin(10),
-            PrimaryTextField(
+            SearchTextField(
               hint: "johndoe@gmail.com",
             ),
             YMargin(10),
@@ -64,10 +68,23 @@ class _SignupScreenState extends State<SignupScreen> {
               style: TextStyles.mediumMedium,
             ),
             YMargin(10),
-            PrimaryTextField(
+            SearchTextField(
               hint: "********",
-              obscureText: true,
-            ),  
+              obscureText: _isObscure,
+              suffix: IconButton(
+                onPressed: () {
+                  setState(() {
+                    _isObscure = !_isObscure;
+                  });
+                },
+                icon: Icon(
+                  _isObscure ? Icons.visibility : Icons.visibility_off, 
+                  color: isDarkMode 
+                    ? Palette.textGreyscale700Dark 
+                    : Palette.textGreyscale700Light
+                ),
+              ),
+            ),
             YMargin(10),
             Row(
               children: [
@@ -89,10 +106,10 @@ class _SignupScreenState extends State<SignupScreen> {
           ],
         ),
       ),
-      persistentFooterButtons: [
-        Padding(
+      bottomNavigationBar: Padding(
           padding: EdgeInsets.symmetric(horizontal: config.sw(10)),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               YMargin(10),
               PrimaryButton(
@@ -101,7 +118,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   push(DashboardScreen());
                 }
               ),
-              YMargin(10),
+              YMargin(20),
               InkWell(
                 onTap: () {
                   pop();
@@ -110,11 +127,11 @@ class _SignupScreenState extends State<SignupScreen> {
                   "Already have an account? Login",
                   style: TextStyles.mediumSemiBold,
                 ),
-              )
+              ),
+              YMargin(40)
             ],
           ),
         )
-      ],
     );
   }
 }

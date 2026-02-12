@@ -1,6 +1,7 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/presentation/features/expert/screens/become_expert_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/features/dashboard/screens/expert_dashboard_screen.dart';
@@ -140,6 +141,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             icon: Icons.workspace_premium_outlined,
             isDarkMode: isDarkMode,
             showDivider: false,
+            onTap: () {
+              push(BecomeExpertScreen());
+            }
           ),
           YMargin(20),
           _SettingsSectionTitle(
@@ -174,13 +178,14 @@ class _SettingsTile extends StatelessWidget {
     required this.icon,
     required this.isDarkMode,
     this.showDivider = true,
+    this.onTap,
   });
 
   final String title;
   final IconData icon;
   final bool isDarkMode;
   final bool showDivider;
-
+  final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) {
     final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
@@ -206,7 +211,7 @@ class _SettingsTile extends StatelessWidget {
             Icons.chevron_right,
             color: secondaryTextColor,
           ),
-          onTap: () {},
+          onTap: onTap,
         ),
         if (showDivider)
           Divider(
@@ -281,25 +286,14 @@ class _ModeSwitchRow extends StatelessWidget {
     final textColor = isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight;
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        // Icon(Icons.switch_account_outlined, color: Palette.primary),
-        // XMargin(8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Expert Mode",
-                style: TextStyles.mediumSemiBold.copyWith(color: textColor),
-              ),
-              // YMargin(2),
-              // Text(
-              //   "Switch to the expert dashboard",
-              //   style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
-              // ),
-            ],
-          ),
+       Text(
+          "Expert Mode",
+          style: TextStyles.mediumSemiBold.copyWith(color: textColor),
         ),
+        XMargin(10),
         Switch.adaptive(
           value: isExpertMode,
           activeColor: Palette.primary,

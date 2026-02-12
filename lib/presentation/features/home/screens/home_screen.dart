@@ -34,14 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
             fontFamily: TextStyles.fontFamily,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              push(ExpertDashboardScreen());
-            }
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.settings),
+        //     onPressed: () {
+        //       push(ExpertDashboardScreen());
+        //     }
+        //   )
+        // ],
       ),
       body: SingleChildScrollView(
         child: Column(

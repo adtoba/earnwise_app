@@ -288,25 +288,14 @@ class _ModeSwitchRow extends StatelessWidget {
     final textColor = isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight;
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        // Icon(Icons.switch_account_outlined, color: Palette.primary),
-        // XMargin(8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Expert Mode",
-                style: TextStyles.mediumSemiBold.copyWith(color: textColor),
-              ),
-              // YMargin(2),
-              // Text(
-              //   "Switch to the user dashboard",
-              //   style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
-              // ),
-            ],
-          ),
+       Text(
+          "Expert Mode",
+          style: TextStyles.mediumSemiBold.copyWith(color: textColor),
         ),
+        XMargin(10),
         Switch.adaptive(
           value: isExpertMode,
           activeColor: Palette.primary,
