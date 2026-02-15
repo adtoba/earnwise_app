@@ -1,5 +1,7 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/presentation/features/expert/screens/expert_set_availability_screen.dart';
 import 'package:earnwise_app/presentation/features/expert/screens/set_rates_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
@@ -19,6 +21,8 @@ class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
   String? _country;
   String? _state;
   String? _city;
+  final List<String> _days = const ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  late final Map<String, _SimpleAvailability> _availability;
   final List<String> _selectedCategories = [];
   final List<String> _availableCategories = [
     "Accounting",
@@ -39,7 +43,18 @@ class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
   final List<String> _cities = ["Ikeja", "Lekki", "Yaba", "Surulere"];
 
   @override
+  void initState() {
+    super.initState();
+    _availability = {
+      for (final day in _days) day: _SimpleAvailability(),
+    };
+  }
+
+  @override
   void dispose() {
+    for (final availability in _availability.values) {
+      availability.dispose();
+    }
     super.dispose();
   }
 
@@ -55,7 +70,7 @@ class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          "Become an Expert",
+          "Set Expert Details",
           style: TextStyles.largeBold.copyWith(
             color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
           ),
@@ -64,103 +79,103 @@ class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
         children: [
-          _SectionBlock(
-            title: "Profile",
-            borderColor: sectionBorderColor,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: config.sw(32),
-                      backgroundColor: Palette.primary.withOpacity(0.15),
-                      child: const Icon(Icons.camera_alt, color: Palette.primary),
-                    ),
-                    XMargin(12),
-                    Expanded(
-                      child: Text(
-                        "Upload a clear profile photo",
-                        style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        "Upload",
-                        style: TextStyles.smallSemiBold.copyWith(color: Palette.primary),
-                      ),
-                    ),
-                  ],
-                ),
-                YMargin(16),
-                _LabeledField(label: "First name", child: _textField(hint: "John")),
-                YMargin(12),
-                _LabeledField(label: "Last name", child: _textField(hint: "Doe")),
-                YMargin(12),
-                _LabeledField(
-                  label: "Gender",
-                  child: _dropdownField(
-                    context: context,
-                    value: _gender,
-                    hint: "Select gender",
-                    items: _genders,
-                    onChanged: (value) => setState(() => _gender = value),
-                  ),
-                ),
-                YMargin(20),
-                _LabeledField(
-                  label: "Date of birth",
-                  child: _textField(hint: "DD / MM / YYYY"),
-                ),
-              ],
-            ),
-          ),
-          YMargin(16),
-          _SectionBlock(
-            title: "Contact & Location",
-            borderColor: sectionBorderColor,
-            child: Column(
-              children: [
-                _LabeledField(label: "Phone number", child: _textField(hint: "+234 801 234 5678")),
-                YMargin(12),
-                _LabeledField(
-                  label: "Country",
-                  child: _dropdownField(
-                    context: context,
-                    value: _country,
-                    hint: "Select country",
-                    items: _countries,
-                    onChanged: (value) => setState(() => _country = value),
-                  ),
-                ),
-                YMargin(12),
-                _LabeledField(
-                  label: "State",
-                  child: _dropdownField(
-                    context: context,
-                    value: _state,
-                    hint: "Select state",
-                    items: _states,
-                    onChanged: (value) => setState(() => _state = value),
-                  ),
-                ),
-                YMargin(12),
-                _LabeledField(
-                  label: "City",
-                  child: _dropdownField(
-                    context: context,
-                    value: _city,
-                    hint: "Select city",
-                    items: _cities,
-                    onChanged: (value) => setState(() => _city = value),
-                  ),
-                ),
-                YMargin(12),
-                _LabeledField(label: "Zip code", child: _textField(hint: "100001")),
-              ],
-            ),
-          ),
-          YMargin(16),
+          // _SectionBlock(
+          //   title: "Profile",
+          //   borderColor: sectionBorderColor,
+          //   child: Column(
+          //     children: [
+          //       Row(
+          //         children: [
+          //           CircleAvatar(
+          //             radius: config.sw(32),
+          //             backgroundColor: Palette.primary.withOpacity(0.15),
+          //             child: const Icon(Icons.camera_alt, color: Palette.primary),
+          //           ),
+          //           XMargin(12),
+          //           Expanded(
+          //             child: Text(
+          //               "Upload a clear profile photo",
+          //               style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
+          //             ),
+          //           ),
+          //           TextButton(
+          //             onPressed: () {},
+          //             child: Text(
+          //               "Upload",
+          //               style: TextStyles.smallSemiBold.copyWith(color: Palette.primary),
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //       YMargin(16),
+          //       _LabeledField(label: "First name", child: _textField(hint: "John")),
+          //       YMargin(12),
+          //       _LabeledField(label: "Last name", child: _textField(hint: "Doe")),
+          //       YMargin(12),
+          //       _LabeledField(
+          //         label: "Gender",
+          //         child: _dropdownField(
+          //           context: context,
+          //           value: _gender,
+          //           hint: "Select gender",
+          //           items: _genders,
+          //           onChanged: (value) => setState(() => _gender = value),
+          //         ),
+          //       ),
+          //       YMargin(20),
+          //       _LabeledField(
+          //         label: "Date of birth",
+          //         child: _textField(hint: "DD / MM / YYYY"),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          // YMargin(16),
+          // _SectionBlock(
+          //   title: "Contact & Location",
+          //   borderColor: sectionBorderColor,
+          //   child: Column(
+          //     children: [
+          //       _LabeledField(label: "Phone number", child: _textField(hint: "+234 801 234 5678")),
+          //       YMargin(12),
+          //       _LabeledField(
+          //         label: "Country",
+          //         child: _dropdownField(
+          //           context: context,
+          //           value: _country,
+          //           hint: "Select country",
+          //           items: _countries,
+          //           onChanged: (value) => setState(() => _country = value),
+          //         ),
+          //       ),
+          //       YMargin(12),
+          //       _LabeledField(
+          //         label: "State",
+          //         child: _dropdownField(
+          //           context: context,
+          //           value: _state,
+          //           hint: "Select state",
+          //           items: _states,
+          //           onChanged: (value) => setState(() => _state = value),
+          //         ),
+          //       ),
+          //       YMargin(12),
+          //       _LabeledField(
+          //         label: "City",
+          //         child: _dropdownField(
+          //           context: context,
+          //           value: _city,
+          //           hint: "Select city",
+          //           items: _cities,
+          //           onChanged: (value) => setState(() => _city = value),
+          //         ),
+          //       ),
+          //       YMargin(12),
+          //       _LabeledField(label: "Zip code", child: _textField(hint: "100001")),
+          //     ],
+          //   ),
+          // ),
+          // YMargin(16),
           _SectionBlock(
             title: "Expertise",
             borderColor: sectionBorderColor,
@@ -247,20 +262,27 @@ class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
               ],
             ),
           ),
-          YMargin(16),
-          _SectionBlock(
-            title: "Availability",
-            borderColor: sectionBorderColor,
-            child: Column(
-              children: [
-                _LabeledField(label: "Working days", child: _textField(hint: "Mon - Fri")),
-                YMargin(12),
-                _LabeledField(label: "Working hours", child: _textField(hint: "9:00 AM - 5:00 PM")),
-                YMargin(12),
-                _LabeledField(label: "Time zone", child: _textField(hint: "GMT +1")),
-              ],
-            ),
-          ),
+          // YMargin(16),
+          // _SectionBlock(
+          //   title: "Availability",
+          //   borderColor: sectionBorderColor,
+          //   child: Column(
+          //     children: [
+          //       for (int i = 0; i < _days.length; i++) ...[
+          //         _AvailabilityRow(
+          //           day: _days[i],
+          //           availability: _availability[_days[i]]!,
+          //           onChanged: (value) {
+          //             setState(() {
+          //               _availability[_days[i]]!.isEnabled = value;
+          //             });
+          //           },
+          //         ),
+          //         if (i != _days.length - 1) YMargin(12),
+          //       ],
+          //     ],
+          //   ),
+          // ),
           YMargin(16),
           _SectionBlock(
             title: "Rates",
@@ -314,12 +336,98 @@ class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
             horizontal: config.sw(20),
           ),
           child: PrimaryButton(
-            text: "Submit for Review", 
-            onPressed: () {}
+            text: "Next", 
+            onPressed: () {
+              push(ExpertSetAvailabilityScreen());
+            }
           ),
         )
       ],
     );
+  }
+}
+
+class _AvailabilityRow extends StatelessWidget {
+  const _AvailabilityRow({
+    required this.day,
+    required this.availability,
+    required this.onChanged,
+  });
+
+  final String day;
+  final _SimpleAvailability availability;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    var brightness = Theme.of(context).brightness;
+    bool isDarkMode = brightness == Brightness.dark;
+    final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Text(
+              day,
+              style: TextStyles.mediumSemiBold.copyWith(
+                color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+              ),
+            ),
+            Spacer(),
+            Switch.adaptive(
+              value: availability.isEnabled,
+              activeColor: Palette.primary,
+              onChanged: onChanged,
+            ),
+          ],
+        ),
+        if (availability.isEnabled) ...[
+          YMargin(8),
+          Row(
+            children: [
+              Expanded(
+                child: SearchTextField(
+                  hint: "Start time",
+                  controller: availability.startController,
+                ),
+              ),
+              XMargin(10),
+              Expanded(
+                child: SearchTextField(
+                  hint: "End time",
+                  controller: availability.endController,
+                ),
+              ),
+            ],
+          ),
+        ] else ...[
+          YMargin(2),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Not available",
+              style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _SimpleAvailability {
+  _SimpleAvailability()
+      : startController = TextEditingController(text: "9:00 AM"),
+        endController = TextEditingController(text: "5:00 PM");
+
+  bool isEnabled = true;
+  final TextEditingController startController;
+  final TextEditingController endController;
+
+  void dispose() {
+    startController.dispose();
+    endController.dispose();
   }
 }
 

@@ -1,7 +1,6 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
-import 'package:earnwise_app/presentation/features/expert/screens/become_expert_screen.dart';
 import 'package:earnwise_app/presentation/features/expert/views/become_expert_modal.dart';
 import 'package:earnwise_app/presentation/features/profile/screens/profile_screen.dart';
 import 'package:earnwise_app/presentation/features/settings/screens/favorite_experts_screen.dart';
@@ -67,6 +66,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         "Alex Johnson",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        textScaler: TextScaler.noScaling,
                         style: TextStyles.largeSemiBold.copyWith(
                           color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                         ),
@@ -74,11 +74,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       YMargin(4),
                       Text(
                         "@alexjohnson",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textScaler: TextScaler.noScaling,
                         style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
                       ),
                     ],
                   ),
                 ),
+                XMargin(10),
                 OutlinedButton(
                   onPressed: () {
                     push(ProfileScreen());

@@ -26,9 +26,7 @@ class ExpertFeedsView extends StatelessWidget {
                   "Expert Posts",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyles.xLargeSemiBold.copyWith(
-                    fontFamily: TextStyles.fontFamily,
-                  ),
+                  style: TextStyles.largeBold
                 ),
               ),
               TextButton(

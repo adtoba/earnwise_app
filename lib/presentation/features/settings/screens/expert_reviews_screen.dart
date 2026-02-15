@@ -55,13 +55,13 @@ class _ExpertReviewsScreenState extends State<ExpertReviewsScreen> {
                                 TextSpan(
                                   text: "4.5",
                                   style: TextStyles.h3Bold.copyWith(
-                                    color: isDarkMode ? Colors.grey : Colors.black,
-                                  ),
+                                    color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+                                  )
                                 ),
                                 TextSpan(
                                   text: " /5",
                                   style: TextStyles.mediumMedium.copyWith(
-                                    color: isDarkMode ? Colors.grey : Colors.black,
+                                    color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                                   )
                                 )
                               ],

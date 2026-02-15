@@ -26,57 +26,54 @@ class ExpertHomeWalletView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Wallet Balance",
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyles.smallRegular.copyWith(
-                fontFamily: TextStyles.fontFamily,
-                color: isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light,
-              ),
-            ),
-            YMargin(6),
-            Text(
-              "\$0.00",
-              style: TextStyles.h4Bold.copyWith(
-                color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
-              ),
-            ),
-            YMargin(16),
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: isDarkMode ? Palette.borderDark : Palette.borderLight),
-                      foregroundColor: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: EdgeInsets.symmetric(vertical: config.sh(12)),
-                    ),
-                    child: Text(
-                      "Withdraw",
-                      style: TextStyles.mediumSemiBold,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Available Balance",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textScaler: TextScaler.noScaling,
+                        style: TextStyles.smallRegular.copyWith(
+                          fontFamily: TextStyles.fontFamily,
+                          color: isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light,
+                        ),
+                      ),
+                      YMargin(6),
+                      Text(
+                        "\$0.00",
+                        style: TextStyles.h4Bold.copyWith(
+                          color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 XMargin(12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Palette.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: EdgeInsets.symmetric(vertical: config.sh(12)),
-                    ),
-                    child: Text(
-                      "Top Up",
-                      style: TextStyles.mediumSemiBold.copyWith(color: Colors.white),
-                    ),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Palette.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: EdgeInsets.symmetric(vertical: config.sh(8), horizontal: config.sw(16)),
+                  ),
+                  child: Text(
+                    "Withdraw",
+                    style: TextStyles.mediumSemiBold,
                   ),
                 ),
               ],
+            ),
+            YMargin(8),
+            Text(
+              "+\$0.00 pending",
+              style: TextStyles.smallRegular.copyWith(
+                color: isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light,
+              ),
             ),
           ],
         ),

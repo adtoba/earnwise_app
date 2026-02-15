@@ -6,7 +6,6 @@ import 'package:earnwise_app/presentation/features/dashboard/screens/dashboard_s
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/primary_button.dart';
-import 'package:earnwise_app/presentation/widgets/primary_textfield.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
 

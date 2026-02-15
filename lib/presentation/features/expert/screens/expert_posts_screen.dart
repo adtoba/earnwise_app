@@ -2,6 +2,7 @@ import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/presentation/features/home/screens/feed_info_screen.dart';
 import 'package:earnwise_app/presentation/features/home/widgets/expert_feed_item.dart';
+import 'package:earnwise_app/presentation/features/expert/screens/new_post_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,9 @@ class _ExpertPostsScreenState extends State<ExpertPostsScreen> {
         itemCount: 5
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          push(NewPostScreen());
+        },
         backgroundColor: Palette.primary,
         child: Icon(Icons.add, color: Colors.white),
       ),

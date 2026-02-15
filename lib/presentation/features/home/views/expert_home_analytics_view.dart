@@ -62,7 +62,13 @@ class ExpertHomeAnalyticsView extends StatelessWidget {
               children: [
                 _AnalyticsRow(
                   label: "Total Earnings",
-                  value: "\$2,450.00",
+                  value: "\$2,450",
+                  isDarkMode: isDarkMode,
+                ),
+                Divider(height: config.sh(20), color: borderColor),
+                _AnalyticsRow(
+                  label: "Withdrawals",
+                  value: "\$1,450",
                   isDarkMode: isDarkMode,
                 ),
                 Divider(height: config.sh(20), color: borderColor),

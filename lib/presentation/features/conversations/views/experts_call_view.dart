@@ -15,7 +15,7 @@ class ExpertsCallsView extends StatelessWidget {
     bool isDarkMode = brightness == Brightness.dark;
     
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Column(
         children: [
           YMargin(30),
@@ -37,6 +37,7 @@ class ExpertsCallsView extends StatelessWidget {
               unselectedLabelColor: isDarkMode ? Palette.textGeneralDark.withOpacity(0.7) : Palette.textGeneralLight.withOpacity(0.7),
               labelStyle: TextStyles.mediumSemiBold,
               tabs: const [
+                Tab(text: "Pending"),
                 Tab(text: "Upcoming"),
                 Tab(text: "Past"),
               ],
@@ -46,6 +47,7 @@ class ExpertsCallsView extends StatelessWidget {
           Expanded(
             child: TabBarView(
               children: [
+                UpcomingCallsView(),
                 UpcomingCallsView(),
                 PastCallsView()
               ],

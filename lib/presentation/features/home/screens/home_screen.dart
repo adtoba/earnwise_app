@@ -1,12 +1,9 @@
 import 'package:earnwise_app/core/constants/constants.dart';
-import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
-import 'package:earnwise_app/presentation/features/dashboard/screens/expert_dashboard_screen.dart';
 import 'package:earnwise_app/presentation/features/home/views/expert_feeds_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/suggested_experts_view.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
-import 'package:earnwise_app/presentation/widgets/primary_textfield.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -31,9 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // leading: Icon(Icons.access_alarms_sharp),
         title: Text(
           'Home',
-          style: TextStyles.largeBold.copyWith(
-            fontFamily: TextStyles.fontFamily,
-          ),
+          style: TextStyles.largeBold
         ),
         actions: [
           IconButton(
@@ -54,7 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 hint: "Search Experts",
                 prefix: Icon(Icons.search),
               ),
-            ),            
+            ),    
+            YMargin(10),        
             SuggestedExpertsView(),
             YMargin(20),
             Divider(

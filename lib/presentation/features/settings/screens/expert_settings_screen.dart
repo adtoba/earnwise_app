@@ -2,6 +2,8 @@ import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/dashboard/screens/dashboard_screen.dart';
+import 'package:earnwise_app/presentation/features/expert/screens/expert_set_availability_screen.dart';
+import 'package:earnwise_app/presentation/features/expert/screens/expert_socials_screen.dart';
 import 'package:earnwise_app/presentation/features/expert/screens/set_rates_screen.dart';
 import 'package:earnwise_app/presentation/features/profile/screens/profile_screen.dart';
 import 'package:earnwise_app/presentation/features/settings/screens/expert_details_screen.dart';
@@ -67,6 +69,7 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
                         "Jose Martinez",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        textScaler: TextScaler.noScaling,
                         style: TextStyles.largeSemiBold.copyWith(
                           color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                         ),
@@ -74,11 +77,15 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
                       YMargin(4),
                       Text(
                         "@josemartinez",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textScaler: TextScaler.noScaling,
                         style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
                       ),
                     ],
                   ),
                 ),
+                XMargin(10),
                 OutlinedButton(
                   onPressed: () {
                     push(ProfileScreen());
@@ -136,6 +143,18 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
             icon: Icons.calendar_today_outlined,
             isDarkMode: isDarkMode,
             showDivider: true,
+            onTap: () {
+              push(ExpertSetAvailabilityScreen());
+            },
+          ),
+          _SettingsTile(
+            title: "Linked Socials",
+            icon: Icons.link_outlined,
+            isDarkMode: isDarkMode,
+            showDivider: true,
+            onTap: () {
+              push(ExpertSocialsScreen());
+            },
           ),
           _SettingsTile(
             title: "Ratings & Reviews",
@@ -330,7 +349,6 @@ class _ModeSwitchRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
     final textColor = isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight;
 
     return Row(

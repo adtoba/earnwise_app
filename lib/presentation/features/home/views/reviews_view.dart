@@ -6,7 +6,6 @@ import 'package:earnwise_app/presentation/features/home/widgets/review_item.dart
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ReviewsView extends StatelessWidget {
   const ReviewsView({super.key});

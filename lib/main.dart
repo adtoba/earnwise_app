@@ -1,5 +1,4 @@
 import 'package:earnwise_app/core/utils/size_config.dart';
-import 'package:earnwise_app/presentation/features/auth/screens/login_screen.dart';
 import 'package:earnwise_app/presentation/features/auth/screens/onboarding_screen.dart';
 import 'package:earnwise_app/presentation/styles/theme.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +24,7 @@ class MyApp extends StatelessWidget {
           title: 'EarnWise',
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
-          themeMode: ThemeMode.light,
+          themeMode: ThemeMode.dark,
           home: OnboardingScreen()
         );
       }

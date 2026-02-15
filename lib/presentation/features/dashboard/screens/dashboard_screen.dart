@@ -1,6 +1,5 @@
 import 'package:earnwise_app/presentation/features/conversations/screens/conversations_screen.dart';
 import 'package:earnwise_app/presentation/features/explore/screens/explore_screen.dart';
-import 'package:earnwise_app/presentation/features/home/screens/expert_home_screen.dart';
 import 'package:earnwise_app/presentation/features/home/screens/home_screen.dart';
 import 'package:earnwise_app/presentation/features/settings/screens/settings_screen.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
@@ -44,6 +43,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onPageChanged,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
         selectedLabelStyle: TextStyles.mediumRegular,
         unselectedLabelStyle: TextStyles.mediumRegular,
         items: [

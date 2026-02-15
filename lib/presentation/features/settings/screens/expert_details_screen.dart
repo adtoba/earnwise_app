@@ -1,6 +1,5 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
-import 'package:earnwise_app/presentation/features/expert/screens/set_rates_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/primary_button.dart';
