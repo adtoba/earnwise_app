@@ -4,7 +4,9 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 
 class FaqView extends StatelessWidget {
-  const FaqView({super.key});
+  const FaqView({super.key, this.faq});
+
+  final List<String>? faq;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class FaqView extends StatelessWidget {
             style: TextStyles.h4Bold,
           ),
           YMargin(10),
-          ...demoFaq.map((e) => Padding(
+          ...faq!.map((e) => Padding(
             padding: EdgeInsets.only(bottom: config.sh(10)),
             child: Row(
               children: [

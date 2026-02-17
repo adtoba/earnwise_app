@@ -1,8 +1,10 @@
 import 'package:earnwise_app/core/constants/pref_keys.dart';
+import 'package:earnwise_app/core/di/di.dart';
 import 'package:earnwise_app/core/utils/size_config.dart';
 import 'package:earnwise_app/presentation/features/auth/screens/onboarding_screen.dart';
 import 'package:earnwise_app/presentation/styles/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/web.dart';
@@ -12,10 +14,10 @@ final logger = Logger();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+  setupDI();
   await Hive.initFlutter();
   await Hive.openBox(PrefKeys.appData);
-  runApp(const MyApp());
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +38,7 @@ class MyApp extends StatelessWidget {
             title: 'EarnWise',
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
-            themeMode: ThemeMode.dark,
+            themeMode: ThemeMode.light,
             home: OnboardingScreen()
           );
         }

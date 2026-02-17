@@ -1,9 +1,12 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/constants/pref_keys.dart';
 import 'package:earnwise_app/core/utils/extensions.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/data/services/local_storage_service.dart';
 import 'package:earnwise_app/presentation/features/auth/screens/login_screen.dart';
 import 'package:earnwise_app/presentation/features/auth/widgets/auth_button.dart';
+import 'package:earnwise_app/presentation/features/dashboard/screens/dashboard_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
@@ -65,8 +68,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 YMargin(10),
                 AuthButton(
                   text: "Continue with Email",
-                  onPressed: () {
-                    push(LoginScreen());
+                  onPressed: () async {
+                    bool? isLoggedIn = await LocalStorageService.get(PrefKeys.isLoggedIn);
+                    if(isLoggedIn == true) {
+                      pushAndRemoveUntil(const DashboardScreen());
+                    } else {
+                      push(LoginScreen());
+                    }
                   },
                   isLoading: false,
                   color: Palette.primary,

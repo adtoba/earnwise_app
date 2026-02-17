@@ -1,4 +1,6 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/auth_provider.dart';
+import 'package:earnwise_app/core/utils/input_validator.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/auth/screens/signup_screen.dart';
@@ -8,20 +10,27 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/primary_button.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isObscure = true;
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final authProvider = ref.watch(authNotifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -35,57 +44,64 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Container(
         padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Email Address',
-              style: TextStyles.mediumMedium,
-            ),
-            YMargin(10),
-            SearchTextField(
-              hint: "johndoe@gmail.com",
-            ),
-            YMargin(10),
-            Text(
-              'Password',
-              style: TextStyles.mediumMedium,
-            ),
-            YMargin(10),
-            SearchTextField(
-              hint: "********",
-              obscureText: _isObscure,
-              suffix: IconButton(
-                onPressed: () {
-                  setState(() {
-                    _isObscure = !_isObscure;
-                  });
-                },
-                icon: Icon(
-                  _isObscure ? Icons.visibility : Icons.visibility_off, 
-                  color: isDarkMode 
-                    ? Palette.textGreyscale700Dark 
-                    : Palette.textGreyscale700Light
-                ),
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Email Address',
+                style: TextStyles.mediumMedium,
               ),
-            ),  
-            YMargin(10),
-            Row(
-              children: [
-                Text(
-                  "Forgot Your Password?",
-                  style: TextStyles.mediumSemiBold,
-                ),
-                Spacer(),
-                Text(
-                  "Reset",
-                  style: TextStyles.mediumSemiBold.copyWith(
-                    color: Palette.primary
+              YMargin(10),
+              SearchTextField(
+                controller: emailController,
+                hint: "johndoe@gmail.com",
+                validator: InputValidator.validateEmail,
+              ),
+              YMargin(10),
+              Text(
+                'Password',
+                style: TextStyles.mediumMedium,
+              ),
+              YMargin(10),
+              SearchTextField(
+                controller: passwordController,
+                hint: "********",
+                validator: InputValidator.validatePassword,
+                obscureText: _isObscure,
+                suffix: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _isObscure = !_isObscure;
+                    });
+                  },
+                  icon: Icon(
+                    _isObscure ? Icons.visibility : Icons.visibility_off, 
+                    color: isDarkMode 
+                      ? Palette.textGreyscale700Dark 
+                      : Palette.textGreyscale700Light
                   ),
                 ),
-              ],
-            ),
-          ],
+              ),  
+              YMargin(10),
+              Row(
+                children: [
+                  Text(
+                    "Forgot Your Password?",
+                    style: TextStyles.mediumSemiBold,
+                  ),
+                  Spacer(),
+                  Text(
+                    "Reset",
+                    style: TextStyles.mediumSemiBold.copyWith(
+                      color: Palette.primary
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Padding(
@@ -95,9 +111,15 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             YMargin(10),
             PrimaryButton(
+              isLoading: authProvider.isLoading,
               text: "Continue", 
               onPressed: () {
-                push(DashboardScreen());
+                if (formKey.currentState!.validate()) {
+                  authProvider.login(
+                    email: emailController.text, 
+                    password: passwordController.text
+                  );
+                }
               }
             ),
             YMargin(20),

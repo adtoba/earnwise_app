@@ -10,6 +10,7 @@ class ExpertListItem extends StatelessWidget {
     required this.rating,
     required this.consultations,
     required this.location,
+    required this.state,
     required this.rate,
     required this.description,
     required this.imageUrl,
@@ -20,6 +21,7 @@ class ExpertListItem extends StatelessWidget {
   final double rating;
   final int consultations;
   final String location;
+  final String state;
   final String rate;
   final String description;
   final String imageUrl;
@@ -124,7 +126,7 @@ class ExpertListItem extends StatelessWidget {
                       XMargin(4),
                       Expanded(
                         child: Text(
-                          location,
+                          "${state != "" ? "$state, " : ""}$location",
                           style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
                         ),
                       ),

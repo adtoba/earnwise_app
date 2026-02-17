@@ -5,7 +5,8 @@ class PrefKeys {
   static const String userId = 'user_id';
   static const String userName = 'user_name';
   static const String userImageUrl = 'user_image_url';
-  static const String userFullName = 'user_full_name';
+  static const String userFirstName = 'user_first_name';
+  static const String userLastName = 'user_last_name';
   static const String userEmail = 'user_email';
   static const String isLoggedIn = 'is_logged_in';
 

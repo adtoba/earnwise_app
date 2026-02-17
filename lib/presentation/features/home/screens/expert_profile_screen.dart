@@ -1,6 +1,7 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/extensions.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/domain/models/expert_profile_model.dart';
 import 'package:earnwise_app/presentation/features/home/views/about_expert_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/expertise_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/faq_view.dart';
@@ -12,7 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ExpertProfileScreen extends StatefulWidget {
-  const ExpertProfileScreen({super.key});
+  const ExpertProfileScreen({super.key, this.expert});
+
+  final ExpertProfileModel? expert;
 
   @override
   State<ExpertProfileScreen> createState() => _ExpertProfileScreenState();
@@ -21,11 +24,22 @@ class ExpertProfileScreen extends StatefulWidget {
 class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    var firstName = widget.expert?.user?.firstName ?? "";
+    var lastName = widget.expert?.user?.lastName ?? "";
+    var professionalTitle = widget.expert?.professionalTitle ?? "";
+    var rating = widget.expert?.rating ?? 0;
+    var reviewsCount = widget.expert?.reviewsCount ?? 0;
+    var totalConsultations = widget.expert?.totalConsultations ?? 0;
+    var location = widget.expert?.user?.country ?? "";
+    var state = widget.expert?.user?.state ?? "";
+    var isEmailVerified = widget.expert?.user?.isEmailVerified ?? false;
+    var isPhoneVerified = widget.expert?.user?.isPhoneVerified ?? false;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          "Jose Martinez",
+          "$firstName $lastName",
           style: TextStyles.largeBold,
         ),
         actions: [
@@ -67,7 +81,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                 child: Row(
                   children: [
                     Text(
-                      "Jose Martinez",
+                      "$firstName $lastName",
                       style: TextStyles.h4Bold,
                     ),
                     XMargin(10),
@@ -78,7 +92,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
                 child: Text(
-                  "Business Consultant",
+                  professionalTitle,
                   style: TextStyles.largeSemiBold.copyWith(
                     color: Colors.grey
                   ),
@@ -90,9 +104,10 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                 child: Row(
                   children: [
                     RatingBar.builder(
-                      initialRating: 4.5,
+                      initialRating: rating,
                       glowColor: Color(0xffFF9F29),
                       allowHalfRating: true,
+                      ignoreGestures: true,
                       itemCount: 5,
                       itemSize: 30,
                       itemBuilder: (context, index) => Icon(Icons.star, color: Color(0xffFF9F29)),
@@ -101,7 +116,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                       },
                     ),
                     Text(
-                      "4.5 (100 reviews)",
+                      "$rating ($reviewsCount reviews)",
                       style: TextStyles.largeBold
                     )
                   ],
@@ -132,9 +147,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
               YMargin(20),
               _buildConsultationCard(title: "Typically replies in 3 days", icon: Icons.access_time),
               YMargin(10),
-              _buildConsultationCard(title: "100 Consultations", icon: Icons.group),
+              _buildConsultationCard(title: "$totalConsultations Consultations", icon: Icons.group),
               YMargin(10),
-              _buildConsultationCard(title: "New York, USA", icon: Icons.location_on),
+              _buildConsultationCard(title: "${state != "" ? "$state, " : ""}$location", icon: Icons.location_on),
               YMargin(10),
               _buildConsultationCard(title: "100% Response Rate", icon: Icons.check_circle_outline),
               YMargin(10),
@@ -145,7 +160,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
 
               // About Expert section
               YMargin(20),
-              AboutExpertView(),
+              AboutExpertView(
+                bio: widget.expert?.bio ?? "",
+              ),
               Divider(
                 color: Colors.grey.withOpacity(0.2),
                 thickness: 1,
@@ -153,7 +170,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
 
               // Expertise section
               YMargin(20),
-              ExpertiseView(),
+              ExpertiseView(
+                categories: widget.expert?.categories ?? [],
+              ),
               YMargin(20),
 
               // Faq section
@@ -162,7 +181,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                 thickness: 1,
               ),
               YMargin(20),
-              FaqView(),
+              FaqView(
+                faq: widget.expert?.faq ?? [],
+              ),
 
               // Reviews section
               YMargin(20),

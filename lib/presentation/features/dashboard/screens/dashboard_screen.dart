@@ -15,7 +15,10 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
 
-  final PageController _pageController = PageController();
+  final PageController _pageController = PageController(
+    initialPage: 0,
+    keepPage: true
+  );
 
   int _currentIndex = 0;
 

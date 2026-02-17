@@ -4,7 +4,9 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 
 class ExpertiseView extends StatelessWidget {
-  const ExpertiseView({super.key});
+  const ExpertiseView({super.key, this.categories});
+
+  final List<String>? categories;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class ExpertiseView extends StatelessWidget {
             spacing: 10,
             runSpacing: 10,
             children: [
-              ...demoExpertise.map((e) => Container(
+              ...categories!.map((e) => Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: Colors.grey.withOpacity(0.2),

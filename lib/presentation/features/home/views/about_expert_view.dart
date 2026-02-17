@@ -4,7 +4,9 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 
 class AboutExpertView extends StatelessWidget {
-  const AboutExpertView({super.key});
+  const AboutExpertView({super.key, this.bio});
+
+  final String? bio;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class AboutExpertView extends StatelessWidget {
           ),
           YMargin(10),
           Text(
-            "Jose Martinez is a business consultant with over 10 years of experience. He has helped businesses grow and succeed in the competitive business world. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            bio ?? "",
           ),
           YMargin(10),
           Row(
