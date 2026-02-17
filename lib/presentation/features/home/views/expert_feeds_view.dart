@@ -60,9 +60,11 @@ class ExpertFeedsView extends StatelessWidget {
               userName: "Albert Einstein",
               text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
               time: "2h",
+              likesCount: 100,
+              commentsCount: 5,
               images: i % 2 == 0 ? visibleImages : [],
               onTap: () {
-                push(FeedInfoScreen(images: visibleImages));
+                push(FeedInfoScreen());
               },
             );
           },

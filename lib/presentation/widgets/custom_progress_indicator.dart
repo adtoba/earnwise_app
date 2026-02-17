@@ -6,11 +6,14 @@ class CustomProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var brightness = Theme.of(context).brightness;
+    bool isDarkMode = brightness == Brightness.dark;
+
     return SizedBox(
       width: config.sw(25),
       height: config.sh(25),
       child: CircularProgressIndicator(
-        color: Colors.white,
+        color: isDarkMode ? Colors.white : Colors.black,
       ),
     );
   }

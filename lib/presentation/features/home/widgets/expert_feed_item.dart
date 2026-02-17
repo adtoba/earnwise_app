@@ -5,10 +5,24 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 
 class ExpertFeedItem extends StatelessWidget {
-  const ExpertFeedItem({super.key, required this.userImageUrl, required this.userName, required this.text, required this.time, this.images, required this.onTap});
+  const ExpertFeedItem({
+    super.key, 
+    required this.userImageUrl, 
+    required this.userName, 
+    required this.likesCount, 
+    required this.commentsCount, 
+    required this.text, 
+    this.location,
+    required this.time, 
+    this.images, 
+    required this.onTap
+  });
 
   final String userImageUrl ;
   final String userName;
+  final int likesCount;
+  final int commentsCount;
+  final String? location;
   final String text;    
   final String time;
   final List<String>? images;
@@ -58,7 +72,7 @@ class ExpertFeedItem extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        "Business Consultant",
+                        location ?? "",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyles.xSmallMedium,
@@ -141,13 +155,13 @@ class ExpertFeedItem extends StatelessWidget {
                   children: [
                     FeedAction(
                       icon: Icons.favorite_border,
-                      label: "100",
+                      label: likesCount.toString(),
                       onTap: () {},
                     ),
                     XMargin(12),
                     FeedAction(
                       icon: Icons.comment_outlined,
-                      label: "5",
+                      label: commentsCount.toString(),
                       onTap: () {},
                     ),
                     Spacer(),

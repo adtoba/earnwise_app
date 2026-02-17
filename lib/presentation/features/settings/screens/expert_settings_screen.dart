@@ -66,7 +66,7 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Jose Martinez",
+                        "${firstName ?? ""} ${lastName ?? ""}",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textScaler: TextScaler.noScaling,
@@ -76,7 +76,7 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
                       ),
                       YMargin(4),
                       Text(
-                        "@josemartinez",
+                        email ?? "",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textScaler: TextScaler.noScaling,

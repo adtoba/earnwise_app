@@ -5,12 +5,22 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 
 class CommentItem extends StatelessWidget {
-  const CommentItem({super.key, required this.userImageUrl, required this.userName, required this.text, required this.time});
+  const CommentItem({
+    super.key, 
+    required this.userImageUrl, 
+    required this.userName, 
+    required this.text, 
+    required this.time, 
+    this.location, 
+    required this.likesCount
+  });
 
   final String userImageUrl;
   final String userName;
   final String text;
   final String time;
+  final String? location;
+  final int likesCount;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +47,7 @@ class CommentItem extends StatelessWidget {
                 children: [
                   Text(
                     userName,
-                    style: TextStyles.largeSemiBold,
+                    style: TextStyles.mediumSemiBold,
                   ),
                   XMargin(5),
                   Icon(
@@ -62,7 +72,7 @@ class CommentItem extends StatelessWidget {
                 text,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyles.smallRegular.copyWith(
+                style: TextStyles.mediumRegular.copyWith(
                   fontFamily: TextStyles.fontFamily,
                   color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                 ),
@@ -74,7 +84,7 @@ class CommentItem extends StatelessWidget {
                 children: [
                   Icon(Icons.favorite_border),
                   XMargin(5),
-                  Text("5"),
+                  Text(likesCount.toString()),
                 ],
               )
             ]

@@ -9,6 +9,7 @@ import 'package:earnwise_app/domain/dto/update_expert_availability_dto.dart';
 import 'package:earnwise_app/domain/dto/update_expert_details_dto.dart';
 import 'package:earnwise_app/domain/dto/update_expert_rate_dto.dart';
 import 'package:earnwise_app/domain/dto/update_expert_socials_dto.dart';
+import 'package:earnwise_app/domain/models/expert_dashboard_model.dart';
 import 'package:earnwise_app/domain/repositories/expert_repository.dart';
 
 class ExpertHttpRepository extends ApiService implements ExpertRepository {
@@ -53,6 +54,19 @@ class ExpertHttpRepository extends ApiService implements ExpertRepository {
   Future<Either<Response<dynamic>, String>> updateExpertSocials({required UpdateExpertSocialsDto updateExpertSocialsDto}) {
     // TODO: implement updateExpertSocials
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<ExpertDashboardModel, String>> getExpertDashboard() async {
+    try {
+      final response = await http.get(Endpoints.expertDashboard);
+      return left(ExpertDashboardModel.fromJson(response.data["data"]));
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
   }
 
 }

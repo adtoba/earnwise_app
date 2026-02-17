@@ -14,4 +14,9 @@ class Endpoints {
   static String users = "/users/";
 
   static String experts = "/experts/";
+  static String expertDashboard = "/experts/dashboard";
+
+  static String posts = "/posts/";
+
+  static String postComments(String postId) => "/posts/comments/$postId";
 }

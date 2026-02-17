@@ -1,22 +1,38 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/post_provider.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/domain/models/post_model.dart';
 import 'package:earnwise_app/presentation/features/home/widgets/comment_item.dart';
 import 'package:earnwise_app/presentation/features/home/widgets/expert_feed_item.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
+import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
-class FeedInfoScreen extends StatefulWidget {
-  const FeedInfoScreen({super.key, this.images});
+class FeedInfoScreen extends ConsumerStatefulWidget {
+  const FeedInfoScreen({super.key, this.post});
   
-  final List<String>? images;
+  final PostModel? post;
 
   @override
-  State<FeedInfoScreen> createState() => _FeedInfoScreenState();
+  ConsumerState<FeedInfoScreen> createState() => _FeedInfoScreenState();
 }
 
-class _FeedInfoScreenState extends State<FeedInfoScreen> {
+class _FeedInfoScreenState extends ConsumerState<FeedInfoScreen> {
+
+  final commentController = TextEditingController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(postNotifier).getPostComments(postId: widget.post?.id ?? "");
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var brightness = Theme.of(context).brightness;
@@ -43,38 +59,65 @@ class _FeedInfoScreenState extends State<FeedInfoScreen> {
                 children: [
                   CircleAvatar(
                     radius: config.sw(20),
-                    backgroundImage: NetworkImage("https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80"),
+                    backgroundImage: NetworkImage(
+                      widget.post?.user?.profilePicture == "" 
+                        ? "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80"
+                        : widget.post?.user?.profilePicture ?? ""
+                    ),
+                  ),
+                  XMargin(10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                "${widget.post?.user?.firstName ?? ""} ${widget.post?.user?.lastName ?? ""}",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyles.largeSemiBold,
+                              ),
+                            ),
+                            XMargin(5),
+                            Icon(
+                              Icons.verified,
+                              color: Colors.blue,
+                              size: 15,
+                            ),
+                          ],
+                        ),
+                        Text(
+                          "${widget.post?.user?.state ?? ""}, ${widget.post?.user?.country ?? ""}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyles.xSmallMedium,
+                        ),
+                      ],
+                    ),
                   ),
                   XMargin(10),
                   Text(
-                    "Albert Einstein",
-                    style: TextStyles.largeSemiBold,
-                  ),
-                  XMargin(5),
-                  Icon(
-                    Icons.verified, 
-                    color: Colors.blue,
-                    size: 15,
-                  ),
-                  XMargin(10),
-                  Text(
-                    "2h",
+                    timeago.format(DateTime.parse(widget.post?.createdAt ?? "")),
                     style: TextStyles.smallRegular.copyWith(
                       fontFamily: TextStyles.fontFamily,
                       color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                     ),
                   ),
                   XMargin(10),
-                  Spacer(),
-                  Icon(Icons.more_horiz)
+                  Icon(Icons.more_horiz),
+                  YMargin(10),
                 ],
               ),
               YMargin(10),
               Text(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+                widget.post?.content ?? "",
+                style: TextStyles.mediumRegular,
               ),
               YMargin(10),
-              if (widget.images?.isNotEmpty ?? false)
+              if (widget.post?.attachments?.isNotEmpty ?? false)
                 Container(
                   decoration: BoxDecoration(
                     color: isDarkMode ? Palette.darkFillColor : Palette.lightFillColor,
@@ -86,7 +129,7 @@ class _FeedInfoScreenState extends State<FeedInfoScreen> {
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       const spacing = 5.0;
-                      final imageCount = widget.images?.length ?? 0;
+                      final imageCount = widget.post?.attachments?.length ?? 0;
                       final crossAxisCount = imageCount == 1 ? 1 : 2;
                       final rows = imageCount <= 2 ? 1 : 2;
                       final totalSpacing = spacing * (crossAxisCount - 1);
@@ -107,7 +150,7 @@ class _FeedInfoScreenState extends State<FeedInfoScreen> {
                         itemBuilder: (c, i) => ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.network(
-                            widget.images?[i] ?? "",
+                            widget.post?.attachments?[i] ?? "",
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -120,13 +163,13 @@ class _FeedInfoScreenState extends State<FeedInfoScreen> {
                 children: [
                   FeedAction(
                     icon: Icons.favorite_border,
-                    label: "100",
+                    label: widget.post?.likesCount?.toString() ?? "0",
                     onTap: () {},
                   ),
                   XMargin(12),
                   FeedAction(
                     icon: Icons.comment_outlined,
-                    label: "5",
+                    label: widget.post?.commentsCount?.toString() ?? "0",
                     onTap: () {},
                   ),
                   Spacer(),
@@ -143,22 +186,41 @@ class _FeedInfoScreenState extends State<FeedInfoScreen> {
                 color: isDarkMode ? Palette.borderDark : Palette.borderLight,
               ),
               Text(
-                "Comments (5)",
+                "Comments (${ref.watch(postNotifier).comments.length})",
                 style: TextStyles.largeBold
               ),
               YMargin(20),
-              ListView.separated(
-                shrinkWrap: true,
-                itemBuilder: (c, i) => CommentItem(
-                  userImageUrl: "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
-                  userName: "Albert Einstein",
-                  text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                  time: "2h",
-                ),
-                physics: NeverScrollableScrollPhysics(),
-                separatorBuilder: (c, i) => Divider(height: 20, color: isDarkMode ? Palette.borderDark : Palette.borderLight),
-                itemCount: 5
-              )
+              if(ref.watch(postNotifier).isPostCommentsLoading)...[
+                Center(
+                  child: CustomProgressIndicator(),
+                )
+              ] else if(ref.watch(postNotifier).comments.isEmpty)...[
+                Center(
+                  child: Text("No comments yet"),
+                )
+              ] else ...[
+                ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (c, i) {
+                    var comment = ref.watch(postNotifier).comments[i];
+
+                    return CommentItem(
+                      userImageUrl: comment.user?.profilePicture != "" ? comment.user?.profilePicture ?? "" : "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
+                      userName: "${comment.user?.firstName ?? ""} ${comment.user?.lastName ?? ""}",
+                      text: comment.comment ?? "",
+                      time: timeago.format(DateTime.parse(comment.createdAt ?? "")),
+                      likesCount: comment.likesCount ?? 0,
+                      location: "${comment.user?.state ?? ""}, ${comment.user?.country ?? ""}",
+                    );
+                  },
+                  physics: NeverScrollableScrollPhysics(),
+                  separatorBuilder: (c, i) => Divider(
+                    height: 20, 
+                    color: isDarkMode ? Palette.borderDark : Palette.borderLight
+                  ),
+                  itemCount: ref.watch(postNotifier).comments.length
+                )
+              ]
             ],
           ),
         )
@@ -167,12 +229,34 @@ class _FeedInfoScreenState extends State<FeedInfoScreen> {
         child: Padding(
           padding: EdgeInsets.only(
             left: config.sw(20),
-            right: config.sw(20),
             bottom: MediaQuery.of(context).viewInsets.bottom + 20,
             top: config.sh(10),
           ),
-          child: SearchTextField(
-            hint: "Add a comment",
+          child: Row(
+            children: [
+              Expanded(
+                child: SearchTextField(
+                  controller: commentController,
+                  hint: "Add a comment",
+                ),
+              ),
+              XMargin(10),
+              IconButton(
+                onPressed: () {
+                  if(commentController.text.isNotEmpty) {
+                    String comment = commentController.text.trim();
+                    commentController.clear();
+
+                    ref.read(postNotifier).commentOnPost(
+                      postId: widget.post?.id ?? "", 
+                      comment: comment
+                    );
+                  }
+                  
+                },
+                icon: Icon(Icons.send),
+              ),
+            ],
           ),
         ),
       ),

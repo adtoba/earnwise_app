@@ -3,6 +3,7 @@ import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/toast.dart';
 import 'package:earnwise_app/domain/dto/create_expert_profile_dto.dart';
+import 'package:earnwise_app/domain/models/expert_dashboard_model.dart';
 import 'package:earnwise_app/domain/models/expert_profile_model.dart';
 import 'package:earnwise_app/domain/repositories/expert_repository.dart';
 import 'package:earnwise_app/main.dart';
@@ -24,8 +25,14 @@ class ExpertProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _isExpertDashboardLoading = false;
+  bool get isExpertDashboardLoading => _isExpertDashboardLoading;
+
   ExpertProfileModel? _expertProfile;
   ExpertProfileModel? get expertProfile => _expertProfile;
+
+  ExpertDashboardModel? _expertDashboard;
+  ExpertDashboardModel? get expertDashboard => _expertDashboard;
 
   CreateExpertProfileDto? createExpertProfileDto;
 
@@ -53,6 +60,26 @@ class ExpertProvider extends ChangeNotifier {
         logger.e("Create expert profile failed: $failure");
         showErrorToast(failure);
       }
+    );
+  }
+
+  Future<void> getExpertDashboard() async {
+    _isExpertDashboardLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.getExpertDashboard();
+    result.fold(
+      (success) {
+        _isExpertDashboardLoading = false;
+        _expertDashboard = success;
+        notifyListeners();
+      },
+      (failure) {
+        _isExpertDashboardLoading = false;
+        notifyListeners();
+        logger.e("Get expert dashboard failed: $failure");
+        showErrorToast(failure);
+      },
     );
   }
 }

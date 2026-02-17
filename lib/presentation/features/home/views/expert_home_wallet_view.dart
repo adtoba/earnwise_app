@@ -1,11 +1,14 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/domain/models/wallet_model.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 
 class ExpertHomeWalletView extends StatelessWidget {
-  const ExpertHomeWalletView({super.key});
+  const ExpertHomeWalletView({super.key, this.wallet});
+
+  final WalletModel? wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +47,7 @@ class ExpertHomeWalletView extends StatelessWidget {
                       ),
                       YMargin(6),
                       Text(
-                        "\$0.00",
+                        "\$${wallet?.availableBalance ?? 0}",
                         style: TextStyles.h4Bold.copyWith(
                           color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                         ),
@@ -70,7 +73,7 @@ class ExpertHomeWalletView extends StatelessWidget {
             ),
             YMargin(8),
             Text(
-              "+\$0.00 pending",
+              "+\$${wallet?.pendingBalance ?? 0} pending",
               style: TextStyles.smallRegular.copyWith(
                 color: isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light,
               ),

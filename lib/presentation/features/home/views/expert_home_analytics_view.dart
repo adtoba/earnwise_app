@@ -1,11 +1,14 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/domain/models/expert_dashboard_model.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 
 class ExpertHomeAnalyticsView extends StatelessWidget {
-  const ExpertHomeAnalyticsView({super.key});
+  const ExpertHomeAnalyticsView({super.key, this.expertDashboard});
+
+  final ExpertDashboardModel? expertDashboard;
 
   @override
   Widget build(BuildContext context) {
@@ -21,36 +24,36 @@ class ExpertHomeAnalyticsView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                "Analytics",
-                style: TextStyles.largeSemiBold.copyWith(
-                  color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
-                ),
-              ),
-              Spacer(),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: config.sw(10), vertical: config.sh(6)),
-                decoration: BoxDecoration(
-                  color: isDarkMode ? Palette.surfaceButtonDark : Palette.surfaceButtonLight,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: borderColor),
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      "Last 30 days",
-                      style: TextStyles.smallSemiBold.copyWith(color: secondaryTextColor),
-                    ),
-                    XMargin(6),
-                    Icon(Icons.keyboard_arrow_down, size: 16, color: secondaryTextColor),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          YMargin(12),
+          // Row(
+          //   children: [
+          //     Text(
+          //       "Analytics",
+          //       style: TextStyles.largeSemiBold.copyWith(
+          //         color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+          //       ),
+          //     ),
+          //     Spacer(),
+          //     Container(
+          //       padding: EdgeInsets.symmetric(horizontal: config.sw(10), vertical: config.sh(6)),
+          //       decoration: BoxDecoration(
+          //         color: isDarkMode ? Palette.surfaceButtonDark : Palette.surfaceButtonLight,
+          //         borderRadius: BorderRadius.circular(20),
+          //         border: Border.all(color: borderColor),
+          //       ),
+          //       child: Row(
+          //         children: [
+          //           Text(
+          //             "Last 30 days",
+          //             style: TextStyles.smallSemiBold.copyWith(color: secondaryTextColor),
+          //           ),
+          //           XMargin(6),
+          //           Icon(Icons.keyboard_arrow_down, size: 16, color: secondaryTextColor),
+          //         ],
+          //       ),
+          //     ),
+          //   ],
+          // ),
+          // YMargin(12),
           Container(
             padding: EdgeInsets.symmetric(horizontal: config.sw(16), vertical: config.sh(14)),
             decoration: BoxDecoration(
@@ -62,25 +65,25 @@ class ExpertHomeAnalyticsView extends StatelessWidget {
               children: [
                 _AnalyticsRow(
                   label: "Total Earnings",
-                  value: "\$2,450",
+                  value: "\$${expertDashboard?.wallet?.totalEarnings ?? 0}",
                   isDarkMode: isDarkMode,
                 ),
                 Divider(height: config.sh(20), color: borderColor),
                 _AnalyticsRow(
                   label: "Withdrawals",
-                  value: "\$1,450",
+                  value: "\$${expertDashboard?.wallet?.totalWithdrawals ?? 0}",
                   isDarkMode: isDarkMode,
                 ),
                 Divider(height: config.sh(20), color: borderColor),
                 _AnalyticsRow(
                   label: "Total Consultations",
-                  value: "124",
+                  value: "${expertDashboard?.expertProfile?.totalConsultations ?? 0}",
                   isDarkMode: isDarkMode,
                 ),
                 Divider(height: config.sh(20), color: borderColor),
                 _AnalyticsRow(
                   label: "Avg. Rating",
-                  value: "4.9",
+                  value: "${expertDashboard?.expertProfile?.rating?.toStringAsFixed(2) ?? 0}",
                   isDarkMode: isDarkMode,
                   trailing: Icon(Icons.star, size: 16, color: Colors.amber.shade600),
                 ),

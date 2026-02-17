@@ -132,5 +132,7 @@ class ProfileProvider extends ChangeNotifier {
     zip = profile.user?.zip;
     gender = profile.user?.gender;
     phone = profile.user?.phone;
+    
+    notifyListeners();
   }
 }

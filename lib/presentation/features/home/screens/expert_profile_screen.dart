@@ -116,7 +116,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                       },
                     ),
                     Text(
-                      "$rating ($reviewsCount reviews)",
+                      "${double.parse(rating.toStringAsFixed(2))} ($reviewsCount reviews)",
                       style: TextStyles.largeBold
                     )
                   ],
