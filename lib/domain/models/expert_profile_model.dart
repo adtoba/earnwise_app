@@ -91,6 +91,7 @@ class User {
   String? lastName;
   String? email;
   String? gender;
+  String? profilePicture;
   String? dob;
   String? phone;
   String? address;
@@ -111,6 +112,7 @@ class User {
       this.lastName,
       this.email,
       this.gender,
+      this.profilePicture,
       this.dob,
       this.phone,
       this.address,
@@ -131,6 +133,7 @@ class User {
     lastName = json['last_name'];
     email = json['email'];
     gender = json['gender'];
+    profilePicture = json['profile_picture'];
     dob = json['dob'];
     phone = json['phone'];
     address = json['address'];
@@ -153,6 +156,7 @@ class User {
     data['last_name'] = lastName;
     data['email'] = email;
     data['gender'] = gender;
+    data['profile_picture'] = profilePicture;
     data['dob'] = dob;
     data['phone'] = phone;
     data['address'] = address;

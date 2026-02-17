@@ -1,6 +1,9 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/auth_provider.dart';
+import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/core/utils/toast.dart';
 import 'package:earnwise_app/presentation/features/expert/views/become_expert_modal.dart';
 import 'package:earnwise_app/presentation/features/profile/screens/profile_screen.dart';
 import 'package:earnwise_app/presentation/features/settings/screens/favorite_experts_screen.dart';
@@ -8,19 +11,30 @@ import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/features/dashboard/screens/expert_dashboard_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _expertMode = false;
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(profileNotifier).getProfile();
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final authProvider = ref.watch(authNotifier);
+    
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
@@ -63,7 +77,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Alex Johnson",
+                        "$firstName $lastName",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textScaler: TextScaler.noScaling,
@@ -73,7 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       YMargin(4),
                       Text(
-                        "@alexjohnson",
+                        email ?? "",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textScaler: TextScaler.noScaling,
@@ -101,29 +115,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-          YMargin(16),
-          _ModeSwitchRow(
-            isExpertMode: _expertMode,
-            isDarkMode: isDarkMode,
-            onChanged: (value) {
-              setState(() {
-                _expertMode = value;
-              });
-              if (value) {
-                pushAndRemoveUntil(const ExpertDashboardScreen());
-              }
-            },
-          ),
+          if(userExpertId != null)...[
+            YMargin(16),
+            _ModeSwitchRow(
+              isExpertMode: _expertMode,
+              isDarkMode: isDarkMode,
+              onChanged: (value) {
+                setState(() {
+                  _expertMode = value;
+                });
+                if (value) {
+                  pushAndRemoveUntil(const ExpertDashboardScreen());
+                }
+              },
+            ),
+          ],
           YMargin(20),
           _SettingsSectionTitle(
             title: "Account",
             isDarkMode: isDarkMode,
           ),
-          _SettingsTile(
-            title: "Wallet",
-            icon: Icons.account_balance_wallet_outlined,
-            isDarkMode: isDarkMode,
-          ),
+          // _SettingsTile(
+          //   title: "Wallet",
+          //   icon: Icons.account_balance_wallet_outlined,
+          //   isDarkMode: isDarkMode,
+          // ),
           _SettingsTile(
             title: "Transactions",
             icon: Icons.receipt_long_outlined,
@@ -138,30 +154,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
               push(const FavoriteExpertsScreen());
             },
           ),
-          // _SettingsTile(
-          //   title: "My Consultations",
-          //   icon: Icons.calendar_today_outlined,
-          //   isDarkMode: isDarkMode,
-          //   showDivider: false,
-          // ),
-          YMargin(20),
-          _SettingsSectionTitle(
-            title: "Expert",
-            isDarkMode: isDarkMode,
-          ),
-          _SettingsTile(
-            title: "Become an Expert",
-            icon: Icons.workspace_premium_outlined,
-            isDarkMode: isDarkMode,
-            showDivider: false,
-            onTap: () {
-              showModalBottomSheet(
-                context: context, 
-                isScrollControlled: true,
-                builder: (context) => BecomeExpertModal()
-              );
-            }
-          ),
+          if(userExpertId == null)...[
+            YMargin(20),
+            _SettingsSectionTitle(
+              title: "Expert",
+              isDarkMode: isDarkMode,
+            ),
+            _SettingsTile(
+              title: "Become an Expert",
+              icon: Icons.workspace_premium_outlined,
+              isDarkMode: isDarkMode,
+              showDivider: false,
+              onTap: () {
+                if(gender == "" && phone == "" && country == "") {
+                  showErrorToast("Please complete your profile first");
+                  push(ProfileScreen());
+                } else {
+                  showModalBottomSheet(
+                    context: context, 
+                    isScrollControlled: true,
+                    builder: (context) => BecomeExpertModal()
+                  );
+                }
+                
+              }
+            ),
+          ],
+          
           YMargin(20),
           _SettingsSectionTitle(
             title: "Preferences",
@@ -201,7 +220,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           YMargin(20),
           TextButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              authProvider.logout();
+            },
             icon: Icon(Icons.logout, color: Colors.red.shade400),
             label: Text(
               "Logout",

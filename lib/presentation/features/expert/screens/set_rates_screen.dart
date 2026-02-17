@@ -5,6 +5,7 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/primary_button.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SetRatesScreen extends StatefulWidget {
   const SetRatesScreen({super.key});
@@ -90,6 +91,8 @@ class RateRowInline extends StatelessWidget {
     required this.hint,
     required this.isDarkMode,
     required this.showDivider,
+    this.controller,
+    this.validator,
   });
 
   final String title;
@@ -97,6 +100,8 @@ class RateRowInline extends StatelessWidget {
   final String hint;
   final bool isDarkMode;
   final bool showDivider;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
@@ -131,6 +136,12 @@ class RateRowInline extends StatelessWidget {
               width: config.sw(100),
               child: SearchTextField(
                 hint: hint,
+                controller: controller,
+                validator: validator,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
               ),
             ),
           ],

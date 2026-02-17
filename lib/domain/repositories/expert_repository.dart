@@ -1,0 +1,16 @@
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:earnwise_app/domain/dto/create_expert_profile_dto.dart';
+import 'package:earnwise_app/domain/dto/update_expert_availability_dto.dart';
+import 'package:earnwise_app/domain/dto/update_expert_details_dto.dart';
+import 'package:earnwise_app/domain/dto/update_expert_rate_dto.dart';
+import 'package:earnwise_app/domain/dto/update_expert_socials_dto.dart';
+
+abstract class ExpertRepository {
+  Future<Either<Response, String>> createExpertProfile({required CreateExpertProfileDto createExpertProfileDto});
+  Future<Either<Response, String>> getExpertProfile();
+  Future<Either<Response, String>> updateExpertDetails({required UpdateExpertDetailsDto updateExpertDetailsDto});
+  Future<Either<Response, String>> updateExpertRate({required UpdateExpertRateDto updateExpertRateDto});
+  Future<Either<Response, String>> updateExpertAvailability({required List<UpdateExpertAvailabilityDto> updateExpertAvailabilityDto});
+  Future<Either<Response, String>> updateExpertSocials({required UpdateExpertSocialsDto updateExpertSocialsDto});
+}

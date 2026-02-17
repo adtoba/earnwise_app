@@ -1,70 +1,64 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/expert_provider.dart';
+import 'package:earnwise_app/core/utils/input_validator.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/domain/dto/create_expert_profile_dto.dart';
+import 'package:earnwise_app/domain/dto/update_expert_rate_dto.dart';
 import 'package:earnwise_app/presentation/features/expert/screens/expert_set_availability_screen.dart';
 import 'package:earnwise_app/presentation/features/expert/screens/set_rates_screen.dart';
+import 'package:earnwise_app/presentation/features/settings/screens/expert_category_selection_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/primary_button.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BecomeExpertScreen extends StatefulWidget {
+class BecomeExpertScreen extends ConsumerStatefulWidget {
   const BecomeExpertScreen({super.key});
 
   @override
-  State<BecomeExpertScreen> createState() => _BecomeExpertScreenState();
+  ConsumerState<BecomeExpertScreen> createState() => _BecomeExpertScreenState();
 }
 
-class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
-  String? _gender;
-  String? _country;
-  String? _state;
-  String? _city;
-  final List<String> _days = const ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  late final Map<String, _SimpleAvailability> _availability;
+class _BecomeExpertScreenState extends ConsumerState<BecomeExpertScreen> {
   final List<String> _selectedCategories = [];
-  final List<String> _availableCategories = [
-    "Accounting",
-    "Tax Planning",
-    "Investing",
-    "Career Coaching",
-    "Marketing",
-    "Business Strategy",
-    "UX Design",
-    "Software Engineering",
-    "Real Estate",
-    "Personal Finance",
-  ];
-
-  final List<String> _genders = ["Male", "Female", "Other"];
-  final List<String> _countries = ["Nigeria", "Ghana", "United States", "United Kingdom"];
-  final List<String> _states = ["Lagos", "Abuja", "Rivers", "Kano"];
-  final List<String> _cities = ["Ikeja", "Lekki", "Yaba", "Surulere"];
+  final formKey = GlobalKey<FormState>();
+  
+  final professionalTitleController = TextEditingController();
+  final bioController = TextEditingController();
+  final question1Controller = TextEditingController();
+  final question2Controller = TextEditingController();
+  final question3Controller = TextEditingController();
+  final textResponseRateController = TextEditingController();
+  final videoResponseRateController = TextEditingController();
+  final videoCallRateController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _availability = {
-      for (final day in _days) day: _SimpleAvailability(),
-    };
   }
 
   @override
   void dispose() {
-    for (final availability in _availability.values) {
-      availability.dispose();
-    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final expertProvider = ref.watch(expertNotifier);
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
-    final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
-    final sectionBorderColor = isDarkMode ? Palette.borderDark : Palette.borderLight;
+    final secondaryTextColor = isDarkMode 
+      ? Palette.textGreyscale700Dark 
+      : Palette.textGreyscale700Light;
+    final sectionBorderColor = isDarkMode 
+      ? Palette.borderDark 
+      : Palette.borderLight;
+
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -76,259 +70,168 @@ class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
           ),
         ),
       ),
-      body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
-        children: [
-          // _SectionBlock(
-          //   title: "Profile",
-          //   borderColor: sectionBorderColor,
-          //   child: Column(
-          //     children: [
-          //       Row(
-          //         children: [
-          //           CircleAvatar(
-          //             radius: config.sw(32),
-          //             backgroundColor: Palette.primary.withOpacity(0.15),
-          //             child: const Icon(Icons.camera_alt, color: Palette.primary),
-          //           ),
-          //           XMargin(12),
-          //           Expanded(
-          //             child: Text(
-          //               "Upload a clear profile photo",
-          //               style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
-          //             ),
-          //           ),
-          //           TextButton(
-          //             onPressed: () {},
-          //             child: Text(
-          //               "Upload",
-          //               style: TextStyles.smallSemiBold.copyWith(color: Palette.primary),
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //       YMargin(16),
-          //       _LabeledField(label: "First name", child: _textField(hint: "John")),
-          //       YMargin(12),
-          //       _LabeledField(label: "Last name", child: _textField(hint: "Doe")),
-          //       YMargin(12),
-          //       _LabeledField(
-          //         label: "Gender",
-          //         child: _dropdownField(
-          //           context: context,
-          //           value: _gender,
-          //           hint: "Select gender",
-          //           items: _genders,
-          //           onChanged: (value) => setState(() => _gender = value),
-          //         ),
-          //       ),
-          //       YMargin(20),
-          //       _LabeledField(
-          //         label: "Date of birth",
-          //         child: _textField(hint: "DD / MM / YYYY"),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          // YMargin(16),
-          // _SectionBlock(
-          //   title: "Contact & Location",
-          //   borderColor: sectionBorderColor,
-          //   child: Column(
-          //     children: [
-          //       _LabeledField(label: "Phone number", child: _textField(hint: "+234 801 234 5678")),
-          //       YMargin(12),
-          //       _LabeledField(
-          //         label: "Country",
-          //         child: _dropdownField(
-          //           context: context,
-          //           value: _country,
-          //           hint: "Select country",
-          //           items: _countries,
-          //           onChanged: (value) => setState(() => _country = value),
-          //         ),
-          //       ),
-          //       YMargin(12),
-          //       _LabeledField(
-          //         label: "State",
-          //         child: _dropdownField(
-          //           context: context,
-          //           value: _state,
-          //           hint: "Select state",
-          //           items: _states,
-          //           onChanged: (value) => setState(() => _state = value),
-          //         ),
-          //       ),
-          //       YMargin(12),
-          //       _LabeledField(
-          //         label: "City",
-          //         child: _dropdownField(
-          //           context: context,
-          //           value: _city,
-          //           hint: "Select city",
-          //           items: _cities,
-          //           onChanged: (value) => setState(() => _city = value),
-          //         ),
-          //       ),
-          //       YMargin(12),
-          //       _LabeledField(label: "Zip code", child: _textField(hint: "100001")),
-          //     ],
-          //   ),
-          // ),
-          // YMargin(16),
-          _SectionBlock(
-            title: "Expertise",
-            borderColor: sectionBorderColor,
-            child: Column(
-              children: [
-                _LabeledField(
-                  label: "Categories",
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "Selected categories",
-                              style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
+      body: Form(
+        key: formKey,
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
+          children: [
+            _SectionBlock(
+              title: "Expertise",
+              borderColor: sectionBorderColor,
+              child: Column(
+                children: [
+                  _LabeledField(
+                    label: "Categories",
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "Selected categories",
+                                style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              final selected = await Navigator.of(context).push<List<String>>(
-                                MaterialPageRoute(
-                                  builder: (_) => _CategorySelectionScreen(
-                                    categories: _availableCategories,
-                                    initialSelection: _selectedCategories,
+                            IconButton(
+                              onPressed: () async {
+                                final selected = await Navigator.of(context).push<List<String>>(
+                                  MaterialPageRoute(
+                                    builder: (_) => CategorySelectionScreen(
+                                      initialSelection: _selectedCategories,
+                                    ),
                                   ),
-                                ),
-                              );
-                              if (selected == null) return;
-                              setState(() {
-                                _selectedCategories
-                                  ..clear()
-                                  ..addAll(selected);
-                              });
-                            },
-                            icon: Icon(Icons.add_circle, color: Palette.primary),
+                                );
+                                if (selected == null) return;
+                                setState(() {
+                                  _selectedCategories
+                                    ..clear()
+                                    ..addAll(selected);
+                                });
+                              },
+                              icon: Icon(Icons.add_circle, color: Palette.primary),
+                            ),
+                          ],
+                        ),
+                        if (_selectedCategories.isNotEmpty) ...[
+                          YMargin(10),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: _selectedCategories
+                                .map(
+                                  (category) => Chip(
+                                    label: Text(category),
+                                    onDeleted: () {
+                                      setState(() {
+                                        _selectedCategories.remove(category);
+                                      });
+                                    },
+                                  ),
+                                )
+                                .toList(),
                           ),
                         ],
-                      ),
-                      if (_selectedCategories.isNotEmpty) ...[
-                        YMargin(10),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: _selectedCategories
-                              .map(
-                                (category) => Chip(
-                                  label: Text(category),
-                                  onDeleted: () {
-                                    setState(() {
-                                      _selectedCategories.remove(category);
-                                    });
-                                  },
-                                ),
-                              )
-                              .toList(),
-                        ),
                       ],
-                    ],
+                    ),
                   ),
-                ),
-                YMargin(12),
-                _LabeledField(label: "Professional title", child: _textField(hint: "Business Consultant")),
-                YMargin(12),
-                _LabeledField(
-                  label: "Bio",
-                  child: _textField(hint: "Tell clients about your expertise", maxLines: 4),
-                ),
-              ],
+                  YMargin(12),
+                  _LabeledField(
+                    label: "Professional title", 
+                    child: _textField(
+                      controller: professionalTitleController,
+                      hint: "Business Consultant",
+                      validator: InputValidator.validateField
+                    )
+                  ),
+                  YMargin(12),
+                  _LabeledField(
+                    label: "Bio",
+                    child: _textField(
+                      controller: bioController,
+                      hint: "Tell clients about your expertise", 
+                      maxLines: 4,
+                      validator: InputValidator.validateField
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          YMargin(16),
-          _SectionBlock(
-            title: "Frequently Asked Questions",
-            borderColor: sectionBorderColor,
-            child: Column(
-              children: [
-                _LabeledField(label: "Question 1", child: _textField(hint: "How do I get started?")),
-                YMargin(12),
-                _LabeledField(label: "Question 2", child: _textField(hint: "What do you specialize in?")),
-                YMargin(12),
-                _LabeledField(label: "Question 3", child: _textField(hint: "How do I contact you?")),
-              ],
+            YMargin(16),
+            _SectionBlock(
+              title: "Frequently Asked Questions",
+              borderColor: sectionBorderColor,
+              child: Column(
+                children: [
+                  _LabeledField(
+                    label: "Question 1", 
+                    child: _textField(
+                      hint: "How do I get started?",
+                      controller: question1Controller,
+                      validator: InputValidator.validateField
+                    )
+                  ),
+                  YMargin(12),
+                  _LabeledField(
+                    label: "Question 2", 
+                    child: _textField(
+                      hint: "What do you specialize in?",
+                      controller: question2Controller,
+                      validator: InputValidator.validateField
+                    )
+                  ),
+                  YMargin(12),
+                  _LabeledField(
+                    label: "Question 3", 
+                    child: _textField(
+                      hint: "How do I contact you?",
+                      controller: question3Controller,
+                      validator: InputValidator.validateField
+                    )
+                  ),
+                ],
+              ),
             ),
-          ),
-          // YMargin(16),
-          // _SectionBlock(
-          //   title: "Availability",
-          //   borderColor: sectionBorderColor,
-          //   child: Column(
-          //     children: [
-          //       for (int i = 0; i < _days.length; i++) ...[
-          //         _AvailabilityRow(
-          //           day: _days[i],
-          //           availability: _availability[_days[i]]!,
-          //           onChanged: (value) {
-          //             setState(() {
-          //               _availability[_days[i]]!.isEnabled = value;
-          //             });
-          //           },
-          //         ),
-          //         if (i != _days.length - 1) YMargin(12),
-          //       ],
-          //     ],
-          //   ),
-          // ),
-          YMargin(16),
-          _SectionBlock(
-            title: "Rates",
-            borderColor: sectionBorderColor,
-            child: Column(
-              children: [
-                RateRowInline(
-                  title: "Text/Audio response",
-                  subtitle: "(Min. \$10 per response)",
-                  hint: "\$10 / response",
-                  isDarkMode: isDarkMode,
-                  showDivider: true,
-                ),
-                RateRowInline(
-                  title: "Video response",
-                  subtitle: "(Min. \$20 per response)",
-                  hint: "\$20 / response",
-                  isDarkMode: isDarkMode,
-                  showDivider: true,
-                ),
-                RateRowInline(
-                  title: "Video call",
-                  subtitle: "(Min. \$1 per minute)",
-                  hint: "\$1 / minute",
-                  isDarkMode: isDarkMode,
-                  showDivider: false,
-                ),
-              ],
+            YMargin(16),
+            _SectionBlock(
+              title: "Rates",
+              borderColor: sectionBorderColor,
+              child: Column(
+                children: [
+                  RateRowInline(
+                    title: "Text/Audio response",
+                    subtitle: "(Min. \$10 per response)",
+                    hint: "\$10 / response",
+                    isDarkMode: isDarkMode,
+                    controller: textResponseRateController,
+                    validator: InputValidator.validateField,
+                    showDivider: true,
+                  ),
+                  RateRowInline(
+                    title: "Video response",
+                    subtitle: "(Min. \$20 per response)",
+                    hint: "\$20 / response",
+                    isDarkMode: isDarkMode,
+                    controller: videoResponseRateController,
+                    validator: InputValidator.validateField,
+                    showDivider: true,
+                  ),
+                  RateRowInline(
+                    title: "Video call",
+                    subtitle: "(Min. \$1 per minute)",
+                    hint: "\$1 / minute",
+                    isDarkMode: isDarkMode,
+                    controller: videoCallRateController,
+                    validator: InputValidator.validateField,
+                    showDivider: false,
+                  ),
+                ],
+              ),
             ),
-          ),
-          YMargin(20),
-          // ElevatedButton(
-          //   onPressed: () {},
-          //   style: ElevatedButton.styleFrom(
-          //     backgroundColor: Palette.primary,
-          //     foregroundColor: Colors.white,
-          //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          //     padding: EdgeInsets.symmetric(vertical: config.sh(14)),
-          //   ),
-          //   child: Text(
-          //     "Submit for Review",
-          //     style: TextStyles.mediumSemiBold.copyWith(color: Colors.white),
-          //   ),
-          // ),
-          // YMargin(20),
-        ],
+            YMargin(20),
+          ],
+        ),
       ),
       persistentFooterButtons: [
         Padding(
@@ -338,7 +241,21 @@ class _BecomeExpertScreenState extends State<BecomeExpertScreen> {
           child: PrimaryButton(
             text: "Next", 
             onPressed: () {
-              push(ExpertSetAvailabilityScreen());
+              if(formKey.currentState!.validate() && _selectedCategories.isNotEmpty) {
+                expertProvider.createExpertProfileDto = CreateExpertProfileDto(
+                  professionalTitle: professionalTitleController.text,
+                  bio: bioController.text,
+                  categories: _selectedCategories,
+                  faq: [question1Controller.text, question2Controller.text, question3Controller.text],
+                  rates: UpdateExpertRateDto(
+                    textRate: double.parse(textResponseRateController.text),
+                    videoRate: double.parse(videoResponseRateController.text),
+                    callRate: double.parse(videoCallRateController.text),
+                  ),
+                );
+                push(ExpertSetAvailabilityScreen());
+              }
+             
             }
           ),
         )
@@ -495,10 +412,12 @@ class _LabeledField extends StatelessWidget {
   }
 }
 
-Widget _textField({required String hint, int maxLines = 1}) {
+Widget _textField({required String hint, int maxLines = 1, TextEditingController? controller, String? Function(String?)? validator}) {
   return SearchTextField(
     hint: hint,
     maxLines: maxLines,
+    controller: controller,
+    validator: validator,
   );
 }
 

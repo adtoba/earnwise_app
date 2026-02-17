@@ -1,22 +1,25 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/expert_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/domain/dto/update_expert_availability_dto.dart';
 import 'package:earnwise_app/presentation/features/expert/screens/expert_socials_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/primary_button.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExpertSetAvailabilityScreen extends StatefulWidget {
+class ExpertSetAvailabilityScreen extends ConsumerStatefulWidget {
   const ExpertSetAvailabilityScreen({super.key});
 
   @override
-  State<ExpertSetAvailabilityScreen> createState() => _ExpertSetAvailabilityScreenState();
+  ConsumerState<ExpertSetAvailabilityScreen> createState() => _ExpertSetAvailabilityScreenState();
 }
 
-class _ExpertSetAvailabilityScreenState extends State<ExpertSetAvailabilityScreen> {
-  final List<String> _days = const ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+class _ExpertSetAvailabilityScreenState extends ConsumerState<ExpertSetAvailabilityScreen> {
+  final List<String> _days = const ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   late final Map<String, _DayAvailability> _availability;
 
   @override
@@ -139,6 +142,14 @@ class _ExpertSetAvailabilityScreenState extends State<ExpertSetAvailabilityScree
           child: PrimaryButton(
             text: "Save Changes", 
             onPressed: () {
+              var expertProvider = ref.watch(expertNotifier);
+              expertProvider.createExpertProfileDto?.availability = _availability.keys.map((e) => UpdateExpertAvailabilityDto(
+                day: e,
+                status: _availability[e]!.isEnabled ? "available" : "unavailable",
+                start: _availability[e]!.startController.text,
+                end: _availability[e]!.endController.text,
+              )).toList();
+
               push(ExpertSocialsScreen());
             }
           ),
@@ -150,8 +161,8 @@ class _ExpertSetAvailabilityScreenState extends State<ExpertSetAvailabilityScree
 
 class _DayAvailability {
   _DayAvailability()
-      : startController = TextEditingController(text: "9:00 AM"),
-        endController = TextEditingController(text: "5:00 PM");
+      : startController = TextEditingController(text: "9:00"),
+        endController = TextEditingController(text: "17:00");
 
   bool isEnabled = true;
   final TextEditingController startController;

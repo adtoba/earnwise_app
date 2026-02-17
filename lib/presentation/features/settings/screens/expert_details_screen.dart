@@ -1,10 +1,14 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/category_provider.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/presentation/features/settings/screens/expert_category_selection_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
+import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:earnwise_app/presentation/widgets/primary_button.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ExpertDetailsScreen extends StatefulWidget {
   const ExpertDetailsScreen({super.key});
@@ -14,28 +18,7 @@ class ExpertDetailsScreen extends StatefulWidget {
 }
 
 class _ExpertDetailsScreenState extends State<ExpertDetailsScreen> {
-  String? _gender;
-  String? _country;
-  String? _state;
-  String? _city;
   final List<String> _selectedCategories = [];
-  final List<String> _availableCategories = [
-    "Accounting",
-    "Tax Planning",
-    "Investing",
-    "Career Coaching",
-    "Marketing",
-    "Business Strategy",
-    "UX Design",
-    "Software Engineering",
-    "Real Estate",
-    "Personal Finance",
-  ];
-
-  final List<String> _genders = ["Male", "Female", "Other"];
-  final List<String> _countries = ["Nigeria", "Ghana", "United States", "United Kingdom"];
-  final List<String> _states = ["Lagos", "Abuja", "Rivers", "Kano"];
-  final List<String> _cities = ["Ikeja", "Lekki", "Yaba", "Surulere"];
 
   @override
   void dispose() {
@@ -86,8 +69,7 @@ class _ExpertDetailsScreenState extends State<ExpertDetailsScreen> {
                             onPressed: () async {
                               final selected = await Navigator.of(context).push<List<String>>(
                                 MaterialPageRoute(
-                                  builder: (_) => _CategorySelectionScreen(
-                                    categories: _availableCategories,
+                                  builder: (_) => CategorySelectionScreen(
                                     initialSelection: _selectedCategories,
                                   ),
                                 ),
@@ -271,84 +253,4 @@ Widget _dropdownField({
     items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
     onChanged: onChanged,
   );
-}
-
-class _CategorySelectionScreen extends StatefulWidget {
-  const _CategorySelectionScreen({
-    required this.categories,
-    required this.initialSelection,
-  });
-
-  final List<String> categories;
-  final List<String> initialSelection;
-
-  @override
-  State<_CategorySelectionScreen> createState() => _CategorySelectionScreenState();
-}
-
-class _CategorySelectionScreenState extends State<_CategorySelectionScreen> {
-  late Set<String> _selected;
-
-  @override
-  void initState() {
-    super.initState();
-    _selected = widget.initialSelection.toSet();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var brightness = Theme.of(context).brightness;
-    bool isDarkMode = brightness == Brightness.dark;
-
-    final borderColor = isDarkMode ? Palette.borderDark : Palette.borderLight;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Select Categories"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(_selected.toList());
-            },
-            child: Text(
-              "Done",
-              style: TextStyles.smallSemiBold.copyWith(color: Palette.primary),
-            ),
-          ),
-        ],
-      ),
-      body: ListView.separated(
-        padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
-        itemBuilder: (context, index) {
-          final category = widget.categories[index];
-          final isSelected = _selected.contains(category);
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: borderColor),
-            ),
-            child: CheckboxListTile(
-              value: isSelected,
-              controlAffinity: ListTileControlAffinity.leading,
-              title: Text(
-                category,
-                style: TextStyles.mediumSemiBold,
-              ),
-              onChanged: (value) {
-                setState(() {
-                  if (value == true) {
-                    _selected.add(category);
-                  } else {
-                    _selected.remove(category);
-                  }
-                });
-              },
-            ),
-          );
-        },
-        separatorBuilder: (_, __) => YMargin(10),
-        itemCount: widget.categories.length,
-      ),
-    );
-  }
 }
