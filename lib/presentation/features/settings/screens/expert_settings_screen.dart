@@ -144,7 +144,9 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
             isDarkMode: isDarkMode,
             showDivider: true,
             onTap: () {
-              push(ExpertSetAvailabilityScreen());
+              push(ExpertSetAvailabilityScreen(
+                isEditMode: true,
+              ));
             },
           ),
           _SettingsTile(
@@ -153,7 +155,9 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
             isDarkMode: isDarkMode,
             showDivider: true,
             onTap: () {
-              push(ExpertSocialsScreen());
+              push(ExpertSocialsScreen(
+                isEditMode: true,
+              ));
             },
           ),
           _SettingsTile(

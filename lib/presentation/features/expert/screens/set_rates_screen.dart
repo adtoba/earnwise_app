@@ -1,26 +1,57 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/expert_provider.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/domain/dto/update_expert_rate_dto.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/primary_button.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SetRatesScreen extends StatefulWidget {
+class SetRatesScreen extends ConsumerStatefulWidget {
   const SetRatesScreen({super.key});
 
   @override
-  State<SetRatesScreen> createState() => _SetRatesScreenState();
+  ConsumerState<SetRatesScreen> createState() => _SetRatesScreenState();
 }
 
-class _SetRatesScreenState extends State<SetRatesScreen> {
+class _SetRatesScreenState extends ConsumerState<SetRatesScreen> {
+  final textResponseRateController = TextEditingController();
+  final videoResponseRateController = TextEditingController();
+  final videoCallRateController = TextEditingController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final expertProvider = ref.read(expertNotifier);
+      setState(() {
+        textResponseRateController.text = expertProvider.expertDashboard?.expertProfile?.rates?.text?.toString() ?? "";
+        videoResponseRateController.text = expertProvider.expertDashboard?.expertProfile?.rates?.video?.toString() ?? "";
+        videoCallRateController.text = expertProvider.expertDashboard?.expertProfile?.rates?.call?.toString() ?? "";
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    textResponseRateController.dispose();
+    videoResponseRateController.dispose();
+    videoCallRateController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    var expertProvider = ref.watch(expertNotifier);
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
-    final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
+    final secondaryTextColor = isDarkMode 
+      ? Palette.textGreyscale700Dark 
+      : Palette.textGreyscale700Light;
 
     return Scaffold(
       appBar: AppBar(
@@ -52,6 +83,7 @@ class _SetRatesScreenState extends State<SetRatesScreen> {
             subtitle: "(Min. \$10 per response)",
             hint: "\$10 / response",
             isDarkMode: isDarkMode,
+            controller: textResponseRateController,
             showDivider: true,
           ),
           RateRowInline(
@@ -59,6 +91,7 @@ class _SetRatesScreenState extends State<SetRatesScreen> {
             subtitle: "(Min. \$20 per response)",
             hint: "\$20 / response",
             isDarkMode: isDarkMode,
+            controller: videoResponseRateController,
             showDivider: true,
           ),
           RateRowInline(
@@ -66,6 +99,7 @@ class _SetRatesScreenState extends State<SetRatesScreen> {
             subtitle: "(Min. \$1 per minute)",
             hint: "\$1 / minute",
             isDarkMode: isDarkMode,
+            controller: videoCallRateController,
             showDivider: false,
           ),
         ],
@@ -75,7 +109,16 @@ class _SetRatesScreenState extends State<SetRatesScreen> {
           padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(12)),
           child: PrimaryButton(
             text: "Save Changes",
-            onPressed: () {},
+            isLoading: expertProvider.isLoading,
+            onPressed: () {
+              var updateExpertRateDto = UpdateExpertRateDto(
+                textRate: double.parse(textResponseRateController.text),
+                videoRate: double.parse(videoResponseRateController.text),
+                callRate: double.parse(videoCallRateController.text),
+              );
+
+              expertProvider.updateExpertRate(updateExpertRateDto);
+            },
           ),
         )
       ],

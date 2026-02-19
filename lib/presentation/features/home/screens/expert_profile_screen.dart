@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/extensions.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/core/providers/review_provider.dart';
 import 'package:earnwise_app/domain/models/expert_profile_model.dart';
 import 'package:earnwise_app/presentation/features/home/views/about_expert_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/expertise_view.dart';
@@ -11,17 +14,44 @@ import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExpertProfileScreen extends StatefulWidget {
+class ExpertProfileScreen extends ConsumerStatefulWidget {
   const ExpertProfileScreen({super.key, this.expert});
 
   final ExpertProfileModel? expert;
 
   @override
-  State<ExpertProfileScreen> createState() => _ExpertProfileScreenState();
+  ConsumerState<ExpertProfileScreen> createState() => _ExpertProfileScreenState();
 }
 
-class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
+class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(reviewNotifier).getExpertReviews(
+        expertId: widget.expert?.id ?? ""
+      );
+    });
+    super.initState();
+    
+  }
+
+  final List<String> _fallbackImages = const [
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
+    "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=400&q=80",
+    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80",
+    "https://images.unsplash.com/photo-1525134479668-1bee5c7c6845?w=400&q=80",
+    "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400&q=80",
+    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80",
+  ];
+
+  String _randomImageForIndex(int index) {
+    final rand = Random(index);
+    return _fallbackImages[rand.nextInt(_fallbackImages.length)];
+  }
+  
   @override
   Widget build(BuildContext context) {
     var firstName = widget.expert?.user?.firstName ?? "";
@@ -32,8 +62,8 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
     var totalConsultations = widget.expert?.totalConsultations ?? 0;
     var location = widget.expert?.user?.country ?? "";
     var state = widget.expert?.user?.state ?? "";
-    var isEmailVerified = widget.expert?.user?.isEmailVerified ?? false;
-    var isPhoneVerified = widget.expert?.user?.isPhoneVerified ?? false;
+    
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +98,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.network(
-                    "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
+                    widget.expert?.user?.profilePicture ?? _randomImageForIndex(0),
                     width: double.infinity,
                     height: config.sh(300),
                     fit: BoxFit.cover,
@@ -192,7 +222,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                 thickness: 1,
               ),
               YMargin(10),
-              ReviewsView(),
+              ReviewsView(
+                expertId: widget.expert?.id ?? "",
+              ),
 
                // Reviews section
               YMargin(20),

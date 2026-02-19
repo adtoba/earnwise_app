@@ -1,6 +1,9 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/providers/category_provider.dart';
+import 'package:earnwise_app/core/providers/expert_provider.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/domain/dto/update_expert_details_dto.dart';
+import 'package:earnwise_app/main.dart';
 import 'package:earnwise_app/presentation/features/settings/screens/expert_category_selection_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
@@ -10,23 +13,55 @@ import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExpertDetailsScreen extends StatefulWidget {
+class ExpertDetailsScreen extends ConsumerStatefulWidget {
   const ExpertDetailsScreen({super.key});
 
   @override
-  State<ExpertDetailsScreen> createState() => _ExpertDetailsScreenState();
+  ConsumerState<ExpertDetailsScreen> createState() => _ExpertDetailsScreenState();
 }
 
-class _ExpertDetailsScreenState extends State<ExpertDetailsScreen> {
+class _ExpertDetailsScreenState extends ConsumerState<ExpertDetailsScreen> {
+
   final List<String> _selectedCategories = [];
+
+  final professionalTitleController = TextEditingController();
+  final bioController = TextEditingController();
+  final question1Controller = TextEditingController();
+  final question2Controller = TextEditingController();
+  final question3Controller = TextEditingController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final expertProvider = ref.read(expertNotifier);
+      setState(() {
+        professionalTitleController.text = expertProvider.expertDashboard?.expertProfile?.professionalTitle ?? "";
+        bioController.text = expertProvider.expertDashboard?.expertProfile?.bio ?? "";
+        question1Controller.text = expertProvider.expertDashboard?.expertProfile?.faq?[0] ?? "";
+        question2Controller.text = expertProvider.expertDashboard?.expertProfile?.faq?[1] ?? "";
+        question3Controller.text = expertProvider.expertDashboard?.expertProfile?.faq?[2] ?? "";
+        _selectedCategories.addAll(expertProvider.expertDashboard?.expertProfile?.categories ?? []);
+
+        logger.i("Expert profile: ${expertProvider.expertDashboard?.expertProfile?.toJson()}");
+      });
+    });
+
+    super.initState();
+  }
 
   @override
   void dispose() {
+    professionalTitleController.dispose();
+    bioController.dispose();
+    question1Controller.dispose();
+    question2Controller.dispose();
+    question3Controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    var expertProvider = ref.watch(expertNotifier);
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
@@ -108,11 +143,21 @@ class _ExpertDetailsScreenState extends State<ExpertDetailsScreen> {
                   ),
                 ),
                 YMargin(12),
-                _LabeledField(label: "Professional title", child: _textField(hint: "Business Consultant")),
+                _LabeledField(
+                  label: "Professional title", 
+                  child: _textField(
+                    hint: "Business Consultant",
+                    controller: professionalTitleController,
+                  ),
+                ),
                 YMargin(12),
                 _LabeledField(
                   label: "Bio",
-                  child: _textField(hint: "Tell clients about your expertise", maxLines: 4),
+                  child: _textField(
+                    hint: "Tell clients about your expertise", 
+                    maxLines: 4,
+                    controller: bioController,
+                  ),
                 ),
               ],
             ),
@@ -123,11 +168,23 @@ class _ExpertDetailsScreenState extends State<ExpertDetailsScreen> {
             borderColor: sectionBorderColor,
             child: Column(
               children: [
-                _LabeledField(label: "Question 1", child: _textField(hint: "How do I get started?")),
+                _LabeledField(
+                  label: "Question 1", child: _textField(
+                    hint: "How do I get started?",
+                    controller: question1Controller,
+                  )),
                 YMargin(12),
-                _LabeledField(label: "Question 2", child: _textField(hint: "What do you specialize in?")),
+                _LabeledField(
+                  label: "Question 2", child: _textField(
+                    hint: "What do you specialize in?",
+                    controller: question2Controller,
+                  )),
                 YMargin(12),
-                _LabeledField(label: "Question 3", child: _textField(hint: "How do I contact you?")),
+                _LabeledField(
+                  label: "Question 3", child: _textField(
+                    hint: "How do I contact you?",
+                    controller: question3Controller,
+                  )),
               ],
             ),
           ),
@@ -139,8 +196,18 @@ class _ExpertDetailsScreenState extends State<ExpertDetailsScreen> {
             horizontal: config.sw(20),
           ),
           child: PrimaryButton(
-            text: "Submit for Review", 
-            onPressed: () {}
+            text: "Continue", 
+            isLoading: expertProvider.isLoading,
+            onPressed: () {
+              var updateExpertDetailsDto = UpdateExpertDetailsDto(
+                professionalTitle: professionalTitleController.text,
+                bio: bioController.text,
+                faq: [question1Controller.text, question2Controller.text, question3Controller.text],
+                categories: _selectedCategories,
+              );
+
+              expertProvider.updateExpertDetails(updateExpertDetailsDto);
+            }
           ),
         )
       ],
@@ -212,10 +279,12 @@ class _LabeledField extends StatelessWidget {
   }
 }
 
-Widget _textField({required String hint, int maxLines = 1}) {
+Widget _textField({required String hint, int maxLines = 1, TextEditingController? controller, String? Function(String?)? validator}) {
   return SearchTextField(
     hint: hint,
     maxLines: maxLines,
+    controller: controller,
+    validator: validator,
   );
 }
 

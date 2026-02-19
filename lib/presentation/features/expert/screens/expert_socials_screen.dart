@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ExpertSocialsScreen extends ConsumerStatefulWidget {
-  const ExpertSocialsScreen({super.key});
+  const ExpertSocialsScreen({super.key, this.isEditMode = false});
+
+  final bool? isEditMode;
 
   @override
   ConsumerState<ExpertSocialsScreen> createState() => _ExpertSocialsScreenState();
@@ -23,6 +25,20 @@ class _ExpertSocialsScreenState extends ConsumerState<ExpertSocialsScreen> {
   final xController = TextEditingController();
   final linkedinController = TextEditingController();
   final websiteController = TextEditingController();
+  
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final expertProvider = ref.read(expertNotifier);
+      setState(() {
+        instagramController.text = expertProvider.expertDashboard?.expertProfile?.socials?.instagram ?? "";
+        xController.text = expertProvider.expertDashboard?.expertProfile?.socials?.x ?? "";
+        linkedinController.text = expertProvider.expertDashboard?.expertProfile?.socials?.linkedin ?? "";
+        websiteController.text = expertProvider.expertDashboard?.expertProfile?.socials?.website ?? "";
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,14 +127,26 @@ class _ExpertSocialsScreenState extends ConsumerState<ExpertSocialsScreen> {
           text: "Save Changes", 
           isLoading: expertProvider.isLoading,
           onPressed: () {
-            expertProvider.createExpertProfileDto?.socials = UpdateExpertSocialsDto(
-              instagram: instagramController.text,
-              x: xController.text,
-              linkedin: linkedinController.text,
-              website: websiteController.text,
-            );
+            if(widget.isEditMode == true) {
+              var updateExpertSocialsDto = UpdateExpertSocialsDto(
+                instagram: instagramController.text,
+                x: xController.text,
+                linkedin: linkedinController.text,
+                website: websiteController.text,
+              );
 
-            expertProvider.createExpertProfile();
+              expertProvider.updateExpertSocials(updateExpertSocialsDto);
+            } else {
+              expertProvider.createExpertProfileDto?.socials = UpdateExpertSocialsDto(
+                instagram: instagramController.text,
+                x: xController.text,
+                linkedin: linkedinController.text,
+                website: websiteController.text,
+              );
+
+              expertProvider.createExpertProfile();
+            }
+            
           }
         ),
       )

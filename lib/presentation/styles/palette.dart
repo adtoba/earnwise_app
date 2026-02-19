@@ -8,7 +8,7 @@ class Palette {
   static const Color lightBackground = Color(0xffffffff);
   static const Color darkBackground = Color(0xff181A20);
 
-  static const Color darkFillColor = Color.fromARGB(255, 48, 53, 65);
+  static const Color darkFillColor = Color.fromARGB(255, 35, 36, 39);
   static const Color lightFillColor = Color(0xffF5F5F5);
   
   static const Color surfaceButtonLight = Color(0xffECFAF2);

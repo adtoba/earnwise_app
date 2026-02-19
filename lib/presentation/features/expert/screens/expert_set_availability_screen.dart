@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ExpertSetAvailabilityScreen extends ConsumerStatefulWidget {
-  const ExpertSetAvailabilityScreen({super.key});
+  const ExpertSetAvailabilityScreen({super.key, this.isEditMode = false});
+
+  final bool? isEditMode;
 
   @override
   ConsumerState<ExpertSetAvailabilityScreen> createState() => _ExpertSetAvailabilityScreenState();
@@ -25,9 +27,33 @@ class _ExpertSetAvailabilityScreenState extends ConsumerState<ExpertSetAvailabil
   @override
   void initState() {
     super.initState();
-    _availability = {
-      for (final day in _days) day: _DayAvailability(),
-    };
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final expertProvider = ref.read(expertNotifier);
+      var availability = expertProvider.expertDashboard?.expertProfile?.availability;
+      if (availability != null) {
+        setState(() {
+          _availability = {
+            for (final day in availability) day.day!: _DayAvailability(
+              isEnabled: day.status == "available",
+              startController: TextEditingController(text: day.start),
+              endController: TextEditingController(text: day.end),
+            ),
+          };
+        });
+
+      } else {
+        setState(() {
+          _availability = {
+            for (final day in _days) day: _DayAvailability(
+              isEnabled: true,
+              startController: TextEditingController(text: "9:00"),
+              endController: TextEditingController(text: "17:00"),
+            ),
+          };
+        });
+      }
+      
+    });
   }
 
   @override
@@ -40,6 +66,7 @@ class _ExpertSetAvailabilityScreenState extends ConsumerState<ExpertSetAvailabil
 
   @override
   Widget build(BuildContext context) {
+    var expertProvider = ref.watch(expertNotifier);
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
@@ -141,16 +168,32 @@ class _ExpertSetAvailabilityScreenState extends ConsumerState<ExpertSetAvailabil
           ),
           child: PrimaryButton(
             text: "Save Changes", 
+            isLoading: expertProvider.isLoading,
             onPressed: () {
               var expertProvider = ref.watch(expertNotifier);
-              expertProvider.createExpertProfileDto?.availability = _availability.keys.map((e) => UpdateExpertAvailabilityDto(
-                day: e,
-                status: _availability[e]!.isEnabled ? "available" : "unavailable",
-                start: _availability[e]!.startController.text,
-                end: _availability[e]!.endController.text,
-              )).toList();
 
-              push(ExpertSocialsScreen());
+              if(widget.isEditMode == true) {
+                var updateExpertAvailabilityDto = _availability.keys.map((e) => UpdateExpertAvailabilityDto(
+                  day: e,
+                  status: _availability[e]!.isEnabled ? "available" : "unavailable",
+                  start: _availability[e]!.startController.text,
+                  end: _availability[e]!.endController.text,
+                )).toList();
+
+                expertProvider.updateExpertAvailability(updateExpertAvailabilityDto);
+              } else {
+                expertProvider.createExpertProfileDto?.availability = _availability.keys.map((e) => UpdateExpertAvailabilityDto(
+                  day: e,
+                  status: _availability[e]!.isEnabled ? "available" : "unavailable",
+                  start: _availability[e]!.startController.text,
+                  end: _availability[e]!.endController.text,
+                )).toList();
+
+                push(ExpertSocialsScreen(
+                  isEditMode: false,
+                ));
+              }
+              
             }
           ),
         )
@@ -160,9 +203,11 @@ class _ExpertSetAvailabilityScreenState extends ConsumerState<ExpertSetAvailabil
 }
 
 class _DayAvailability {
-  _DayAvailability()
-      : startController = TextEditingController(text: "9:00"),
-        endController = TextEditingController(text: "17:00");
+  _DayAvailability({
+    this.isEnabled = true,
+    required this.startController,
+    required this.endController,
+  });
 
   bool isEnabled = true;
   final TextEditingController startController;

@@ -10,6 +10,7 @@ import 'package:earnwise_app/domain/dto/update_expert_details_dto.dart';
 import 'package:earnwise_app/domain/dto/update_expert_rate_dto.dart';
 import 'package:earnwise_app/domain/dto/update_expert_socials_dto.dart';
 import 'package:earnwise_app/domain/models/expert_dashboard_model.dart';
+import 'package:earnwise_app/domain/models/expert_profile_model.dart';
 import 'package:earnwise_app/domain/repositories/expert_repository.dart';
 
 class ExpertHttpRepository extends ApiService implements ExpertRepository {
@@ -27,33 +28,70 @@ class ExpertHttpRepository extends ApiService implements ExpertRepository {
   }
 
   @override
-  Future<Either<Response<dynamic>, String>> getExpertProfile() {
-    // TODO: implement getExpertProfile
-    throw UnimplementedError();
+  Future<Either<Response<dynamic>, String>> getExpertProfile() async {
+    try {
+      final response = await http.get("${Endpoints.experts}/profile");
+      return left(response);
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
   }
 
   @override
-  Future<Either<Response<dynamic>, String>> updateExpertAvailability({required List<UpdateExpertAvailabilityDto> updateExpertAvailabilityDto}) {
-    // TODO: implement updateExpertAvailability
-    throw UnimplementedError();
+  Future<Either<Response<dynamic>, String>> updateExpertAvailability({required List<UpdateExpertAvailabilityDto> updateExpertAvailabilityDto}) async {
+    try {
+      final response = await http.put("${Endpoints.experts}/availability", data: {
+        "availability": updateExpertAvailabilityDto.map((e) => e.toJson()).toList()
+      });
+      return left(response);
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
   }
 
   @override
-  Future<Either<Response<dynamic>, String>> updateExpertDetails({required UpdateExpertDetailsDto updateExpertDetailsDto}) {
-    // TODO: implement updateExpertDetails
-    throw UnimplementedError();
+  Future<Either<Response<dynamic>, String>> updateExpertDetails({required UpdateExpertDetailsDto updateExpertDetailsDto}) async {
+    try {
+      final response = await http.put("${Endpoints.experts}/details", data: updateExpertDetailsDto.toJson());
+      return left(response);
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
   }
 
   @override
-  Future<Either<Response<dynamic>, String>> updateExpertRate({required UpdateExpertRateDto updateExpertRateDto}) {
-    // TODO: implement updateExpertRate
-    throw UnimplementedError();
+  Future<Either<Response<dynamic>, String>> updateExpertRate({required UpdateExpertRateDto updateExpertRateDto}) async {
+    try {
+      final response = await http.put("${Endpoints.experts}/rate", data: updateExpertRateDto.toJson());
+      return left(response);
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
   }
 
   @override
-  Future<Either<Response<dynamic>, String>> updateExpertSocials({required UpdateExpertSocialsDto updateExpertSocialsDto}) {
-    // TODO: implement updateExpertSocials
-    throw UnimplementedError();
+  Future<Either<Response<dynamic>, String>> updateExpertSocials({required UpdateExpertSocialsDto updateExpertSocialsDto}) async {
+    try {
+      final response = await http.put("${Endpoints.experts}/socials", data: updateExpertSocialsDto.toJson());
+      return left(response);
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
   }
 
   @override
@@ -66,6 +104,17 @@ class ExpertHttpRepository extends ApiService implements ExpertRepository {
       return right(error);
     } catch (e) {
       return right(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<List<ExpertProfileModel>, String>> getRecommendedExperts() async {
+    try {
+      final response = await http.get("${Endpoints.experts}/recommended");
+      return left((response.data["data"] as List<dynamic>).map((e) => ExpertProfileModel.fromJson(e)).toList());
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
     }
   }
 

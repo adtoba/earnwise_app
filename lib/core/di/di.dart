@@ -3,11 +3,13 @@ import 'package:earnwise_app/data/repositories/category_http_repository.dart';
 import 'package:earnwise_app/data/repositories/expert_http_repository.dart';
 import 'package:earnwise_app/data/repositories/post_http_repository.dart';
 import 'package:earnwise_app/data/repositories/profile_http_repository.dart';
+import 'package:earnwise_app/data/repositories/review_http_repository.dart';
 import 'package:earnwise_app/domain/repositories/auth_repository.dart';
 import 'package:earnwise_app/domain/repositories/category_repository.dart';
 import 'package:earnwise_app/domain/repositories/expert_repository.dart';
 import 'package:earnwise_app/domain/repositories/post_repository.dart';
 import 'package:earnwise_app/domain/repositories/profile_repository.dart';
+import 'package:earnwise_app/domain/repositories/review_repository.dart';
 import 'package:get_it/get_it.dart';
 
 final di = GetIt.instance;
@@ -18,4 +20,5 @@ void setupDI() {
   di.registerFactory<ProfileRepository>(() => ProfileHttpRepository());
   di.registerFactory<ExpertRepository>(() => ExpertHttpRepository());
   di.registerFactory<PostRepository>(() => PostHttpRepository());
+  di.registerFactory<ReviewRepository>(() => ReviewHttpRepository());
 }

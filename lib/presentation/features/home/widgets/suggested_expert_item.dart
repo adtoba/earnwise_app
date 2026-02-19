@@ -5,12 +5,22 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 
 class SuggestedExpertItem extends StatelessWidget {
-  const SuggestedExpertItem({super.key, required this.imageUrl, required this.name, required this.title, required this.onTap});
+  const SuggestedExpertItem({
+    super.key, 
+    required this.imageUrl, 
+    required this.name, 
+    required this.title, 
+    required this.onTap, 
+    required this.rating,
+    required this.rate,
+  });
 
   final String imageUrl;
   final String name;
   final String title;
   final VoidCallback onTap;
+  final double rating;
+  final int rate;
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +100,7 @@ class SuggestedExpertItem extends StatelessWidget {
                               Icon(Icons.star, color: Colors.amber.shade400, size: 12),
                               XMargin(4),
                               Text(
-                                "4.9",
+                                "${rating}",
                                 style: TextStyles.xSmallSemiBold.copyWith(color: Colors.white),
                               ),
                             ],
@@ -158,7 +168,7 @@ class SuggestedExpertItem extends StatelessWidget {
                     Icon(Icons.chat_bubble_outline, size: 12, color: Colors.white),
                     XMargin(4),
                     Text(
-                      "\$30 / text",
+                      "\$${rate} / text",
                       style: TextStyles.xSmallSemiBold.copyWith(color: Colors.white),
                     ),
                   ],

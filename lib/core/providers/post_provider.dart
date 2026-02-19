@@ -30,6 +30,33 @@ class PostProvider extends ChangeNotifier {
   bool _isPostCommentsLoading = false;
   bool get isPostCommentsLoading => _isPostCommentsLoading;
 
+  bool _isRecommendedPostsLoading = false;
+  bool get isRecommendedPostsLoading => _isRecommendedPostsLoading;
+
+  List<PostModel> _recommendedPosts = [];
+  List<PostModel> get recommendedPosts => _recommendedPosts;
+
+  Future<void> getRecommendedPosts() async {
+    _isRecommendedPostsLoading = true;
+    notifyListeners();
+
+    final result = await postRepository.getRecommendedPosts();
+    result.fold(
+      (success) {
+        _isRecommendedPostsLoading = false;
+        _recommendedPosts = success;
+        notifyListeners();
+      },
+      (failure) {
+        _isRecommendedPostsLoading = false;
+        _recommendedPosts = [];
+        notifyListeners();
+        logger.e("Get recommended posts failed: $failure");
+        showErrorToast(failure);
+      }
+    );
+  }
+
   Future<void> getMyPosts() async {
     _isLoading = true;
     notifyListeners();

@@ -1,21 +1,38 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/expert_provider.dart';
+import 'package:earnwise_app/core/providers/review_provider.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/home/widgets/review_item.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
+import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExpertReviewsScreen extends StatefulWidget {
+class ExpertReviewsScreen extends ConsumerStatefulWidget {
   const ExpertReviewsScreen({super.key});
 
   @override
-  State<ExpertReviewsScreen> createState() => _ExpertReviewsScreenState();
+  ConsumerState<ExpertReviewsScreen> createState() => _ExpertReviewsScreenState();
 }
 
-class _ExpertReviewsScreenState extends State<ExpertReviewsScreen> {
+class _ExpertReviewsScreenState extends ConsumerState<ExpertReviewsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(reviewNotifier).getMyReviews();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final reviewProvider = ref.watch(reviewNotifier);
+    var dashboard = ref.watch(expertNotifier).expertDashboard;
+    var expertProfile = dashboard?.expertProfile;
+    var rating = expertProfile?.rating;
+    var reviewsCount = expertProfile?.reviewsCount;
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
     
@@ -53,7 +70,7 @@ class _ExpertReviewsScreenState extends State<ExpertReviewsScreen> {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: "4.5",
+                                  text: rating?.toStringAsFixed(2) ?? "0",
                                   style: TextStyles.h3Bold.copyWith(
                                     color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                                   )
@@ -69,7 +86,7 @@ class _ExpertReviewsScreenState extends State<ExpertReviewsScreen> {
                           ),
                           YMargin(10),
                           Text(
-                            "100 Rating(s)",
+                            "$reviewsCount Rating(s)",
                             style: TextStyles.smallRegular.copyWith(
                               fontSize: config.sp(12),
                               color: Colors.grey,
@@ -81,7 +98,7 @@ class _ExpertReviewsScreenState extends State<ExpertReviewsScreen> {
                     RatingBar(
                       itemSize: 25,
                       glowRadius: 10,
-                      initialRating: 4.0,
+                      initialRating: rating ?? 0,
                       unratedColor: Colors.grey,
                       minRating: 1,
                       direction: Axis.horizontal,
@@ -116,15 +133,33 @@ class _ExpertReviewsScreenState extends State<ExpertReviewsScreen> {
               ),
               Divider(height: config.sh(20), color: isDarkMode ? Palette.borderDark : Palette.borderLight),
               YMargin(20),
-              ListView.separated(
-                itemBuilder: (c, i) {
-                  return ReviewItem();
-                },
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                separatorBuilder: (c, i) => Divider(height: config.sh(20), color: isDarkMode ? Palette.borderDark : Palette.borderLight), 
-                itemCount: 10
-              ),
+              if(reviewProvider.isLoading) ...[
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(30),
+                    child: CustomProgressIndicator(),
+                  ),
+                )
+              ] else if (reviewProvider.myReviews.isEmpty) ...[
+                Center(
+                  child: Text("No reviews yet"),
+                )
+              ] else ...[
+                ListView.separated(
+                  itemBuilder: (c, i) {
+                    return ReviewItem(
+                      fullName: reviewProvider.myReviews[i].fullName,
+                      rating: reviewProvider.myReviews[i].rating,
+                      comment: reviewProvider.myReviews[i].comment,
+                      createdAt: reviewProvider.myReviews[i].createdAt,
+                    );
+                  },
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  separatorBuilder: (c, i) => Divider(height: config.sh(20), color: isDarkMode ? Palette.borderDark : Palette.borderLight), 
+                  itemCount: reviewProvider.myReviews.length
+                ),
+              ]
             ],
           ),
         ),

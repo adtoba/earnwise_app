@@ -24,6 +24,19 @@ class PostHttpRepository extends ApiService implements PostRepository {
   }
 
   @override
+  Future<Either<List<PostModel>, String>> getRecommendedPosts() async {
+    try {
+      final response = await http.get("${Endpoints.posts}/recommended");
+      return left((response.data["data"] as List<dynamic>).map((e) => PostModel.fromJson(e)).toList());
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
+  }
+
+  @override
   Future<Either<List<CommentModel>, String>> getPostComments({required String postId}) async {
     try {
       final response = await http.get(Endpoints.postComments(postId));

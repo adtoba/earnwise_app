@@ -3,6 +3,10 @@ import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/toast.dart';
 import 'package:earnwise_app/domain/dto/create_expert_profile_dto.dart';
+import 'package:earnwise_app/domain/dto/update_expert_availability_dto.dart';
+import 'package:earnwise_app/domain/dto/update_expert_details_dto.dart';
+import 'package:earnwise_app/domain/dto/update_expert_rate_dto.dart';
+import 'package:earnwise_app/domain/dto/update_expert_socials_dto.dart';
 import 'package:earnwise_app/domain/models/expert_dashboard_model.dart';
 import 'package:earnwise_app/domain/models/expert_profile_model.dart';
 import 'package:earnwise_app/domain/repositories/expert_repository.dart';
@@ -27,6 +31,12 @@ class ExpertProvider extends ChangeNotifier {
 
   bool _isExpertDashboardLoading = false;
   bool get isExpertDashboardLoading => _isExpertDashboardLoading;
+
+  bool _isRecommendedExpertsLoading = false;
+  bool get isRecommendedExpertsLoading => _isRecommendedExpertsLoading;
+
+  List<ExpertProfileModel> _recommendedExperts = [];
+  List<ExpertProfileModel> get recommendedExperts => _recommendedExperts;
 
   ExpertProfileModel? _expertProfile;
   ExpertProfileModel? get expertProfile => _expertProfile;
@@ -80,6 +90,111 @@ class ExpertProvider extends ChangeNotifier {
         logger.e("Get expert dashboard failed: $failure");
         showErrorToast(failure);
       },
+    );
+  }
+
+  Future<void> getRecommendedExperts() async {
+    _isRecommendedExpertsLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.getRecommendedExperts();
+    result.fold(
+      (success) {
+        _isRecommendedExpertsLoading = false;
+        _recommendedExperts = success;
+        notifyListeners();
+      },
+      (failure) {
+        _isRecommendedExpertsLoading = false;
+        notifyListeners();
+        logger.e("Get recommended experts failed: $failure");
+        showErrorToast(failure);
+      }
+    );
+  }
+
+
+  Future<void> updateExpertSocials(UpdateExpertSocialsDto updateExpertSocialsDto) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.updateExpertSocials(updateExpertSocialsDto: updateExpertSocialsDto);
+    result.fold(
+      (success) async {
+        await getExpertDashboard();
+        _isLoading = false;
+        notifyListeners();
+        showSuccessToast("Socials updated successfully");
+      },
+      (failure) {
+        _isLoading = false;
+        notifyListeners();
+        logger.e("Update expert profile failed: $failure");
+        showErrorToast(failure);
+      }
+    );
+  }
+
+  Future<void> updateExpertDetails(UpdateExpertDetailsDto updateExpertDetailsDto) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.updateExpertDetails(updateExpertDetailsDto: updateExpertDetailsDto);
+    result.fold(
+      (success) async {
+        await getExpertDashboard();
+        _isLoading = false;
+        notifyListeners();
+        showSuccessToast("Expert profile updated successfully");
+      },
+      (failure) {
+        _isLoading = false;
+        notifyListeners();
+        logger.e("Update expert profile failed: $failure");
+        showErrorToast(failure);
+      }
+    );
+  }
+
+  Future<void> updateExpertRate(UpdateExpertRateDto updateExpertRateDto) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.updateExpertRate(updateExpertRateDto: updateExpertRateDto);
+    result.fold(
+      (success) async {
+        await getExpertDashboard();
+        _isLoading = false;
+        notifyListeners();
+        showSuccessToast("Rates updated successfully");
+      },
+      (failure) {
+        _isLoading = false;
+        notifyListeners();
+        logger.e("Update expert profile failed: $failure");
+        showErrorToast(failure);
+      }
+    );
+  }
+
+  Future<void> updateExpertAvailability(List<UpdateExpertAvailabilityDto> updateExpertAvailabilityDto) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.updateExpertAvailability(updateExpertAvailabilityDto: updateExpertAvailabilityDto);
+    result.fold(
+      (success) async {
+        await getExpertDashboard();
+        _isLoading = false;
+        notifyListeners();
+        showSuccessToast("Availability updated successfully");
+      },
+      (failure) {
+        _isLoading = false;
+        notifyListeners();
+        logger.e("Update expert profile failed: $failure");
+        showErrorToast(failure);
+      }
     );
   }
 }

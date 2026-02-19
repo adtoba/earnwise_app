@@ -253,7 +253,9 @@ class _BecomeExpertScreenState extends ConsumerState<BecomeExpertScreen> {
                     callRate: double.parse(videoCallRateController.text),
                   ),
                 );
-                push(ExpertSetAvailabilityScreen());
+                push(ExpertSetAvailabilityScreen(
+                  isEditMode: false,
+                ));
               }
              
             }

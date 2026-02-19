@@ -1,17 +1,38 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/review_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/home/screens/all_reviews_screen.dart';
 import 'package:earnwise_app/presentation/features/home/widgets/review_item.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
+import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ReviewsView extends StatelessWidget {
-  const ReviewsView({super.key});
+class ReviewsView extends ConsumerStatefulWidget {
+  const ReviewsView({super.key, required this.expertId});
+
+  final String expertId;
+
+  @override
+  ConsumerState<ReviewsView> createState() => _ReviewsViewState();
+}
+
+class _ReviewsViewState extends ConsumerState<ReviewsView> {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(reviewNotifier).getExpertReviews(expertId: widget.expertId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    var reviewProvider = ref.watch(reviewNotifier);
+    var isExpertReviewsLoading = reviewProvider.isExpertReviewsLoading;
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
     
@@ -24,7 +45,7 @@ class ReviewsView extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  "Reviews (100)",
+                  "Reviews",
                   maxLines: 1,
                   textScaler: TextScaler.noScaling,
                   style: TextStyles.h4Bold,
@@ -32,7 +53,9 @@ class ReviewsView extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  push(const AllReviewsScreen());
+                  push(AllReviewsScreen(
+                    reviews: reviewProvider.expertReviews,
+                  ));
                 }, 
                 child: Text(
                   "View all", 
@@ -45,15 +68,34 @@ class ReviewsView extends StatelessWidget {
             ],
           ),
           YMargin(10),
-          ListView.separated(
-            itemBuilder: (c, i) {
-              return ReviewItem();
-            },
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            separatorBuilder: (c, i) => Divider(height: config.sh(20), color: isDarkMode ? Palette.borderDark : Palette.borderLight), 
-            itemCount: 4
-          ),
+          if (isExpertReviewsLoading) ...[
+            Center(
+              child: CustomProgressIndicator(),
+            )
+          ] else if (reviewProvider.expertReviews.isEmpty) ...[
+            Center(
+              child: Text("No reviews yet"),
+            )
+          ] else ...[
+            ListView.separated(
+              itemBuilder: (c, i) {
+                var review = reviewProvider.expertReviews[i];
+                return ReviewItem(
+                  fullName: review.fullName ?? "",
+                  rating: review.rating ?? 0,
+                  comment: review.comment ?? "",
+                  createdAt: review.createdAt ?? "",
+                );
+              },
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              separatorBuilder: (c, i) => Divider(
+                height: config.sh(20), 
+                color: isDarkMode ? Palette.borderDark : Palette.borderLight
+              ), 
+              itemCount: reviewProvider.expertReviews.take(5).length
+            ),
+          ]
         ],
       ),
     );

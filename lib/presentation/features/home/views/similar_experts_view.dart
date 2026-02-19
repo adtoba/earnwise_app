@@ -44,6 +44,8 @@ class SimilarExpertsView extends StatelessWidget {
                 imageUrl: "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80", 
                 name: "Jose Martinez", 
                 title: "Business Consultant",
+                rating: 4.5,
+                rate: 30,
                 onTap: () {
                   push(ExpertProfileScreen());
                 }
