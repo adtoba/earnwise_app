@@ -10,6 +10,7 @@ import 'package:earnwise_app/presentation/features/settings/screens/expert_detai
 import 'package:earnwise_app/presentation/features/settings/screens/expert_reviews_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
+import 'package:earnwise_app/presentation/widgets/profile_details_widget.dart';
 import 'package:flutter/material.dart';
 
 class ExpertSettingsScreen extends StatefulWidget {
@@ -45,65 +46,7 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
         children: [
-          Container(
-            padding: EdgeInsets.all(config.sw(14)),
-            decoration: BoxDecoration(
-              color: cardColor,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: borderColor),
-            ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: config.sw(28),
-                  backgroundImage: const NetworkImage(
-                    "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
-                  ),
-                ),
-                XMargin(12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${firstName ?? ""} ${lastName ?? ""}",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textScaler: TextScaler.noScaling,
-                        style: TextStyles.largeSemiBold.copyWith(
-                          color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
-                        ),
-                      ),
-                      YMargin(4),
-                      Text(
-                        email ?? "",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textScaler: TextScaler.noScaling,
-                        style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
-                      ),
-                    ],
-                  ),
-                ),
-                XMargin(10),
-                OutlinedButton(
-                  onPressed: () {
-                    push(ProfileScreen());
-                  },
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: borderColor),
-                    foregroundColor: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: EdgeInsets.symmetric(horizontal: config.sw(12), vertical: config.sh(8)),
-                  ),
-                  child: Text(
-                    "View Profile",
-                    style: TextStyles.smallSemiBold,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ProfileDetailsWidget(),
           YMargin(16),
           _ModeSwitchRow(
             isExpertMode: _expertMode,

@@ -6,6 +6,7 @@ import 'package:earnwise_app/data/services/local_storage_service.dart';
 import 'package:earnwise_app/presentation/features/auth/screens/onboarding_screen.dart';
 import 'package:earnwise_app/presentation/styles/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -19,6 +20,8 @@ void main() async {
   setupDI();
   await Hive.initFlutter();
   await Hive.openBox(PrefKeys.appData);
+
+  await dotenv.load(fileName: '.env');
 
   userId = await LocalStorageService.get(PrefKeys.userId);
   firstName = await LocalStorageService.get(PrefKeys.userFirstName);
@@ -53,7 +56,7 @@ class MyApp extends StatelessWidget {
           title: 'EarnWise',
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
-          themeMode: ThemeMode.light,
+          themeMode: ThemeMode.dark,
           builder: (context, child) {
             return StyledToast(child: child ?? const SizedBox.shrink());
           },

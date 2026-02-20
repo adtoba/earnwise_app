@@ -95,7 +95,7 @@ class _SuggestedExpertsViewState extends ConsumerState<SuggestedExpertsView> {
               itemBuilder: (c, i) {
                 var expert = recommendedExperts[i];
                 return SuggestedExpertItem(
-                  imageUrl: _randomImageForIndex(i),
+                  imageUrl: expert.user?.profilePicture != "" ? expert.user?.profilePicture ?? "" : "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
                   name: "${expert.user?.firstName ?? ""} ${expert.user?.lastName ?? ""}", 
                   title: expert.professionalTitle ?? "",
                   rating: expert.rating ?? 0,

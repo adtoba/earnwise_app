@@ -45,7 +45,9 @@ class ExpertFeedItem extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: config.sw(20),
-                  backgroundImage: NetworkImage("https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80"),
+                  backgroundImage: NetworkImage(
+                    userImageUrl,
+                  ),
                 ),
                 XMargin(10),
                 Expanded(

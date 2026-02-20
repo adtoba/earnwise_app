@@ -102,6 +102,7 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
                     width: double.infinity,
                     height: config.sh(300),
                     fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
                   ),
                 ),
               ),

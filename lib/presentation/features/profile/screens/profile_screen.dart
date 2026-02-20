@@ -2,6 +2,7 @@ import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/input_validator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/data/services/cloudinary_service.dart';
 import 'package:earnwise_app/domain/dto/update_profile_dto.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
@@ -9,6 +10,7 @@ import 'package:earnwise_app/presentation/widgets/primary_button.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -54,6 +56,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var profileProvider = ref.watch(profileNotifier);
+    var profilePictureUrl = profileProvider.profilePictureUrl;
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
@@ -81,7 +85,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       CircleAvatar(
                         radius: config.sw(42),
                         backgroundImage: NetworkImage(
-                          profilePicture ?? "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
+                          profilePictureUrl ?? profilePicture ?? "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
                         ),
                       ),
                       Positioned(
@@ -103,13 +107,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ],
                   ),
                   YMargin(8),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "Change photo",
-                      style: TextStyles.smallSemiBold.copyWith(color: Palette.primary),
+                  if(profileProvider.isUploadingProfilePicture)...[
+                     const Center(
+                      child: SizedBox(
+                        width: 20, 
+                        height: 20, 
+                        child: CircularProgressIndicator()
+                      ),
                     ),
-                  ),
+                  ] else ...[
+                    TextButton(
+                      onPressed: () {
+                        profileProvider.uploadPicture();
+                      },
+                      child: Text(
+                        "Change photo",
+                        style: TextStyles.smallSemiBold.copyWith(color: Palette.primary),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

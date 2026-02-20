@@ -27,6 +27,22 @@ class ProfileHttpRepository extends ApiService implements ProfileRepository {
   }
 
   @override
+  Future<Either<Response<dynamic>, String>> uploadProfilePicture({required String imagePath}) async {
+    try {
+      final response = await http.put("${Endpoints.users}/profile-picture", data: {
+        "profile_picture": imagePath,
+      });
+      return left(response);
+    }
+    on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
+  }
+
+  @override
   Future<Either<Response<dynamic>, String>> updateProfile({required UpdateProfileDto updateProfileDto}) async {
     try {
       final response = await http.put(Endpoints.users, data: updateProfileDto.toJson());

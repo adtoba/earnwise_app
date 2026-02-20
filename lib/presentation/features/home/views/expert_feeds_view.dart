@@ -78,7 +78,7 @@ class _ExpertFeedsViewState extends ConsumerState<ExpertFeedsView> {
               var post = recommendedPosts[i];
 
               return ExpertFeedItem(
-                userImageUrl: post.user?.profilePicture ?? "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
+                userImageUrl: post.user?.profilePicture != "" ? post.user?.profilePicture ?? "" : "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
                 userName: "${post.user?.firstName ?? ""} ${post.user?.lastName ?? ""}",
                 text: post.content ?? "",
                 time: timeago.format(DateTime.parse(post.createdAt ?? "")),
@@ -92,7 +92,7 @@ class _ExpertFeedsViewState extends ConsumerState<ExpertFeedsView> {
             },
             separatorBuilder: (c, i) => Divider(height: 20, color: isDarkMode ? Palette.borderDark : Palette.borderLight),
             physics: NeverScrollableScrollPhysics(),
-            itemCount: 5
+            itemCount: recommendedPosts.length
           ),
         ]
       ],
