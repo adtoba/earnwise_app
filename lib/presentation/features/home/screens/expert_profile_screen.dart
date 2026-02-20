@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/expert_provider.dart';
 import 'package:earnwise_app/core/utils/extensions.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/core/providers/review_provider.dart';
@@ -12,6 +13,7 @@ import 'package:earnwise_app/presentation/features/home/views/reviews_view.dart'
 import 'package:earnwise_app/presentation/features/home/views/similar_experts_view.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
+import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,9 +32,7 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(reviewNotifier).getExpertReviews(
-        expertId: widget.expert?.id ?? ""
-      );
+      ref.read(expertNotifier).getExpertProfileById(widget.expert?.id ?? "");
     });
     super.initState();
     
@@ -54,14 +54,19 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
   
   @override
   Widget build(BuildContext context) {
+    var brightness = Theme.of(context).brightness;
+    bool isDarkMode = brightness == Brightness.dark;
+
+    var expertProvider = ref.watch(expertNotifier);
     var firstName = widget.expert?.user?.firstName ?? "";
     var lastName = widget.expert?.user?.lastName ?? "";
-    var professionalTitle = widget.expert?.professionalTitle ?? "";
-    var rating = widget.expert?.rating ?? 0;
-    var reviewsCount = widget.expert?.reviewsCount ?? 0;
-    var totalConsultations = widget.expert?.totalConsultations ?? 0;
-    var location = widget.expert?.user?.country ?? "";
-    var state = widget.expert?.user?.state ?? "";
+    var currentExpertProfile = expertProvider.currentExpertProfile;
+    var professionalTitle = currentExpertProfile?.professionalTitle ?? "";
+    var rating = currentExpertProfile?.rating ?? 0;
+    var reviewsCount = currentExpertProfile?.reviewsCount ?? 0;
+    var totalConsultations = currentExpertProfile?.totalConsultations ?? 0;
+    var location = currentExpertProfile?.user?.country ?? "";
+    var state = currentExpertProfile?.user?.state ?? "";
     
     
 
@@ -75,9 +80,19 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
         actions: [
           IconButton(
             onPressed: () {
+              if(expertProvider.isCurrentSavedExpertSaved == false) {
+                expertProvider.saveExpert(widget.expert?.id ?? "");
+              } else {
+                expertProvider.unsaveExpert(widget.expert?.id ?? "");
+              }
               
             },
-            icon: Icon(Icons.favorite_border),
+            icon: Icon(
+              expertProvider.isCurrentSavedExpertSaved ? Icons.favorite : Icons.favorite_border,
+              color: expertProvider.isCurrentSavedExpertSaved 
+                ? Colors.red 
+                : isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+            ),
           ),
           IconButton(
             onPressed: () {
@@ -87,161 +102,161 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
           )
         ],
       ),
-      body: SizedBox(
-        width: double.infinity,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.network(
-                    widget.expert?.user?.profilePicture ?? _randomImageForIndex(0),
-                    width: double.infinity,
-                    height: config.sh(300),
-                    fit: BoxFit.cover,
-                    alignment: Alignment.topCenter,
+      body: expertProvider.isCurrentExpertProfileLoading 
+        ? Center(child: CustomProgressIndicator()) 
+        : expertProvider.currentExpertProfile == null ? Center(child: Text("Expert not found"))
+        : SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.network(
+                      currentExpertProfile?.user?.profilePicture ?? _randomImageForIndex(0),
+                      width: double.infinity,
+                      height: config.sh(300),
+                      fit: BoxFit.cover,
+                      alignment: Alignment.topCenter,
+                    ),
                   ),
                 ),
-              ),
-              YMargin(20),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
-                child: Row(
+                YMargin(20),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
+                  child: Row(
+                    children: [
+                      Text(
+                        "$firstName $lastName",
+                        style: TextStyles.h4Bold,
+                      ),
+                      XMargin(10),
+                      Icon(Icons.verified, color: Colors.blue, size: 20),                  
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
+                  child: Text(
+                    professionalTitle,
+                    style: TextStyles.largeSemiBold.copyWith(
+                      color: Colors.grey
+                    ),
+                  ),
+                ),
+                YMargin(10),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
+                  child: Row(
+                    children: [
+                      RatingBar.builder(
+                        initialRating: rating,
+                        glowColor: Color(0xffFF9F29),
+                        allowHalfRating: true,
+                        ignoreGestures: true,
+                        itemCount: 5,
+                        itemSize: 30,
+                        itemBuilder: (context, index) => Icon(Icons.star, color: Color(0xffFF9F29)),
+                        onRatingUpdate: (rating) {
+                          print(rating);
+                        },
+                      ),
+                      Text(
+                        "${double.parse(rating.toStringAsFixed(2))} ($reviewsCount reviews)",
+                        style: TextStyles.largeBold
+                      )
+                    ],
+                  ),
+                ),
+                YMargin(20),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
+                  child: Row(
                   children: [
-                    Text(
-                      "$firstName $lastName",
-                      style: TextStyles.h4Bold,
+                    Image.asset(
+                      "website".png,
+                      height: config.sh(20),
                     ),
                     XMargin(10),
-                    Icon(Icons.verified, color: Colors.blue, size: 20),                  
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
-                child: Text(
-                  professionalTitle,
-                  style: TextStyles.largeSemiBold.copyWith(
-                    color: Colors.grey
-                  ),
-                ),
-              ),
-              YMargin(10),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
-                child: Row(
-                  children: [
-                    RatingBar.builder(
-                      initialRating: rating,
-                      glowColor: Color(0xffFF9F29),
-                      allowHalfRating: true,
-                      ignoreGestures: true,
-                      itemCount: 5,
-                      itemSize: 30,
-                      itemBuilder: (context, index) => Icon(Icons.star, color: Color(0xffFF9F29)),
-                      onRatingUpdate: (rating) {
-                        print(rating);
-                      },
+                    Image.asset(
+                      "instagram".png,
+                      height: config.sh(20),
                     ),
-                    Text(
-                      "${double.parse(rating.toStringAsFixed(2))} ($reviewsCount reviews)",
-                      style: TextStyles.largeBold
-                    )
-                  ],
-                ),
-              ),
-              YMargin(20),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
-                child: Row(
-                children: [
-                  Image.asset(
-                    "website".png,
-                    height: config.sh(20),
+                    XMargin(10),
+                    Image.asset(
+                      "x".png,
+                      height: config.sh(20),
+                      ),
+                    ],
                   ),
-                  XMargin(10),
-                  Image.asset(
-                    "instagram".png,
-                    height: config.sh(20),
-                  ),
-                  XMargin(10),
-                  Image.asset(
-                    "x".png,
-                    height: config.sh(20),
-                    ),
-                  ],
                 ),
-              ),
-              YMargin(20),
-              _buildConsultationCard(title: "Typically replies in 3 days", icon: Icons.access_time),
-              YMargin(10),
-              _buildConsultationCard(title: "$totalConsultations Consultations", icon: Icons.group),
-              YMargin(10),
-              _buildConsultationCard(title: "${state != "" ? "$state, " : ""}$location", icon: Icons.location_on),
-              YMargin(10),
-              _buildConsultationCard(title: "100% Response Rate", icon: Icons.check_circle_outline),
-              YMargin(10),
-              Divider(
-                color: Colors.grey.withOpacity(0.2),
-                thickness: 1,
-              ),
-
-              // About Expert section
-              YMargin(20),
-              AboutExpertView(
-                bio: widget.expert?.bio ?? "",
-              ),
-              Divider(
-                color: Colors.grey.withOpacity(0.2),
-                thickness: 1,
-              ),
-
-              // Expertise section
-              YMargin(20),
-              ExpertiseView(
-                categories: widget.expert?.categories ?? [],
-              ),
-              YMargin(20),
-
-              // Faq section
-              Divider(
-                color: Colors.grey.withOpacity(0.2),
-                thickness: 1,
-              ),
-              YMargin(20),
-              FaqView(
-                faq: widget.expert?.faq ?? [],
-              ),
-
-              // Reviews section
-              YMargin(20),
-              Divider(
-                color: Colors.grey.withOpacity(0.2),
-                thickness: 1,
-              ),
-              YMargin(10),
-              ReviewsView(
-                expertId: widget.expert?.id ?? "",
-              ),
-
-               // Reviews section
-              YMargin(20),
-              Divider(
-                color: Colors.grey.withOpacity(0.2),
-                thickness: 1,
-              ),
-
-              // Similar experts section
-              YMargin(10),
-              SimilarExpertsView(),
-              YMargin(20)
-            ],
+                YMargin(20),
+                _buildConsultationCard(title: "Typically replies in 3 days", icon: Icons.access_time),
+                YMargin(10),
+                _buildConsultationCard(title: "$totalConsultations Consultations", icon: Icons.group),
+                YMargin(10),
+                _buildConsultationCard(title: "${state != "" ? "$state, " : ""}$location", icon: Icons.location_on),
+                YMargin(10),
+                _buildConsultationCard(title: "100% Response Rate", icon: Icons.check_circle_outline),
+                YMargin(10),
+                Divider(
+                  color: Colors.grey.withOpacity(0.2),
+                  thickness: 1,
+                ),
+          
+                // About Expert section
+                YMargin(20),
+                AboutExpertView(
+                  bio: widget.expert?.bio ?? "",
+                ),
+                Divider(
+                  color: Colors.grey.withOpacity(0.2),
+                  thickness: 1,
+                ),
+          
+                // Expertise section
+                YMargin(20),
+                ExpertiseView(
+                  categories: currentExpertProfile?.categories ?? [],
+                ),
+                YMargin(20),
+          
+                // Faq section
+                Divider(
+                  color: Colors.grey.withOpacity(0.2),
+                  thickness: 1,
+                ),
+                YMargin(20),
+                FaqView(
+                  faq: currentExpertProfile?.faq ?? [],
+                ),
+          
+                // Reviews section
+                YMargin(20),
+                Divider(
+                  color: Colors.grey.withOpacity(0.2),
+                  thickness: 1,
+                ),
+                YMargin(10),
+                ReviewsView(
+                  expertId: widget.expert?.id ?? "",
+                ),
+          
+                // Reviews section
+                YMargin(20),
+                Divider(
+                  color: Colors.grey.withOpacity(0.2),
+                  thickness: 1,
+                ),
+          
+                // Similar experts section
+                YMargin(10),
+                SimilarExpertsView(),
+                YMargin(20)
+              ],
+            ),
           ),
-        ),
-      ),
       persistentFooterButtons: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: config.sw(10)),

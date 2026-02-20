@@ -25,7 +25,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen>
   bool get wantKeepAlive => true;
 
 
-  ValueNotifier<String> _searchQuery = ValueNotifier<String>("");
+  final ValueNotifier<String> _searchQuery = ValueNotifier<String>("");
 
   @override
   void initState() {

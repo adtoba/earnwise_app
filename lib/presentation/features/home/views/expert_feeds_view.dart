@@ -45,7 +45,7 @@ class _ExpertFeedsViewState extends ConsumerState<ExpertFeedsView> {
                   "Expert Posts",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyles.largeBold
+                  style: TextStyles.xLargeBold
                 ),
               ),
               TextButton(

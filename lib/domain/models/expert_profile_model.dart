@@ -12,6 +12,7 @@ class ExpertProfileModel {
   double? rating;
   int? reviewsCount;
   int? totalConsultations;
+  bool? isSaved;
   String? createdAt;
   String? updatedAt;
 
@@ -29,6 +30,7 @@ class ExpertProfileModel {
       this.rating,
       this.reviewsCount,
       this.totalConsultations,
+      this.isSaved,
       this.createdAt,
       this.updatedAt});
 
@@ -52,6 +54,7 @@ class ExpertProfileModel {
     rating = json['rating'].toDouble();
     reviewsCount = json['reviews_count'];
     totalConsultations = json['total_consultations'];
+    isSaved = json['is_saved'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -79,6 +82,7 @@ class ExpertProfileModel {
     data['rating'] = rating;
     data['reviews_count'] = reviewsCount;
     data['total_consultations'] = totalConsultations;
+    data['is_saved'] = isSaved;
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;
     return data;

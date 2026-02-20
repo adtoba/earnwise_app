@@ -13,6 +13,10 @@ abstract class ExpertRepository {
   Future<Either<ExpertDashboardModel, String>> getExpertDashboard();
   Future<Either<Response, String>> getExpertProfile();
   Future<Either<List<ExpertProfileModel>, String>> getRecommendedExperts();
+  Future<Either<List<ExpertProfileModel>, String>> getSavedExperts();
+  Future<Either<ExpertProfileModel, String>> getExpertProfileById({required String expertId});
+  Future<Either<Response, String>> saveExpert({required String expertId});
+  Future<Either<Response, String>> unSaveExpert({required String expertId});
   Future<Either<Response, String>> updateExpertDetails({required UpdateExpertDetailsDto updateExpertDetailsDto});
   Future<Either<Response, String>> updateExpertRate({required UpdateExpertRateDto updateExpertRateDto});
   Future<Either<Response, String>> updateExpertAvailability({required List<UpdateExpertAvailabilityDto> updateExpertAvailabilityDto});

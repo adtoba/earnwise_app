@@ -1,4 +1,5 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/settings_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/dashboard/screens/dashboard_screen.dart';
@@ -12,15 +13,16 @@ import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/profile_details_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExpertSettingsScreen extends StatefulWidget {
+class ExpertSettingsScreen extends ConsumerStatefulWidget {
   const ExpertSettingsScreen({super.key});
 
   @override
-  State<ExpertSettingsScreen> createState() => _ExpertSettingsScreenState();
+  ConsumerState<ExpertSettingsScreen> createState() => _ExpertSettingsScreenState();
 }
 
-class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
+class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
   bool _expertMode = true;
 
   @override
@@ -28,9 +30,7 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
-    final cardColor = isDarkMode ? Palette.darkFillColor : Palette.lightBackground;
-    final borderColor = isDarkMode ? Palette.borderDark : Palette.borderLight;
-    final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
+    var settingsProvider = ref.watch(settingsNotifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -136,17 +136,26 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
             title: "Notifications",
             icon: Icons.notifications_none_outlined,
             isDarkMode: isDarkMode,
+            onTap: () {
+              settingsProvider.goToNotifications();
+            },
           ),
           _SettingsTile(
             title: "Privacy & Security",
             icon: Icons.lock_outline,
             isDarkMode: isDarkMode,
+            onTap: () {
+              settingsProvider.goToPrivacyAndSecurity();
+            },
           ),
           _SettingsTile(
             title: "Help & Support",
             icon: Icons.support_agent_outlined,
             isDarkMode: isDarkMode,
             showDivider: false,
+            onTap: () {
+              settingsProvider.goToHelpAndSupport();
+            },
           ),
           YMargin(20),
           _SettingsSectionTitle(
@@ -157,16 +166,24 @@ class _ExpertSettingsScreenState extends State<ExpertSettingsScreen> {
             title: "Terms & Conditions",
             icon: Icons.description_outlined,
             isDarkMode: isDarkMode,
+            onTap: () {
+              settingsProvider.goToTermsAndConditions();
+            },
           ),
           _SettingsTile(
             title: "Privacy Policy",
             icon: Icons.privacy_tip_outlined,
             isDarkMode: isDarkMode,
             showDivider: false,
+            onTap: () {
+              settingsProvider.goToPrivacyPolicy();
+            },
           ),
           YMargin(20),
           TextButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              settingsProvider.goToLogout();
+            },
             icon: Icon(Icons.logout, color: Colors.red.shade400),
             label: Text(
               "Logout",

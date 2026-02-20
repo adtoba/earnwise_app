@@ -35,8 +35,17 @@ class ExpertProvider extends ChangeNotifier {
   bool _isRecommendedExpertsLoading = false;
   bool get isRecommendedExpertsLoading => _isRecommendedExpertsLoading;
 
+  bool _isSavedExpertsLoading = false;
+  bool get isSavedExpertsLoading => _isSavedExpertsLoading;
+
+  bool _isCurrentExpertProfileLoading = false;
+  bool get isCurrentExpertProfileLoading => _isCurrentExpertProfileLoading;
+
   List<ExpertProfileModel> _recommendedExperts = [];
   List<ExpertProfileModel> get recommendedExperts => _recommendedExperts;
+
+  List<ExpertProfileModel> _savedExperts = [];
+  List<ExpertProfileModel> get savedExperts => _savedExperts;
 
   ExpertProfileModel? _expertProfile;
   ExpertProfileModel? get expertProfile => _expertProfile;
@@ -45,6 +54,17 @@ class ExpertProvider extends ChangeNotifier {
   ExpertDashboardModel? get expertDashboard => _expertDashboard;
 
   CreateExpertProfileDto? createExpertProfileDto;
+
+  bool _isCurrentSavedExpertSaved = false;
+  bool get isCurrentSavedExpertSaved => _isCurrentSavedExpertSaved;
+
+  ExpertProfileModel? _currentExpertProfile;
+  ExpertProfileModel? get currentExpertProfile => _currentExpertProfile;
+
+  void setCurrentSavedExpertSaved(bool value) {
+    _isCurrentSavedExpertSaved = value;
+    notifyListeners();
+  }
 
   Future<void> createExpertProfile() async {
     _isLoading = true;
@@ -68,6 +88,31 @@ class ExpertProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         logger.e("Create expert profile failed: $failure");
+        showErrorToast(failure);
+      }
+    );
+  }
+
+  Future<void> getExpertProfileById(String expertId) async {
+    _currentExpertProfile = null;
+    _isCurrentSavedExpertSaved = false;
+    _isCurrentExpertProfileLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.getExpertProfileById(expertId: expertId);
+    result.fold(
+      (success) {
+        _isCurrentExpertProfileLoading = false;
+        _currentExpertProfile = success;
+        _isCurrentSavedExpertSaved = success.isSaved ?? false;
+        notifyListeners();
+      },
+      (failure) {
+        _isCurrentExpertProfileLoading = false;
+        _currentExpertProfile = null;
+        _isCurrentSavedExpertSaved = false;
+        notifyListeners();
+        logger.e("Get expert profile by id failed: $failure");
         showErrorToast(failure);
       }
     );
@@ -113,6 +158,70 @@ class ExpertProvider extends ChangeNotifier {
     );
   }
 
+  Future<void> getSavedExperts() async {
+    _isSavedExpertsLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.getSavedExperts();
+    result.fold(
+      (success) {
+        _isSavedExpertsLoading = false;
+        _savedExperts = success;
+        notifyListeners();
+      },
+      (failure) {
+        _isSavedExpertsLoading = false;
+        _savedExperts = [];
+        notifyListeners();
+        logger.e("Get saved experts failed: $failure");
+        showErrorToast(failure);
+      }
+    );
+  }
+
+  Future<void> saveExpert(String expertId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.saveExpert(expertId: expertId);
+    result.fold(
+      (success) {
+        _isLoading = false;
+        _isCurrentSavedExpertSaved = true;
+        notifyListeners();
+        showSuccessToast("Expert saved successfully");
+      },
+      (failure) {
+        _isLoading = false;
+        notifyListeners();
+        logger.e("Save expert failed: $failure");
+        showErrorToast(failure);
+      } 
+    );
+  }
+
+  Future<void> unsaveExpert(String expertId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.unSaveExpert(expertId: expertId);
+    result.fold(
+      (success) {
+        _isLoading = false;
+        _isCurrentSavedExpertSaved = false;
+        _savedExperts = _savedExperts.where((element) => element.id != expertId).toList();
+        notifyListeners();
+        showSuccessToast("Expert unsaved successfully");
+      },
+      (failure) {
+        _isLoading = false;
+        _isCurrentSavedExpertSaved = false;
+        notifyListeners();
+        logger.e("Unsave expert failed: $failure");
+        showErrorToast(failure);
+      } 
+    );
+  }
 
   Future<void> updateExpertSocials(UpdateExpertSocialsDto updateExpertSocialsDto) async {
     _isLoading = true;

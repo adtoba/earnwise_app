@@ -57,10 +57,10 @@ class _SuggestedExpertsViewState extends ConsumerState<SuggestedExpertsView> {
             children: [
               Expanded(
                 child: Text(
-                  "Top Rated Experts",
+                  "Recommended Experts",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyles.largeBold
+                  style: TextStyles.xLargeBold
                 ),
               ),
               TextButton(

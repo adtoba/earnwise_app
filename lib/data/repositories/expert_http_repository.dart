@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:dio/src/response.dart';
 import 'package:earnwise_app/core/constants/endpoints.dart';
 import 'package:earnwise_app/core/utils/error_util.dart';
 import 'package:earnwise_app/data/services/api_service.dart';
@@ -19,6 +18,19 @@ class ExpertHttpRepository extends ApiService implements ExpertRepository {
     try {
       final response = await http.post(Endpoints.experts, data: createExpertProfileDto.toJson());
       return left(response);
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<ExpertProfileModel, String>> getExpertProfileById({required String expertId}) async {
+    try {
+      final response = await http.get("${Endpoints.experts}/$expertId");
+      return left(ExpertProfileModel.fromJson(response.data["data"]));
     } on DioException catch (e) {
       String error = ErrorUtil.parseDioError(e);
       return right(error);
@@ -111,11 +123,65 @@ class ExpertHttpRepository extends ApiService implements ExpertRepository {
   Future<Either<List<ExpertProfileModel>, String>> getRecommendedExperts() async {
     try {
       final response = await http.get("${Endpoints.experts}/recommended");
-      return left((response.data["data"] as List<dynamic>).map((e) => ExpertProfileModel.fromJson(e)).toList());
+      if(response.data["data"] != null) {
+        return left((response.data["data"] as List<dynamic>).map((e) => ExpertProfileModel.fromJson(e)).toList());
+      } else {
+        return left([]);
+      }
     } on DioException catch (e) {
       String error = ErrorUtil.parseDioError(e);
       return right(error);
+    } catch (e) {
+      return right(e.toString());
     }
   }
 
+  @override
+  Future<Either<List<ExpertProfileModel>, String>> getSavedExperts() async {
+    try {
+      final response = await http.get("${Endpoints.users}/saved-experts");
+      if(response.data["data"] != null) {
+        return left((response.data["data"] as List<dynamic>).map((e) => ExpertProfileModel.fromJson(e)).toList());
+      } else {
+        return left([]);
+      }
+      
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<Response, String>> saveExpert({required String expertId}) async {
+    try {
+      final response = await http.post("${Endpoints.users}/save-expert", data: {
+        "expert_id": expertId,
+      });
+      return left(response);
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<Response, String>> unSaveExpert({required String expertId}) async {
+    try {
+      final response = await http.delete("${Endpoints.users}/unsave-expert", data: {
+        "expert_id": expertId,
+      });
+      return left(response);
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
+  }
+  
 }

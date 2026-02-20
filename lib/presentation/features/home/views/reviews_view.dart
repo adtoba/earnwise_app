@@ -23,10 +23,10 @@ class _ReviewsViewState extends ConsumerState<ReviewsView> {
 
   @override
   void initState() {
-    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(reviewNotifier).getExpertReviews(expertId: widget.expertId);
     });
+    super.initState(); 
   }
 
   @override
