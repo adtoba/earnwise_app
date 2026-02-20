@@ -75,8 +75,8 @@ class ExpertProvider extends ChangeNotifier {
     );
 
     result.fold(
-      (success) {
-        ref.read(profileNotifier).getProfile();
+      (success) async {
+        await ref.read(profileNotifier).getProfile();
         _isLoading = false;
         notifyListeners();
         pop();

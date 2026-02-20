@@ -43,6 +43,7 @@ class _CategorySelectionScreenState extends ConsumerState<CategorySelectionScree
     return Scaffold(
       appBar: AppBar(
         title: const Text("Select Categories"),
+        centerTitle: true,
         actions: [
           TextButton(
             onPressed: () {

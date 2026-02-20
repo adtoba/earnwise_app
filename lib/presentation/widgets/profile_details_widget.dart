@@ -1,4 +1,5 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/profile/screens/profile_screen.dart';
@@ -6,14 +7,21 @@ import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProfileDetailsWidget extends StatelessWidget {
+class ProfileDetailsWidget extends ConsumerStatefulWidget {
   const ProfileDetailsWidget({super.key});
 
+  @override
+  ConsumerState<ProfileDetailsWidget> createState() => _ProfileDetailsWidgetState();
+}
+
+class _ProfileDetailsWidgetState extends ConsumerState<ProfileDetailsWidget> {
   @override
   Widget build(BuildContext context) {
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
+    var profile = ref.watch(profileNotifier).profile;
 
     final cardColor = isDarkMode ? Palette.darkFillColor : Palette.lightBackground;
     final borderColor = isDarkMode ? Palette.borderDark : Palette.borderLight;
@@ -31,7 +39,7 @@ class ProfileDetailsWidget extends StatelessWidget {
           CircleAvatar(
             radius: config.sw(28),
             backgroundImage: NetworkImage(
-              profilePicture ?? "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
+              profile?.user?.profilePicture ?? "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
             ),
           ),
           XMargin(12),
@@ -40,7 +48,7 @@ class ProfileDetailsWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "$firstName $lastName",
+                  "${profile?.user?.firstName} ${profile?.user?.lastName}",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textScaler: TextScaler.noScaling,
@@ -50,7 +58,7 @@ class ProfileDetailsWidget extends StatelessWidget {
                 ),
                 YMargin(4),
                 Text(
-                  email ?? "",
+                  profile?.user?.email ?? "",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textScaler: TextScaler.noScaling,

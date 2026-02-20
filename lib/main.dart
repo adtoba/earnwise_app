@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/constants/pref_keys.dart';
 import 'package:earnwise_app/core/di/di.dart';
+import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/size_config.dart';
 import 'package:earnwise_app/data/services/local_storage_service.dart';
+import 'package:earnwise_app/domain/models/user_profile_model.dart';
 import 'package:earnwise_app/presentation/features/auth/screens/onboarding_screen.dart';
 import 'package:earnwise_app/presentation/styles/theme.dart';
 import 'package:flutter/material.dart';
@@ -23,28 +27,36 @@ void main() async {
 
   await dotenv.load(fileName: '.env');
 
-  userId = await LocalStorageService.get(PrefKeys.userId);
-  firstName = await LocalStorageService.get(PrefKeys.userFirstName);
-  lastName = await LocalStorageService.get(PrefKeys.userLastName);
-  email = await LocalStorageService.get(PrefKeys.userEmail);
-  profilePicture = await LocalStorageService.get(PrefKeys.userImageUrl);
-  userExpertId = await LocalStorageService.get(PrefKeys.userExpertId);
-  country = await LocalStorageService.get(PrefKeys.userCountry);
-  state = await LocalStorageService.get(PrefKeys.userState);
-  city = await LocalStorageService.get(PrefKeys.userCity);
-  street = await LocalStorageService.get(PrefKeys.userStreet);
-  zip = await LocalStorageService.get(PrefKeys.userZip);
-  gender = await LocalStorageService.get(PrefKeys.userGender);
-  phone = await LocalStorageService.get(PrefKeys.userPhone);
+  var profile = await LocalStorageService.get(PrefKeys.profile);
+  if(profile != null) {
+    var profileModel = UserProfileModel.fromJson(jsonDecode(profile));
 
+  }
 
   runApp(ProviderScope(child: const MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var profile = await LocalStorageService.get(PrefKeys.profile);
+      if(profile != null) {
+        var profileModel = UserProfileModel.fromJson(jsonDecode(profile));
+        ref.read(profileNotifier).storeProfile(profileModel);
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Builder(
@@ -56,7 +68,7 @@ class MyApp extends StatelessWidget {
           title: 'EarnWise',
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
-          themeMode: ThemeMode.light,
+          themeMode: ThemeMode.dark,
           builder: (context, child) {
             return StyledToast(child: child ?? const SizedBox.shrink());
           },

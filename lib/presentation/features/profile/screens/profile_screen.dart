@@ -20,23 +20,38 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  final _firstNameController = TextEditingController(text: firstName);
-  final _lastNameController = TextEditingController(text: lastName);
-  final _emailController = TextEditingController(text: email);
-  final _phoneController = TextEditingController(text: phone);
-  final _countryController = TextEditingController(text: country);
-  final _stateController = TextEditingController(text: state);
-  final _cityController = TextEditingController(text: city);
-  final _streetController = TextEditingController(text: street);
-  final _zipController = TextEditingController(text: zip);
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _countryController = TextEditingController();
+  final _stateController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _streetController = TextEditingController();
+  final _zipController = TextEditingController();
 
   final formKey = GlobalKey<FormState>();
 
-  String? _gender = gender != "" && gender != null ? gender : null;
+  String? _gender;
   final List<String> _genders = ["Male", "Female", "Other"];
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var profile = ref.read(profileNotifier).profile;
+      setState(() {
+        _firstNameController.text = profile?.user?.firstName ?? "";
+        _lastNameController.text = profile?.user?.lastName ?? "";
+        _emailController.text = profile?.user?.email ?? "";
+        _phoneController.text = profile?.user?.phone ?? "";
+        _countryController.text = profile?.user?.country ?? "";
+        _stateController.text = profile?.user?.state ?? "";
+        _cityController.text = profile?.user?.city ?? "";
+        _streetController.text = profile?.user?.address ?? "";
+        _zipController.text = profile?.user?.zip ?? "";
+        _gender = profile?.user?.gender != "" && profile?.user?.gender != null ? profile?.user?.gender : null;
+      });
+    });
     super.initState();
   }
 
@@ -57,6 +72,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     var profileProvider = ref.watch(profileNotifier);
+    var profile = profileProvider.profile;
     var profilePictureUrl = profileProvider.profilePictureUrl;
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
@@ -85,7 +101,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       CircleAvatar(
                         radius: config.sw(42),
                         backgroundImage: NetworkImage(
-                          profilePictureUrl ?? profilePicture ?? "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
+                          profilePictureUrl ?? profile?.user?.profilePicture ?? "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
                         ),
                       ),
                       Positioned(
@@ -138,12 +154,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               label: "First name",
               controller: _firstNameController,
               isDarkMode: isDarkMode,
+              isReadOnly: true,
               validator: InputValidator.validateField,
             ),
             _EditableField(
               label: "Last name",
               controller: _lastNameController,
               isDarkMode: isDarkMode,
+              isReadOnly: true,
               validator: InputValidator.validateField,
             ),
             _DropdownField(
@@ -162,6 +180,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               label: "Email",
               controller: _emailController,
               isDarkMode: isDarkMode,
+              isReadOnly: true,
               validator: InputValidator.validateEmail,
             ),
             _EditableField(
@@ -252,6 +271,7 @@ class _EditableField extends StatelessWidget {
     required this.isDarkMode,
     this.showDivider = true,
     this.validator,
+    this.isReadOnly = false,
   });
 
   final String label;
@@ -259,6 +279,7 @@ class _EditableField extends StatelessWidget {
   final bool isDarkMode;
   final String? Function(String?)? validator;
   final bool showDivider;
+  final bool isReadOnly;
 
 
   @override
@@ -277,6 +298,7 @@ class _EditableField extends StatelessWidget {
           controller: controller,
           hint: label,
           validator: validator,
+          enabled: !isReadOnly,
         ),
         if (showDivider) YMargin(10),
       ],

@@ -6,7 +6,6 @@ import 'package:earnwise_app/presentation/features/dashboard/screens/dashboard_s
 import 'package:earnwise_app/presentation/features/expert/screens/expert_set_availability_screen.dart';
 import 'package:earnwise_app/presentation/features/expert/screens/expert_socials_screen.dart';
 import 'package:earnwise_app/presentation/features/expert/screens/set_rates_screen.dart';
-import 'package:earnwise_app/presentation/features/profile/screens/profile_screen.dart';
 import 'package:earnwise_app/presentation/features/settings/screens/expert_details_screen.dart';
 import 'package:earnwise_app/presentation/features/settings/screens/expert_reviews_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';

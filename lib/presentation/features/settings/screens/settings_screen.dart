@@ -35,9 +35,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = ref.watch(authNotifier);
     var settingsProvider = ref.watch(settingsNotifier);
-    
+    var profile = ref.watch(profileNotifier).profile;
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
@@ -58,7 +57,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
         children: [
           ProfileDetailsWidget(),
-          if(userExpertId != null)...[
+          if(profile?.expertProfile?.id != null && profile?.expertProfile?.verificationStatus == "approved")...[
             YMargin(16),
             _ModeSwitchRow(
               isExpertMode: _expertMode,
@@ -97,7 +96,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               push(const FavoriteExpertsScreen());
             },
           ),
-          if(userExpertId == null)...[
+          if(profile?.expertProfile?.id == null)...[
             YMargin(20),
             _SettingsSectionTitle(
               title: "Expert",
@@ -109,7 +108,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               isDarkMode: isDarkMode,
               showDivider: false,
               onTap: () {
-                if(gender == "" && phone == "" && country == "") {
+                if(profile?.user?.gender == "" && profile?.user?.phone == "" && profile?.user?.country == "") {
                   showErrorToast("Please complete your profile first");
                   push(ProfileScreen());
                 } else {
@@ -121,6 +120,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 }
                 
               }
+            ),
+          ] else if(profile?.expertProfile?.id != null && profile?.expertProfile?.verificationStatus == "pending")...[
+            YMargin(20),
+            _SettingsSectionTitle(
+              title: "Expert",
+              isDarkMode: isDarkMode,
+            ),
+            _SettingsTile(
+              title: "Pending Verification",
+              icon: Icons.pending_actions_outlined,
+              isDarkMode: isDarkMode,
+              showDivider: false,
+              isVerification: true,
             ),
           ],
           
@@ -201,6 +213,7 @@ class _SettingsTile extends StatelessWidget {
     required this.isDarkMode,
     this.showDivider = true,
     this.onTap,
+    this.isVerification = false,
   });
 
   final String title;
@@ -208,6 +221,7 @@ class _SettingsTile extends StatelessWidget {
   final bool isDarkMode;
   final bool showDivider;
   final VoidCallback? onTap;
+  final bool isVerification;
   @override
   Widget build(BuildContext context) {
     final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
@@ -229,7 +243,25 @@ class _SettingsTile extends StatelessWidget {
               color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
             ),
           ),
-          trailing: Icon(
+          subtitle: isVerification ? Text(
+            "Your expert profile is being reviewed",
+            style: TextStyles.smallSemiBold.copyWith(
+              color: isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light,
+            ),
+          ) : null,
+          trailing: isVerification ? Container(
+            padding: EdgeInsets.symmetric(horizontal: config.sw(8), vertical: config.sh(4)),
+            decoration: BoxDecoration(
+              color: Colors.amber,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              "Pending",
+              style: TextStyles.smallSemiBold.copyWith(
+                color: Colors.white,
+              ),
+            ),
+          ) : Icon(
             Icons.chevron_right,
             color: secondaryTextColor,
           ),

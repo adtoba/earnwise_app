@@ -1,6 +1,7 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/providers/expert_provider.dart';
 import 'package:earnwise_app/core/providers/post_provider.dart';
+import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/input_validator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/domain/dto/create_post_dto.dart';
@@ -39,7 +40,7 @@ class _NewPostScreenState extends ConsumerState<NewPostScreen> {
   Widget build(BuildContext context) {
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
-
+    var profile = ref.read(profileNotifier).profile;
     final borderColor = isDarkMode ? Palette.borderDark : Palette.borderLight;
     final fillColor = isDarkMode ? Palette.darkFillColor : Palette.lightFillColor;
 
@@ -58,7 +59,7 @@ class _NewPostScreenState extends ConsumerState<NewPostScreen> {
               if(formKey.currentState!.validate()) {
                 ref.read(postNotifier).createPost(
                   createPostDto: CreatePostDto(
-                    expertId: userExpertId ?? "",
+                    expertId: profile?.expertProfile?.id ?? "",
                     content: _postController.text,
                     attachments: _images,
                   ),

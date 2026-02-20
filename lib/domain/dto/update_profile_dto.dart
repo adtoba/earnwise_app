@@ -3,7 +3,6 @@ class UpdateProfileDto {
   final String? lastName;
   final String? gender;
   final String? email;
-  final String? profilePicture;
   final String? phone;
   final String? country;
   final String? state;
@@ -12,14 +11,13 @@ class UpdateProfileDto {
   final String? zip;
   final String? dob;
 
-  UpdateProfileDto({this.firstName, this.lastName, this.email, this.profilePicture, this.phone, this.country, this.state, this.city, this.street, this.zip, this.gender, this.dob});
+  UpdateProfileDto({this.firstName, this.lastName, this.email, this.phone, this.country, this.state, this.city, this.street, this.zip, this.gender, this.dob});
 
   Map<String, dynamic> toJson() {
     return {
       // "first_name": firstName,
       // "last_name": lastName,
       // "email": email,
-      "profile_picture": profilePicture,
       "phone_number": phone,
       "country": country,
       "state": state,

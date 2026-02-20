@@ -151,7 +151,7 @@ class _CategoryExpertsScreenState extends ConsumerState<CategoryExpertsScreen> {
                         state: expert.user?.state ?? "",
                         rate: "${expert.rates?.text ?? 0} / text",
                         description: expert.bio ?? "",
-                        imageUrl: "https://img.freepik.com/free-photo/portrait-confident-young-businesswoman_23-2148176209.jpg?semt=ais_hybrid&w=740&q=80",
+                        imageUrl: expert.user?.profilePicture != "" ? expert.user?.profilePicture ?? "" : "https://img.freepik.com/free-photo/portrait-confident-young-businesswoman_23-2148176209.jpg?semt=ais_hybrid&w=740&q=80",
                         onTap: () {
                           push(ExpertProfileScreen(
                             expert: expert,
