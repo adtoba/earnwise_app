@@ -1,11 +1,14 @@
+import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/di/di.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
+import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/core/utils/toast.dart';
 import 'package:earnwise_app/domain/dto/create_post_dto.dart';
 import 'package:earnwise_app/domain/models/comment_model.dart';
 import 'package:earnwise_app/domain/models/post_model.dart';
 import 'package:earnwise_app/domain/repositories/post_repository.dart';
 import 'package:earnwise_app/main.dart';
+import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
@@ -147,6 +150,46 @@ class PostProvider extends ChangeNotifier {
         logger.e("Comment on post failed: $failure");
         showErrorToast(failure);
       }
+    );
+  }
+
+  void showMoreOptions({required BuildContext context, required String postId}) {
+    var brightness = Theme.of(context).brightness;
+    bool isDarkMode = brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (c) => Container(
+        decoration: BoxDecoration(
+          color: isDarkMode ? Palette.darkBackground : Palette.lightBackground,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        padding: EdgeInsets.symmetric(vertical: config.sh(20)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text("Edit"),
+              onTap: () {
+                // TODO: Edit post
+              },
+            ),
+            ListTile(
+              title: Text("Delete"),
+            ),
+            ListTile(
+              title: Text("Report"),
+              onTap: () {
+                // TODO: Report post
+              },
+            ),
+            YMargin(30),
+          ],
+        ),
+      ),
     );
   }
 }

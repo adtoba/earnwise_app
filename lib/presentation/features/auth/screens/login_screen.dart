@@ -4,7 +4,6 @@ import 'package:earnwise_app/core/utils/input_validator.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/auth/screens/signup_screen.dart';
-import 'package:earnwise_app/presentation/features/dashboard/screens/dashboard_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/primary_button.dart';

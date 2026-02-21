@@ -1,7 +1,10 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/providers/post_provider.dart';
+import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/domain/models/expert_profile_model.dart';
 import 'package:earnwise_app/domain/models/post_model.dart';
+import 'package:earnwise_app/presentation/features/home/screens/expert_profile_screen.dart';
 import 'package:earnwise_app/presentation/features/home/widgets/comment_item.dart';
 import 'package:earnwise_app/presentation/features/home/widgets/expert_feed_item.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
@@ -35,6 +38,7 @@ class _FeedInfoScreenState extends ConsumerState<FeedInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var postProvider = ref.watch(postNotifier);
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
@@ -53,63 +57,83 @@ class _FeedInfoScreenState extends ConsumerState<FeedInfoScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: config.sw(20),
-                    backgroundImage: NetworkImage(
-                      widget.post?.user?.profilePicture == "" 
-                        ? "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80"
-                        : widget.post?.user?.profilePicture ?? ""
+              InkWell(
+                onTap: () {
+                  push(ExpertProfileScreen(expert: ExpertProfileModel(
+                    id: widget.post?.expertId ?? "",
+                    user: User(
+                      firstName: widget.post?.user?.firstName,
+                      lastName: widget.post?.user?.lastName,
+                      profilePicture: widget.post?.user?.profilePicture,
+                    )
+                  )));
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: config.sw(20),
+                      backgroundImage: NetworkImage(
+                        widget.post?.user?.profilePicture == "" 
+                          ? "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80"
+                          : widget.post?.user?.profilePicture ?? ""
+                      ),
                     ),
-                  ),
-                  XMargin(10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Flexible(
-                              child: Text(
-                                "${widget.post?.user?.firstName ?? ""} ${widget.post?.user?.lastName ?? ""}",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyles.largeSemiBold,
+                    XMargin(10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  "${widget.post?.user?.firstName ?? ""} ${widget.post?.user?.lastName ?? ""}",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyles.largeSemiBold,
+                                ),
                               ),
-                            ),
-                            XMargin(5),
-                            Icon(
-                              Icons.verified,
-                              color: Colors.blue,
-                              size: 15,
-                            ),
-                          ],
-                        ),
-                        Text(
-                          "${widget.post?.user?.state ?? ""}, ${widget.post?.user?.country ?? ""}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyles.xSmallMedium,
-                        ),
-                      ],
+                              XMargin(5),
+                              Icon(
+                                Icons.verified,
+                                color: Colors.blue,
+                                size: 15,
+                              ),
+                            ],
+                          ),
+                          Text(
+                            "${widget.post?.user?.state ?? ""}, ${widget.post?.user?.country ?? ""}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyles.xSmallMedium,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  XMargin(10),
-                  Text(
-                    timeago.format(DateTime.parse(widget.post?.createdAt ?? "")),
-                    style: TextStyles.smallRegular.copyWith(
-                      fontFamily: TextStyles.fontFamily,
-                      color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+                    XMargin(10),
+                    Text(
+                      timeago.format(DateTime.parse(widget.post?.createdAt ?? "")),
+                      style: TextStyles.smallRegular.copyWith(
+                        fontFamily: TextStyles.fontFamily,
+                        color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+                      ),
                     ),
-                  ),
-                  XMargin(10),
-                  Icon(Icons.more_horiz),
-                  YMargin(10),
-                ],
+                    XMargin(10),
+                    InkWell(
+                      onTap: () {
+                        postProvider.showMoreOptions(
+                          context: context, 
+                          postId: widget.post?.id ?? ""
+                        );
+                      },
+                      child: Icon(Icons.more_horiz)
+                    ),
+                    YMargin(10),
+                  ],
+                ),
               ),
               YMargin(10),
               Text(

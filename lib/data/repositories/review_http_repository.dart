@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:earnwise_app/core/constants/endpoints.dart';
 import 'package:earnwise_app/core/utils/error_util.dart';
 import 'package:earnwise_app/data/services/api_service.dart';
 import 'package:earnwise_app/domain/repositories/review_repository.dart';

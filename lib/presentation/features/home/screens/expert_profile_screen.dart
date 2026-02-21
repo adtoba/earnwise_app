@@ -1,11 +1,15 @@
 import 'dart:math';
 
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/chat_provider.dart';
 import 'package:earnwise_app/core/providers/expert_provider.dart';
+import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/extensions.dart';
+import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
-import 'package:earnwise_app/core/providers/review_provider.dart';
+import 'package:earnwise_app/domain/models/chat_model.dart';
 import 'package:earnwise_app/domain/models/expert_profile_model.dart';
+import 'package:earnwise_app/presentation/features/conversations/screens/chat_screen.dart';
 import 'package:earnwise_app/presentation/features/home/views/about_expert_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/expertise_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/faq_view.dart';
@@ -17,6 +21,7 @@ import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ExpertProfileScreen extends ConsumerStatefulWidget {
   const ExpertProfileScreen({super.key, this.expert});
@@ -250,9 +255,9 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
                   thickness: 1,
                 ),
           
-                // Similar experts section
-                YMargin(10),
-                SimilarExpertsView(),
+                // // Similar experts section
+                // YMargin(10),
+                // SimilarExpertsView(),
                 YMargin(20)
               ],
             ),
@@ -264,11 +269,20 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
             children: [
               Expanded(
                 child: _buildActionButton(
-                  title: "Send Message",
-                  subtitle: "\$10 / text",
-                  icon: Icons.message,
+                  title: "Message",
+                  subtitle: "\$${currentExpertProfile?.rates?.text ?? 0} / text",
+                  icon: FontAwesomeIcons.message,
                   onPressed: () {
-                    print("Send Message");
+                    ref.read(chatNotifier).clearMessages();
+                    push(ChatScreen(
+                      chat: ChatModel(
+                        expertId: widget.expert?.id ?? "",
+                        userId: ref.read(profileNotifier).profile?.user?.id ?? "",
+                        expert: currentExpertProfile,
+                        createdAt: DateTime.now().toIso8601String(),
+                        updatedAt: DateTime.now().toIso8601String(),
+                      ),
+                    ));
                   }
                 )
               ),
@@ -276,7 +290,7 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
               Expanded(
                 child: _buildActionButton(
                   title: "Book a Call",
-                  subtitle: "\$10 / 15 min",
+                  subtitle: "\$${currentExpertProfile?.rates?.call ?? 0} / 15 min",
                   icon: Icons.video_call,
                   onPressed: () {
                     print("Book a Call");
@@ -322,7 +336,7 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
-              padding: EdgeInsets.all(5),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Palette.primary,
@@ -341,7 +355,7 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
                 Text(
                   subtitle ?? "", 
                   textScaler: TextScaler.noScaling,
-                  style: TextStyles.largeMedium.copyWith(
+                  style: TextStyles.mediumMedium.copyWith(
                     color: isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light
                   )
                 ),

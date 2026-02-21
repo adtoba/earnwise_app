@@ -1,5 +1,4 @@
 import 'package:earnwise_app/core/constants/constants.dart';
-import 'package:earnwise_app/core/providers/expert_provider.dart';
 import 'package:earnwise_app/core/providers/post_provider.dart';
 import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/input_validator.dart';

@@ -1,6 +1,8 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/providers/post_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
+import 'package:earnwise_app/domain/models/expert_profile_model.dart';
+import 'package:earnwise_app/presentation/features/home/screens/expert_profile_screen.dart';
 import 'package:earnwise_app/presentation/features/home/screens/feed_info_screen.dart';
 import 'package:earnwise_app/presentation/features/home/widgets/expert_feed_item.dart';
 import 'package:earnwise_app/presentation/features/expert/screens/new_post_screen.dart';
@@ -83,6 +85,20 @@ class _ExpertPostsScreenState extends ConsumerState<ExpertPostsScreen> {
                   commentsCount: posts.commentsCount ?? 0,
                   time: timeago.format(DateTime.parse(posts.createdAt ?? "")),
                   images: visibleImages,
+                  onMoreOptionsTap: () => postProvider.showMoreOptions(
+                    context: context, 
+                    postId: posts.id ?? ""
+                  ),
+                  onUserTap: () {
+                    push(ExpertProfileScreen(expert: ExpertProfileModel(
+                      id: posts.expertId,
+                      user: User(
+                        firstName: posts.user?.firstName,
+                        lastName: posts.user?.lastName,
+                        profilePicture: posts.user?.profilePicture,
+                      )
+                    )));
+                  },
                   onTap: () {
                     push(FeedInfoScreen(post: posts));
                   },

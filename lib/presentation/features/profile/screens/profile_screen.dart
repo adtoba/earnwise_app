@@ -2,7 +2,6 @@ import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/input_validator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
-import 'package:earnwise_app/data/services/cloudinary_service.dart';
 import 'package:earnwise_app/domain/dto/update_profile_dto.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
@@ -10,7 +9,6 @@ import 'package:earnwise_app/presentation/widgets/primary_button.dart';
 import 'package:earnwise_app/presentation/widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});

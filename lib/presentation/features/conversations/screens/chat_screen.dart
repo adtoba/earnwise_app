@@ -1,48 +1,41 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/chat_provider.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/domain/dto/create_chat_dto.dart';
+import 'package:earnwise_app/domain/models/chat_model.dart';
+import 'package:earnwise_app/domain/models/expert_profile_model.dart';
+import 'package:earnwise_app/domain/models/message_model.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
+import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
-class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+class ChatScreen extends ConsumerStatefulWidget {
+  const ChatScreen({super.key, this.chat});
+
+  final ChatModel? chat;
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
 enum AnswerType { text, audio, video }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _messageController = TextEditingController();
   AnswerType _selectedType = AnswerType.text;
 
-  final List<_ChatMessage> _messages = [
-    _ChatMessage(
-      isUser: true,
-      type: AnswerType.text,
-      text: "Hi Amanda, can you review my budget plan for Q2?",
-      time: "10:22 AM",
-    ),
-    _ChatMessage(
-      isUser: false,
-      type: AnswerType.video,
-      text: "Video response available",
-      time: "10:30 AM",
-    ),
-    _ChatMessage(
-      isUser: true,
-      type: AnswerType.text,
-      text: "Thanks! Can you also advise on saving for taxes?",
-      time: "10:35 AM",
-    ),
-    _ChatMessage(
-      isUser: false,
-      type: AnswerType.audio,
-      text: "Audio response available",
-      time: "10:44 AM",
-    ),
-  ];
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if(widget.chat?.id != null) {
+        ref.read(chatNotifier).getChatMessages(widget.chat?.id ?? "");
+      }
+    });
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -52,6 +45,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var chatProvider = ref.watch(chatNotifier);
+    var expert = widget.chat?.expert;
+    var messages = chatProvider.messages;
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
@@ -62,17 +58,18 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
+        centerTitle: true,
         title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Amanda Brooks",
+              "${expert?.user?.firstName ?? ""} ${expert?.user?.lastName ?? ""}",
               style: TextStyles.largeBold.copyWith(
                 color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
               ),
             ),
             Text(
-              "\$30 / text answer",
+              "\$${expert?.rates?.text ?? 0} / text answer",
               style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
             ),
           ],
@@ -87,18 +84,24 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: ListView.separated(
-              padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return _ChatBubble(
-                  message: message,
-                  isDarkMode: isDarkMode,
-                );
-              },
-              separatorBuilder: (_, __) => YMargin(12),
-              itemCount: _messages.length,
-            ),
+            child: chatProvider.isMessagesLoading 
+              ? Center(child: CustomProgressIndicator()) 
+              : messages.isEmpty
+                ? _EmptyChatState(isDarkMode: isDarkMode)
+                : ListView.separated(
+                    padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
+                    itemBuilder: (context, index) {
+                      final message = messages[index];
+                      return _ChatBubble(
+                        message: message,
+                        isDarkMode: isDarkMode,
+                        expert: expert,
+                        isUser: message.senderId == widget.chat?.userId,
+                      );
+                    },
+                    separatorBuilder: (_, __) => YMargin(12),
+                    itemCount: messages.length,
+                  ),
           ),
           Container(
             padding: EdgeInsets.fromLTRB(
@@ -155,7 +158,34 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     XMargin(10),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        if(messages.isEmpty) {
+                          var chatDto = CreateChatDto(
+                            expertId: expert?.id ?? "",
+                            message: _messageController.text,
+                            type: _selectedType.name,
+                          );
+                          setState(() {
+                            _messageController.clear();
+                          });
+                          chatProvider.createChat(chatDto);
+                        } else {
+                          chatProvider.sendMessage(
+                            chatId: widget.chat?.id ?? "",
+                            content: _messageController.text,
+                            responseType: _selectedType.name,
+                            attachments: [],
+                            senderId: widget.chat?.userId ?? "",
+                            senderType: "user",
+                            receiverId: expert?.id ?? "",
+                          );
+
+                          setState(() {
+                            _messageController.clear();
+                          });
+                        }
+                        
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Palette.primary,
                         foregroundColor: Colors.white,
@@ -200,6 +230,94 @@ class _ChatScreenState extends State<ChatScreen> {
           YMargin(MediaQuery.of(context).viewInsets.bottom > 0 ? 0 : 6),
         ],
       ),
+    );
+  }
+}
+
+class _EmptyChatState extends StatelessWidget {
+  const _EmptyChatState({required this.isDarkMode});
+
+  final bool isDarkMode;
+
+  @override
+  Widget build(BuildContext context) {
+    final cardColor = isDarkMode ? Palette.darkFillColor : Palette.lightFillColor;
+    final borderColor = isDarkMode ? Palette.borderDark : Palette.borderLight;
+    final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
+
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: config.sw(24)),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(18)),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: borderColor),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircleAvatar(
+                radius: config.sw(26),
+                backgroundColor: Palette.primary.withOpacity(0.12),
+                child: const Icon(Icons.chat_bubble_outline, color: Palette.primary),
+              ),
+              YMargin(12),
+              Text(
+                "Start the conversation",
+                style: TextStyles.largeSemiBold.copyWith(
+                  color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+                ),
+              ),
+              YMargin(8),
+              Text(
+                "Write your message, choose how you want an answer, then tap Pay to send. Your expert will respond here.",
+                textAlign: TextAlign.center,
+                style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
+              ),
+              YMargin(12),
+              _StepRow(
+                label: "1. Write a message",
+                isDarkMode: isDarkMode,
+              ),
+              YMargin(8),
+              _StepRow(
+                label: "2. Pay securely",
+                isDarkMode: isDarkMode,
+              ),
+              YMargin(8),
+              _StepRow(
+                label: "3. Start chatting",
+                isDarkMode: isDarkMode,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StepRow extends StatelessWidget {
+  const _StepRow({required this.label, required this.isDarkMode});
+
+  final String label;
+  final bool isDarkMode;
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(Icons.check_circle, size: 16, color: Palette.primary),
+        XMargin(8),
+        Text(
+          label,
+          style: TextStyles.smallSemiBold.copyWith(color: textColor),
+        ),
+      ],
     );
   }
 }
@@ -277,31 +395,35 @@ class _AnswerTypeSelector extends StatelessWidget {
 class _ChatBubble extends StatelessWidget {
   const _ChatBubble({
     required this.message,
+    required this.isUser,
+    required this.expert,
     required this.isDarkMode,
   });
 
-  final _ChatMessage message;
+  final MessageModel message;
+  final bool isUser;
   final bool isDarkMode;
+  final ExpertProfileModel? expert;
 
   @override
   Widget build(BuildContext context) {
-    final bubbleColor = message.isUser
+    final bubbleColor = isUser
         ? Palette.primary
         : (isDarkMode ? Palette.darkFillColor : Palette.lightFillColor);
-    final textColor = message.isUser ? Colors.white : (isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight);
+    final textColor = isUser ? Colors.white : (isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight);
     final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        if (!message.isUser)
+        if (!isUser)
           CircleAvatar(
             radius: config.sw(16),
+            backgroundImage: expert?.user?.profilePicture != "" ? NetworkImage(expert?.user?.profilePicture ?? "") : null,
             backgroundColor: Palette.primary.withOpacity(0.2),
-            child: const Icon(Icons.person, size: 18, color: Palette.primary),
           ),
-        if (!message.isUser) XMargin(8),
+        if (!isUser) XMargin(8),
         Flexible(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: config.sw(14), vertical: config.sh(12)),
@@ -312,31 +434,31 @@ class _ChatBubble extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (!message.isUser)
+                if (!isUser)
                   Row(
                     children: [
                       Icon(
-                        _typeIcon(message.type),
+                        _typeIcon(message.responseType == "audio" ? AnswerType.audio : message.responseType == "video" ? AnswerType.video : AnswerType.text),
                         size: 14,
                         color: textColor,
                       ),
                       XMargin(6),
                       Text(
-                        _typeLabel(message.type),
+                        _typeLabel(message.responseType == "audio" ? AnswerType.audio : message.responseType == "video" ? AnswerType.video : AnswerType.text),
                         style: TextStyles.smallSemiBold.copyWith(color: textColor),
                       ),
                     ],
                   ),
-                if (!message.isUser) YMargin(6),
+                if (!isUser) YMargin(6),
                 Text(
-                  message.text,
+                  message.content ?? "",
                   style: TextStyles.mediumMedium.copyWith(color: textColor),
                 ),
                 YMargin(6),
                 Text(
-                  message.time,
+                  timeago.format(DateTime.parse(message.createdAt ?? "")),
                   style: TextStyles.xSmallRegular.copyWith(
-                    color: message.isUser ? Colors.white70 : secondaryTextColor,
+                    color: isUser ? Colors.white70 : secondaryTextColor,
                   ),
                 ),
               ],

@@ -1,4 +1,3 @@
-import 'package:earnwise_app/presentation/features/conversations/views/calls_view.dart';
 import 'package:earnwise_app/presentation/features/conversations/views/experts_call_view.dart';
 import 'package:earnwise_app/presentation/features/conversations/views/experts_chat_view.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';

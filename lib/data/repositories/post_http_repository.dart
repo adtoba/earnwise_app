@@ -7,7 +7,6 @@ import 'package:earnwise_app/domain/dto/create_post_dto.dart';
 import 'package:earnwise_app/domain/models/comment_model.dart';
 import 'package:earnwise_app/domain/models/post_model.dart';
 import 'package:earnwise_app/domain/repositories/post_repository.dart';
-import 'package:earnwise_app/main.dart';
 
 class PostHttpRepository extends ApiService implements PostRepository {
   @override

@@ -1,11 +1,16 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/chat_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/presentation/features/conversations/screens/chat_screen.dart';
 import 'package:earnwise_app/presentation/features/conversations/screens/expert_chat_screen.dart';
 import 'package:earnwise_app/presentation/features/conversations/widgets/conversation_item.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
+import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ExpertsChatsView extends StatelessWidget {
   const ExpertsChatsView({super.key});
@@ -48,49 +53,128 @@ class ExpertsChatsView extends StatelessWidget {
           Expanded(
             child: TabBarView(
               children: [
-                ListView.separated(
-                  padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(20)),
-                  itemBuilder: (c, i) {
-                    return ConversationItem(
-                      userImageUrl: "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80", 
-                      userName: i % 2 == 0 ? "Habib Adebisi" : "John Doe", 
-                      lastMessage: "My name is John Doe. I am a software engineer and I am looking for a job.", 
-                      time: "12:00 PM", 
-                      isVerified: true, 
-                      isRead: false,
-                      onTap: () {
-                        push(ExpertChatScreen());
-                      }
-                    );
-                  },
-                  separatorBuilder: (c, i) => YMargin(25),
-                  itemCount: 5,
-                  shrinkWrap: true,
-                ),
-                ListView.separated(
-                  padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(20)),
-                  itemBuilder: (c, i) {
-                    return ConversationItem(
-                      userImageUrl: "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80", 
-                      userName: i % 2 == 0 ? "Habib Adebisi" : "John Doe", 
-                      lastMessage: "My name is John Doe. I am a software engineer and I am looking for a job.", 
-                      time: "12:00 PM", 
-                      isVerified: true, 
-                      isRead: true,
-                      onTap: () {
-                        push(ExpertChatScreen());
-                      }
-                    );
-                  },
-                  separatorBuilder: (c, i) => YMargin(25),
-                  itemCount: 5,
-                  shrinkWrap: true,
-                )
+                PendingChatsView(),
+                CompletedChatsView(),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+class PendingChatsView extends ConsumerStatefulWidget {
+  const PendingChatsView({super.key});
+
+  @override
+  ConsumerState<PendingChatsView> createState() => _PendingChatsViewState();
+}
+
+class _PendingChatsViewState extends ConsumerState<PendingChatsView> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(chatNotifier).getExpertChats();
+    });
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    var chatProvider = ref.watch(chatNotifier);
+    var chats = chatProvider.expertChats;
+    var isLoading = chatProvider.isLoading;
+
+    if (isLoading && chats.isEmpty) {
+      return Center(
+        child: CustomProgressIndicator(),
+      );
+    } else if (chats.isEmpty) {
+      return Center(
+        child: Text("No conversations yet"),
+      );
+    } else {
+      return ListView.separated(
+        padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(20)),
+        itemBuilder: (c, i) {
+          var chat = chats[i];
+          return ExpertConversationItem(
+            userImageUrl: chat.user?.profilePicture ?? "", 
+            userName: "${chat.user?.firstName ?? ""} ${chat.user?.lastName ?? ""}", 
+            lastMessage: chat.lastMessage?.content ?? "", 
+            time: timeago.format(DateTime.parse(chat.createdAt ?? "")),
+            isLastMessageByExpert: chat.lastMessage?.senderId == chat.expertId,
+            isVerified: true, 
+            isRead: false,
+            onTap: () {
+              push(ExpertChatScreen(
+                chat: chat,
+              ));
+            }
+          );
+        },
+        separatorBuilder: (c, i) => YMargin(25),
+        itemCount: chats.length,
+        shrinkWrap: true,
+      );
+    }
+  }
+}
+
+
+class CompletedChatsView extends ConsumerStatefulWidget {
+  const CompletedChatsView({super.key});
+
+  @override
+  ConsumerState<CompletedChatsView> createState() => _CompletedChatsViewState();
+}
+
+class _CompletedChatsViewState extends ConsumerState<CompletedChatsView> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(chatNotifier).getExpertChats();
+    });
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    var chatProvider = ref.watch(chatNotifier);
+    var chats = chatProvider.expertChats;
+    var isLoading = chatProvider.isLoading;
+
+    if (isLoading && chats.isEmpty) {
+      return Center(
+        child: CustomProgressIndicator(),
+      );
+    } else if (chats.isEmpty) {
+      return Center(
+        child: Text("No conversations yet"),
+      );
+    } else {
+      return ListView.separated(
+        padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(20)),
+        itemBuilder: (c, i) {
+          var chat = chats[i];
+          return ExpertConversationItem(
+            userImageUrl: chat.user?.profilePicture ?? "", 
+            userName: "${chat.user?.firstName ?? ""} ${chat.user?.lastName ?? ""}", 
+            lastMessage: chat.lastMessage?.content ?? "", 
+            time: timeago.format(DateTime.parse(chat.createdAt ?? "")), 
+            isLastMessageByExpert: chat.lastMessage?.senderId == chat.expertId,
+            isVerified: true, 
+            isRead: false,
+            onTap: () {
+              push(ExpertChatScreen(
+                chat: chat,
+              ));
+            }
+          );
+        },
+        separatorBuilder: (c, i) => YMargin(25),
+        itemCount: chats.length,
+        shrinkWrap: true,
+      );
+    }
   }
 }

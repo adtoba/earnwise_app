@@ -1,33 +1,67 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/chat_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/conversations/screens/chat_screen.dart';
 import 'package:earnwise_app/presentation/features/conversations/widgets/conversation_item.dart';
+import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
-class ChatsView extends StatelessWidget {
+class ChatsView extends ConsumerStatefulWidget {
   const ChatsView({super.key});
 
   @override
+  ConsumerState<ChatsView> createState() => _ChatsViewState();
+}
+
+class _ChatsViewState extends ConsumerState<ChatsView> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(chatNotifier).getUserChats();
+    });
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(20)),
-      itemBuilder: (c, i) {
-        return ConversationItem(
-          userImageUrl: "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80", 
-          userName: i % 2 == 0 ? "Habib Adebisi" : "John Doe", 
-          lastMessage: "My name is John Doe. I am a software engineer and I am looking for a job.", 
-          time: "12:00 PM", 
-          isVerified: true, 
-          isRead: i % 2 == 0 ? false : true,
-          onTap: () {
-            push(ChatScreen());
-          }
-        );
-      },
-      separatorBuilder: (c, i) => YMargin(25),
-      itemCount: 5,
-      shrinkWrap: true,
-    );
+    var chatProvider = ref.watch(chatNotifier);
+    var chats = chatProvider.chats;
+    var isLoading = chatProvider.isLoading;
+
+    if (isLoading && chats.isEmpty) {
+      return Center(
+        child: CustomProgressIndicator(),
+      );
+    } else if (chats.isEmpty) {
+      return Center(
+        child: Text("No conversations yet"),
+      );
+    } else {
+      return ListView.separated(
+        padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(20)),
+        itemBuilder: (c, i) {
+          var chat = chats[i];
+          return ConversationItem(
+            userImageUrl: chat.expert?.user?.profilePicture ?? "", 
+            userName: "${chat.expert?.user?.firstName ?? ""} ${chat.expert?.user?.lastName ?? ""}", 
+            lastMessage: chat.lastMessage?.content ?? "", 
+            isLastMessageByUser: chat.lastMessage?.senderId == chat.userId,
+            time: timeago.format(DateTime.parse(chat.createdAt ?? "")), 
+            isVerified: true, 
+            isRead: false,
+            onTap: () {
+              push(ChatScreen(
+                chat: chat,
+              ));
+            }
+          );
+        },
+        separatorBuilder: (c, i) => YMargin(25),
+        itemCount: chats.length,
+        shrinkWrap: true,
+      );
+    }
   }
 }

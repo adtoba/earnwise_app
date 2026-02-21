@@ -1,17 +1,19 @@
+import 'package:earnwise_app/core/providers/chat_provider.dart';
 import 'package:earnwise_app/presentation/features/conversations/views/calls_view.dart';
 import 'package:earnwise_app/presentation/features/conversations/views/chats_view.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ConversationsScreen extends StatefulWidget {
+class ConversationsScreen extends ConsumerStatefulWidget {
   const ConversationsScreen({super.key});
 
   @override
-  State<ConversationsScreen> createState() => _ConversationsScreenState();
+  ConsumerState<ConversationsScreen> createState() => _ConversationsScreenState();
 }
 
-class _ConversationsScreenState extends State<ConversationsScreen> with TickerProviderStateMixin {
+class _ConversationsScreenState extends ConsumerState<ConversationsScreen> with TickerProviderStateMixin {
 
   TabController? _tabController;
 

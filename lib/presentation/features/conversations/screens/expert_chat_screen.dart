@@ -1,19 +1,28 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/chat_provider.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/domain/models/chat_model.dart';
+import 'package:earnwise_app/domain/models/expert_profile_model.dart';
+import 'package:earnwise_app/domain/models/message_model.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
+import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
-class ExpertChatScreen extends StatefulWidget {
-  const ExpertChatScreen({super.key});
+class ExpertChatScreen extends ConsumerStatefulWidget {
+  const ExpertChatScreen({super.key, this.chat});
+
+  final ChatModel? chat;  
 
   @override
-  State<ExpertChatScreen> createState() => _ExpertChatScreenState();
+  ConsumerState<ExpertChatScreen> createState() => _ExpertChatScreenState();
 }
 
 enum ExpertAnswerType { text, audio, video }
 
-class _ExpertChatScreenState extends State<ExpertChatScreen> {
+class _ExpertChatScreenState extends ConsumerState<ExpertChatScreen> {
   final _messageController = TextEditingController();
   ExpertAnswerType _selectedType = ExpertAnswerType.text;
   int? _activeReplyIndex;
@@ -48,6 +57,14 @@ class _ExpertChatScreenState extends State<ExpertChatScreen> {
   ];
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ref.read(chatNotifier).getChatMessages(widget.chat?.id ?? "");
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _messageController.dispose();
     super.dispose();
@@ -55,6 +72,10 @@ class _ExpertChatScreenState extends State<ExpertChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var chatProvider = ref.watch(chatNotifier);
+    var expert = widget.chat?.expert;
+    var messages = chatProvider.messages;
+    var user = widget.chat?.user;
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
@@ -68,11 +89,12 @@ class _ExpertChatScreenState extends State<ExpertChatScreen> {
       child: Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
+          centerTitle: true,
           title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Jose Martinez",
+                "${user?.firstName ?? ""} ${user?.lastName ?? ""}",
                 style: TextStyles.largeBold.copyWith(
                   color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                 ),
@@ -93,25 +115,29 @@ class _ExpertChatScreenState extends State<ExpertChatScreen> {
         body: Column(
           children: [
             Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
-                itemBuilder: (context, index) {
-                  final item = _items[index];
-                  return _ExpertConversationCard(
-                    item: item,
-                    isDarkMode: isDarkMode,
-                    isActive: _activeReplyIndex == index,
-                    onReply: () {
-                      setState(() {
-                        _selectedType = item.requestedType;
-                        _activeReplyIndex = index;
-                      });
+              child: chatProvider.isMessagesLoading 
+                ? Center(child: CustomProgressIndicator()) 
+                : ListView.separated(
+                    padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
+                    itemBuilder: (context, index) {
+                      final message = messages[index];
+                      return _ExpertConversationCard(
+                        message: message,
+                        isDarkMode: isDarkMode,
+                        user: user,
+                        isUser: message.senderId == widget.chat?.user?.id,
+                        isActive: _activeReplyIndex == index,
+                        onReply: () {
+                          setState(() {
+                            _selectedType = message.responseType == "audio" ? ExpertAnswerType.audio : message.responseType == "video" ? ExpertAnswerType.video : ExpertAnswerType.text;
+                            _activeReplyIndex = index;
+                          });
+                        },
+                      );
                     },
-                  );
-                },
-                separatorBuilder: (_, __) => YMargin(12),
-                itemCount: _items.length,
-              ),
+                    separatorBuilder: (_, __) => YMargin(12),
+                    itemCount: messages.length,
+                  ),
             ),
             if(_activeReplyIndex != null)...[
               Container(
@@ -203,7 +229,22 @@ class _ExpertChatScreenState extends State<ExpertChatScreen> {
         ),
         XMargin(10),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            if(_messageController.text.isNotEmpty) {
+              ref.read(chatNotifier).sendMessage(
+                chatId: widget.chat?.id ?? "",
+                receiverId: widget.chat?.user?.id ?? "",
+                content: _messageController.text,
+                responseType: _selectedType.name,
+                senderId: widget.chat?.expertId ?? "",
+                senderType: "expert",
+                attachments: [],
+              );
+              setState(() {
+                _messageController.clear();
+              });
+            }
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: Palette.primary,
             foregroundColor: Colors.white,
@@ -446,16 +487,20 @@ class _ExpertAnswerTypeSelector extends StatelessWidget {
 
 class _ExpertConversationCard extends StatelessWidget {
   const _ExpertConversationCard({
-    required this.item,
+    required this.message,
     required this.isDarkMode,
     required this.isActive,
     required this.onReply,
+    required this.isUser,
+    required this.user,
   });
 
-  final _ExpertConversationItem item;
+  final MessageModel message;
   final bool isDarkMode;
   final bool isActive;
-  final VoidCallback onReply;
+  final bool isUser;
+  final User? user;
+  final VoidCallback onReply; 
 
   @override
   Widget build(BuildContext context) {
@@ -469,89 +514,32 @@ class _ExpertConversationCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              radius: config.sw(16),
-              backgroundColor: Palette.primary.withOpacity(0.2),
-              child: const Icon(Icons.person, size: 18, color: Palette.primary),
-            ),
-            XMargin(8),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: config.sw(14), vertical: config.sh(12)),
-                decoration: BoxDecoration(
-                  color: questionBubbleColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: isActive ? Border.all(color: highlightBorderColor, width: 1.4) : null,
-                  boxShadow: isActive
-                      ? [
-                          BoxShadow(
-                            color: highlightBorderColor.withOpacity(0.25),
-                            blurRadius: 10,
-                            offset: const Offset(0, 6),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          _typeIcon(item.requestedType),
-                          size: 14,
-                          color: questionTextColor,
-                        ),
-                        XMargin(6),
-                        Text(
-                          "${_typeLabel(item.requestedType)} requested",
-                          style: TextStyles.smallSemiBold.copyWith(color: questionTextColor),
-                        ),
-                        Spacer(),
-                        TextButton(
-                          onPressed: onReply,
-                          style: TextButton.styleFrom(
-                            foregroundColor: Palette.primary,
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 0),
-                          ),
-                          child: Text(
-                            "Reply",
-                            style: TextStyles.smallSemiBold.copyWith(color: Palette.primary),
-                          ),
-                        ),
-                      ],
-                    ),
-                    YMargin(6),
-                    Text(
-                      item.question,
-                      style: TextStyles.mediumMedium.copyWith(color: questionTextColor),
-                    ),
-                    YMargin(6),
-                    Text(
-                      item.time,
-                      style: TextStyles.xSmallRegular.copyWith(color: secondaryTextColor),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        if (item.response != null) YMargin(10),
-        if (item.response != null)
+        if(isUser)...[
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(
+              CircleAvatar(
+                radius: config.sw(16),
+                backgroundColor: Palette.primary.withOpacity(0.2),
+                backgroundImage: user?.profilePicture != "" ? NetworkImage(user?.profilePicture ?? "") : null,
+              ),
+              XMargin(8),
+              Expanded(
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: config.sw(14), vertical: config.sh(12)),
                   decoration: BoxDecoration(
-                    color: responseBubbleColor,
+                    color: questionBubbleColor,
                     borderRadius: BorderRadius.circular(16),
+                    border: isActive ? Border.all(color: highlightBorderColor, width: 1.4) : null,
+                    boxShadow: isActive
+                        ? [
+                            BoxShadow(
+                              color: highlightBorderColor.withOpacity(0.25),
+                              blurRadius: 10,
+                              offset: const Offset(0, 6),
+                            ),
+                          ]
+                        : null,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -559,26 +547,39 @@ class _ExpertConversationCard extends StatelessWidget {
                       Row(
                         children: [
                           Icon(
-                            _typeIcon(item.response!.type),
+                            _typeIcon(message.responseType == "audio" ? ExpertAnswerType.audio : message.responseType == "video" ? ExpertAnswerType.video : ExpertAnswerType.text),
                             size: 14,
-                            color: responseTextColor,
+                            color: questionTextColor,
                           ),
                           XMargin(6),
                           Text(
-                            _typeLabel(item.response!.type),
-                            style: TextStyles.smallSemiBold.copyWith(color: responseTextColor),
+                            "${_typeLabel(message.responseType == "audio" ? ExpertAnswerType.audio : message.responseType == "video" ? ExpertAnswerType.video : ExpertAnswerType.text)} requested",
+                            style: TextStyles.smallSemiBold.copyWith(color: questionTextColor),
+                          ),
+                          Spacer(),
+                          TextButton(
+                            onPressed: onReply,
+                            style: TextButton.styleFrom(
+                              foregroundColor: Palette.primary,
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(0, 0),
+                            ),
+                            child: Text(
+                              "Reply",
+                              style: TextStyles.smallSemiBold.copyWith(color: Palette.primary),
+                            ),
                           ),
                         ],
                       ),
                       YMargin(6),
                       Text(
-                        item.response!.text,
-                        style: TextStyles.mediumRegular.copyWith(color: responseTextColor),
+                        message.content ?? "",
+                        style: TextStyles.mediumMedium.copyWith(color: questionTextColor),
                       ),
                       YMargin(6),
                       Text(
-                        item.response!.time,
-                        style: TextStyles.xSmallRegular.copyWith(color: Colors.white70),
+                        timeago.format(DateTime.parse(message.createdAt ?? "")),
+                        style: TextStyles.xSmallRegular.copyWith(color: secondaryTextColor),
                       ),
                     ],
                   ),
@@ -586,6 +587,52 @@ class _ExpertConversationCard extends StatelessWidget {
               ),
             ],
           ),
+        ] else ...[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: config.sw(14), vertical: config.sh(12)),
+                    decoration: BoxDecoration(
+                      color: responseBubbleColor,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              _typeIcon(message.responseType == "audio" ? ExpertAnswerType.audio : message.responseType == "video" ? ExpertAnswerType.video : ExpertAnswerType.text),
+                              size: 14,
+                              color: responseTextColor,
+                            ),
+                            XMargin(6),
+                            Text(
+                              _typeLabel(message.responseType == "audio" ? ExpertAnswerType.audio : message.responseType == "video" ? ExpertAnswerType.video : ExpertAnswerType.text),
+                              style: TextStyles.smallSemiBold.copyWith(color: responseTextColor),
+                            ),
+                          ],
+                        ),
+                        YMargin(6),
+                        Text(
+                          message.content ?? "",
+                          style: TextStyles.mediumRegular.copyWith(color: responseTextColor),
+                        ),
+                        YMargin(6),
+                        Text(
+                          timeago.format(DateTime.parse(message.createdAt ?? "")),
+                          style: TextStyles.xSmallRegular.copyWith(color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+        ],
+
       ],
     );
   }
