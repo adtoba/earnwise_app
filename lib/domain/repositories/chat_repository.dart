@@ -8,6 +8,17 @@ abstract class ChatRepository {
   Future<Either<List<ChatModel>, String>> getUserChats();
   Future<Either<List<ChatModel>, String>> getExpertChats();
   Future<Either<List<MessageModel>, String>> getChatMessages({required String chatId});
-  Future<Either<Response, String>> sendMessage({required String chatId, required String content, required String responseType, List<String>? attachments, required String receiverId, required String senderId});
+  Future<Either<Response, String>> sendMessage({
+    required String chatId, 
+    required String content, 
+    String? contentType,
+    required String responseType, 
+    List<String>? attachments, 
+    required String receiverId, 
+    required String senderId,
+    String? isResponseTo,
+    String? responseToId,
+  });
+  Future<Either<Response, String>> updateMessageContent({required String messageId, required String content});
   Future<Either<Response, String>> createChat({required CreateChatDto createChatDto});
 }

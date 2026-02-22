@@ -1,6 +1,7 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/providers/settings_provider.dart';
+import 'package:earnwise_app/core/providers/theme_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/core/utils/toast.dart';
@@ -34,6 +35,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = ref.watch(themeNotifier);
     var settingsProvider = ref.watch(settingsNotifier);
     var profile = ref.watch(profileNotifier).profile;
     var brightness = Theme.of(context).brightness;
@@ -141,6 +143,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             isDarkMode: isDarkMode,
           ),
           _SettingsTile(
+            title: "Dark Mode",
+            icon: Icons.dark_mode_outlined,
+            isDarkMode: isDarkMode,
+            trailing: Switch(
+              value: themeProvider.currentTheme == ThemeMode.dark, 
+              onChanged: (value) {
+                themeProvider.toggleTheme(isDarkMode: value);
+              },
+            ),
+          ),
+          _SettingsTile(
             title: "Notifications",
             icon: Icons.notifications_none_outlined,
             isDarkMode: isDarkMode,
@@ -213,6 +226,7 @@ class _SettingsTile extends StatelessWidget {
     this.showDivider = true,
     this.onTap,
     this.isVerification = false,
+    this.trailing,
   });
 
   final String title;
@@ -221,6 +235,8 @@ class _SettingsTile extends StatelessWidget {
   final bool showDivider;
   final VoidCallback? onTap;
   final bool isVerification;
+  final Widget? trailing;
+
   @override
   Widget build(BuildContext context) {
     final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
@@ -248,7 +264,7 @@ class _SettingsTile extends StatelessWidget {
               color: isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light,
             ),
           ) : null,
-          trailing: isVerification ? Container(
+          trailing: trailing ?? (isVerification ? Container(
             padding: EdgeInsets.symmetric(horizontal: config.sw(8), vertical: config.sh(4)),
             decoration: BoxDecoration(
               color: Colors.amber,
@@ -263,7 +279,7 @@ class _SettingsTile extends StatelessWidget {
           ) : Icon(
             Icons.chevron_right,
             color: secondaryTextColor,
-          ),
+          )),
           onTap: onTap,
         ),
         if (showDivider)

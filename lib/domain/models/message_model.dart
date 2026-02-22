@@ -3,12 +3,15 @@ class MessageModel {
   final String? chatId;
   final String? senderId;
   final String? receiverId;
+  final String? isResponseTo;
+  final String? responseToId;
   final String? content;
+  final String? contentType;
   final String? responseType;
   final List<String>? attachments;
   final String? createdAt;
 
-  MessageModel({this.id, this.chatId, this.senderId, this.receiverId, this.content, this.responseType, this.attachments, this.createdAt});
+  MessageModel({this.id, this.chatId, this.senderId, this.receiverId, this.isResponseTo, this.responseToId, this.content, this.contentType, this.responseType, this.attachments, this.createdAt});
   
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
@@ -16,7 +19,10 @@ class MessageModel {
       chatId: json['chat_id'],
       senderId: json['sender_id'],
       receiverId: json['receiver_id'],
+      isResponseTo: json['is_response_to'],
+      responseToId: json['response_to_id'],
       content: json['content'],
+      contentType: json['content_type'],
       responseType: json['response_type'],
       attachments: json['attachments'].cast<String>(),
       createdAt: json['created_at'],
@@ -29,7 +35,10 @@ class MessageModel {
       'chat_id': chatId,
       'sender_id': senderId,
       'receiver_id': receiverId,
+      'is_response_to': isResponseTo,
+      'response_to_id': responseToId,
       'content': content,
+      'content_type': contentType,
       'response_type': responseType,
       'attachments': attachments,
       'created_at': createdAt,

@@ -38,8 +38,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onTap: () => push(ProfileScreen()),
             child: CircleAvatar(
               radius: config.sw(18),
+              backgroundImage: NetworkImage(profile?.user?.profilePicture ?? ""),
               backgroundColor: Palette.primary.withOpacity(0.12),
-              child: Icon(Icons.person, color: Palette.primary, size: 18),
             ),
           ),
         ),
@@ -75,7 +75,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Icon(Icons.trending_up, size: 16, color: Palette.primary),
                 XMargin(6),
                 Text(
-                  "Trending",
+                  "Home",
                   style: TextStyles.xSmallMedium.copyWith(
                     color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                   ),

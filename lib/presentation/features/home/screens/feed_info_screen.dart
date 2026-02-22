@@ -229,7 +229,7 @@ class _FeedInfoScreenState extends ConsumerState<FeedInfoScreen> {
                     var comment = ref.watch(postNotifier).comments[i];
 
                     return CommentItem(
-                      userImageUrl: comment.user?.profilePicture != "" ? comment.user?.profilePicture ?? "" : "https://img.freepik.com/free-photo/portrait-confident-young-businessman-with-his-arms-crossed_23-2148176206.jpg?semt=ais_hybrid&w=740&q=80",
+                      userImageUrl: comment.user?.profilePicture ?? "",
                       userName: "${comment.user?.firstName ?? ""} ${comment.user?.lastName ?? ""}",
                       text: comment.comment ?? "",
                       time: timeago.format(DateTime.parse(comment.createdAt ?? "")),

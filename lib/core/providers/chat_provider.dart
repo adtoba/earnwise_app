@@ -1,6 +1,6 @@
 import 'package:earnwise_app/core/di/di.dart';
-import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/toast.dart';
+import 'package:earnwise_app/data/services/cloudinary_service.dart';
 import 'package:earnwise_app/domain/dto/create_chat_dto.dart';
 import 'package:earnwise_app/domain/models/chat_model.dart';
 import 'package:earnwise_app/domain/models/message_model.dart';
@@ -88,20 +88,21 @@ class ChatProvider extends ChangeNotifier {
 
     final result = await chatRepository.createChat(createChatDto: createChatDto);
     result.fold(
-      (success) {
+      (success) async {
         _isLoading = false;
         notifyListeners();
-        _messages.add(MessageModel(
-          id: success.data["id"],
-          chatId: success.data["id"],
-          senderId: ref.read(profileNotifier).profile?.user?.id ?? "",
-          receiverId: createChatDto.expertId,
-          content: createChatDto.message,
-          responseType: createChatDto.type,
-          attachments: [],
-          createdAt: DateTime.now().toIso8601String(),
-        ));
-        showSuccessToast("Chat created successfully");
+        // _messages.add(MessageModel(
+        //   id: success.data["id"],
+        //   chatId: success.data["id"],
+        //   senderId: ref.read(profileNotifier).profile?.user?.id ?? "",
+        //   receiverId: createChatDto.expertId,
+        //   content: createChatDto.message,
+        //   responseType: createChatDto.type,
+        //   attachments: [],
+        //   createdAt: DateTime.now().toIso8601String(),
+        // ));
+        await getChatMessages(success.data["data"]["id"]);
+        // showSuccessToast("Chat created successfully");
       },
       (failure) {
         _isLoading = false;
@@ -136,22 +137,34 @@ class ChatProvider extends ChangeNotifier {
   Future<void> sendMessage({
     required String chatId,
     required String content,
+    String? audioPath,
+    String? contentType,
     required String responseType,
     List<String>? attachments,
     required String receiverId,
     required String senderId,
+    String? isResponseTo,
+    String? responseToId,
     required String senderType,
   }) async {
     _isSendingMessage = true;
     notifyListeners();
 
+    if(audioPath != null && contentType == "audio") {
+      final audioUrl = await CloudinaryService.uploadAudio(audioPath: audioPath);
+      content = audioUrl ?? "";
+    }
+
     final result = await chatRepository.sendMessage(
       chatId: chatId, 
       content: content, 
+      contentType: contentType,
       responseType: responseType, 
       attachments: attachments, 
       senderId: senderId,
-      receiverId: receiverId
+      receiverId: receiverId,
+      isResponseTo: isResponseTo,
+      responseToId: responseToId,
     );
     result.fold(
       (success) {
@@ -165,7 +178,10 @@ class ChatProvider extends ChangeNotifier {
           senderId: senderId,
           receiverId: receiverId,
           content: content,
+          contentType: contentType,
           responseType: responseType,
+          isResponseTo: isResponseTo,
+          responseToId: responseToId,
           attachments: attachments,
           createdAt: DateTime.now().toIso8601String(),
         ));
@@ -179,7 +195,10 @@ class ChatProvider extends ChangeNotifier {
               senderId: senderId,
               receiverId: receiverId,
               content: content,
+              contentType: contentType,
               responseType: responseType,
+              isResponseTo: isResponseTo,
+              responseToId: responseToId,
               attachments: attachments,
             );
             _promoteChatToTop(_chats, chatIndex);
@@ -193,7 +212,10 @@ class ChatProvider extends ChangeNotifier {
               senderId: senderId,
               receiverId: receiverId,
               content: content,
+              contentType: contentType,
               responseType: responseType,
+              isResponseTo: isResponseTo,
+              responseToId: responseToId,
               attachments: attachments,
             );
             _promoteChatToTop(_expertChats, chatIndex);
@@ -214,6 +236,63 @@ class ChatProvider extends ChangeNotifier {
   void clearMessages() {
     _messages.clear();
     notifyListeners();
+  }
+
+  Future<void> updateMessageContent({
+    required String messageId,
+    required String content,
+  }) async {
+    final index = _messages.indexWhere((message) => message.id == messageId);
+    if (index == -1) return;
+    final existing = _messages[index];
+    _messages[index] = MessageModel(
+      id: existing.id,
+      chatId: existing.chatId,
+      senderId: existing.senderId,
+      receiverId: existing.receiverId,
+      isResponseTo: existing.isResponseTo,
+      responseToId: existing.responseToId,
+      content: content,
+      responseType: existing.responseType,
+      attachments: existing.attachments,
+      createdAt: existing.createdAt,
+    );
+
+    // Update chat last message
+    final chatIndex = _expertChats.indexWhere((chat) => chat.id == existing.chatId);
+    if (chatIndex != -1) {
+      if(_expertChats[chatIndex].lastMessage?.id == existing.id) {
+        _expertChats[chatIndex].lastMessage = MessageModel(
+          id: existing.id,
+          chatId: existing.chatId,
+          senderId: existing.senderId,
+          receiverId: existing.receiverId,
+          content: content,
+          responseType: existing.responseType,
+          isResponseTo: existing.isResponseTo,
+          responseToId: existing.responseToId,
+          attachments: existing.attachments,
+          createdAt: existing.createdAt,
+        );
+        _promoteChatToTop(_expertChats, chatIndex);
+      }
+      
+    }
+    notifyListeners();
+
+    final result = await chatRepository.updateMessageContent(
+      messageId: messageId, 
+      content: content
+    );
+    result.fold(
+      (success) {
+        showSuccessToast("Message updated successfully");
+      },
+      (failure) {
+        logger.e("Update message content failed: $failure");
+        showErrorToast("Unable to edit message");
+      }
+    );
   }
 
   void _promoteChatToTop(List<ChatModel> chats, int index) {

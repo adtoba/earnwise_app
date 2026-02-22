@@ -4,11 +4,12 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 
 class ConversationItem extends StatelessWidget {
-  const ConversationItem({super.key, required this.userImageUrl, required this.userName, required this.lastMessage, required this.time, required this.isVerified, required this.isRead, required this.onTap, this.isLastMessageByUser, this.isExpert});
+  const ConversationItem({super.key, required this.userImageUrl, required this.userName, required this.lastMessage, required this.lastMessageType, required this.time, required this.isVerified, required this.isRead, required this.onTap, this.isLastMessageByUser, this.isExpert});
 
   final String userImageUrl;
   final String userName;
   final String lastMessage;
+  final String lastMessageType;
   final String time;
   final bool isVerified;
   final VoidCallback onTap;
@@ -64,7 +65,7 @@ class ConversationItem extends StatelessWidget {
                   ),
                   YMargin(5),
                   Text(
-                    isLastMessageByUser == true ? "You: $lastMessage" : "Expert: $lastMessage",
+                    isLastMessageByUser == true ? "You: $lastMessage" : "Expert: ${lastMessageType == "audio" ? "Audio Message" : lastMessageType == "video" ? "Video Message" : lastMessage}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyles.mediumRegular.copyWith(
@@ -82,13 +83,14 @@ class ConversationItem extends StatelessWidget {
 }
 
 class ExpertConversationItem extends StatelessWidget {
-  const ExpertConversationItem({super.key, required this.userImageUrl, required this.userName, required this.lastMessage, required this.time, required this.isVerified, required this.isRead, required this.onTap, this.isLastMessageByExpert});
+  const ExpertConversationItem({super.key, required this.userImageUrl, required this.userName, required this.lastMessage, required this.lastMessageType, required this.time, required this.isVerified, required this.isRead, required this.onTap, this.isLastMessageByExpert});
 
   final String userImageUrl;
   final String userName;
   final String lastMessage;
   final String time;
   final bool isVerified;
+  final String lastMessageType;
   final VoidCallback onTap;
   final bool? isLastMessageByExpert;
   final bool isRead;
@@ -141,7 +143,7 @@ class ExpertConversationItem extends StatelessWidget {
                   ),
                   YMargin(5),
                   Text(
-                    isLastMessageByExpert == true ? "You: $lastMessage" : lastMessage,
+                    isLastMessageByExpert == true ? "You: ${lastMessageType == "audio" ? "Audio Message" : lastMessageType == "video" ? "Video Message" : lastMessage}" : lastMessage,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyles.mediumRegular.copyWith(

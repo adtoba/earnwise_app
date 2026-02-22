@@ -73,7 +73,17 @@ class ChatHttpRepository extends ApiService implements ChatRepository {
   }
 
   @override
-  Future<Either<Response, String>> sendMessage({required String chatId, required String content, required String responseType, List<String>? attachments, required String receiverId, required String senderId}) async {
+  Future<Either<Response, String>> sendMessage({
+    required String chatId, 
+    required String content, 
+    String? contentType,
+    required String responseType, 
+    List<String>? attachments, 
+    required String receiverId, 
+    required String senderId,
+    String? isResponseTo,
+    String? responseToId,
+  }) async {
     try {
       final response = await http.post("/chats/$chatId/messages", data: {
         "content": content,
@@ -81,6 +91,24 @@ class ChatHttpRepository extends ApiService implements ChatRepository {
         "attachments": attachments,
         "receiver_id": receiverId,
         "sender_id": senderId,
+        "is_response_to": isResponseTo,
+        "response_to_id": responseToId,
+        "content_type": contentType,
+      });
+      return left(response);
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<Response, String>> updateMessageContent({required String messageId, required String content}) async {
+    try {
+      final response = await http.put("/chats/messages/$messageId", data: {
+        "content": content,
       });
       return left(response);
     } on DioException catch (e) {

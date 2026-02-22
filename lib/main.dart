@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:earnwise_app/core/constants/pref_keys.dart';
 import 'package:earnwise_app/core/di/di.dart';
 import 'package:earnwise_app/core/providers/profile_provider.dart';
+import 'package:earnwise_app/core/providers/theme_provider.dart';
 import 'package:earnwise_app/core/utils/size_config.dart';
 import 'package:earnwise_app/data/services/local_storage_service.dart';
 import 'package:earnwise_app/domain/models/user_profile_model.dart';
@@ -49,6 +50,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      ref.read(themeNotifier).initTheme();
       var profile = await LocalStorageService.get(PrefKeys.profile);
       if(profile != null) {
         var profileModel = UserProfileModel.fromJson(jsonDecode(profile));
@@ -58,6 +60,8 @@ class _MyAppState extends ConsumerState<MyApp> {
   }
   @override
   Widget build(BuildContext context) {
+    final themeProvider = ref.watch(themeNotifier);
+
     return Builder(
       builder: (context) {
         SizeConfig.init(context);
@@ -67,7 +71,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           title: 'EarnWise',
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
-          themeMode: ThemeMode.dark,
+          themeMode: themeProvider.currentTheme,
           builder: (context, child) {
             return StyledToast(child: child ?? const SizedBox.shrink());
           },

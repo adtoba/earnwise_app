@@ -10,6 +10,7 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatScreen extends ConsumerStatefulWidget {
@@ -48,6 +49,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     var chatProvider = ref.watch(chatNotifier);
     var expert = widget.chat?.expert;
     var messages = chatProvider.messages;
+    final isWaitingForExpertReply = messages.isNotEmpty &&
+        messages.last.senderId == widget.chat?.userId;
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
@@ -55,180 +58,188 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final cardColor = isDarkMode ? Palette.darkFillColor : Palette.lightFillColor;
     final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
 
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "${expert?.user?.firstName ?? ""} ${expert?.user?.lastName ?? ""}",
-              style: TextStyles.largeBold.copyWith(
-                color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+    return SafeArea(
+      bottom: true,
+      top: false,
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "${expert?.user?.firstName ?? ""} ${expert?.user?.lastName ?? ""}",
+                style: TextStyles.largeBold.copyWith(
+                  color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+                ),
               ),
-            ),
-            Text(
-              "\$${expert?.rates?.text ?? 0} / text answer",
-              style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
+              Text(
+                "\$${expert?.rates?.text ?? 0} / text answer",
+                style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.more_vert),
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.more_vert),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: chatProvider.isMessagesLoading 
-              ? Center(child: CustomProgressIndicator()) 
-              : messages.isEmpty
-                ? _EmptyChatState(isDarkMode: isDarkMode)
-                : ListView.separated(
-                    padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
-                    itemBuilder: (context, index) {
-                      final message = messages[index];
-                      return _ChatBubble(
-                        message: message,
-                        isDarkMode: isDarkMode,
-                        expert: expert,
-                        isUser: message.senderId == widget.chat?.userId,
-                      );
-                    },
-                    separatorBuilder: (_, __) => YMargin(12),
-                    itemCount: messages.length,
-                  ),
-          ),
-          Container(
-            padding: EdgeInsets.fromLTRB(
-              config.sw(16),
-              config.sh(12),
-              config.sw(16),
-              config.sh(8),
+        body: Column(
+          children: [
+            Expanded(
+              child: chatProvider.isMessagesLoading 
+                ? Center(child: CustomProgressIndicator()) 
+                : messages.isEmpty
+                  ? _EmptyChatState(isDarkMode: isDarkMode)
+                  : ListView.separated(
+                      padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        return _ChatBubble(
+                          message: message,
+                          isDarkMode: isDarkMode,
+                          expert: expert,
+                          isUser: message.senderId == widget.chat?.userId,
+                        );
+                      },
+                      separatorBuilder: (_, __) => YMargin(12),
+                      itemCount: messages.length,
+                    ),
             ),
-            decoration: BoxDecoration(
-              color: cardColor,
-              border: Border(
-                top: BorderSide(
-                  color: isDarkMode ? Palette.borderDark : Palette.borderLight,
+            Container(
+              padding: EdgeInsets.fromLTRB(
+                config.sw(16),
+                config.sh(12),
+                config.sw(16),
+                config.sh(8),
+              ),
+              decoration: BoxDecoration(
+                color: cardColor,
+                border: Border(
+                  top: BorderSide(
+                    color: isDarkMode ? Palette.borderDark : Palette.borderLight,
+                  ),
                 ),
               ),
-            ),
-            child: Column(
-              children: [
-                _AnswerTypeSelector(
-                  selectedType: _selectedType,
-                  isDarkMode: isDarkMode,
-                  onChanged: (type) {
-                    setState(() {
-                      _selectedType = type;
-                    });
-                  },
-                ),
-                YMargin(10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _messageController,
-                        minLines: 1,
-                        maxLines: 4,
-                        style: TextStyles.mediumRegular.copyWith(
-                          color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+              child: Column(
+                children: [
+                  _AnswerTypeSelector(
+                    selectedType: _selectedType,
+                    isDarkMode: isDarkMode,
+                    onChanged: (type) {
+                      setState(() {
+                        _selectedType = type;
+                      });
+                    },
+                  ),
+                  YMargin(10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _messageController,
+                          minLines: 1,
+                          maxLines: 4,
+                          enabled: !isWaitingForExpertReply,
+                          style: TextStyles.mediumRegular.copyWith(
+                            color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: "Type your question...",
+                            hintStyle: TextStyles.mediumRegular.copyWith(color: secondaryTextColor),
+                            filled: true,
+                            fillColor: isDarkMode ? Palette.surfaceButtonDark : Palette.surfaceButtonLight,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: config.sw(14),
+                              vertical: config.sh(12),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
                         ),
-                        decoration: InputDecoration(
-                          hintText: "Type your question...",
-                          hintStyle: TextStyles.mediumRegular.copyWith(color: secondaryTextColor),
-                          filled: true,
-                          fillColor: isDarkMode ? Palette.surfaceButtonDark : Palette.surfaceButtonLight,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: config.sw(14),
+                      ),
+                      XMargin(10),
+                      ElevatedButton(
+                        onPressed: isWaitingForExpertReply ? null : () {
+                          if(messages.isEmpty) {
+                            var chatDto = CreateChatDto(
+                              expertId: expert?.id ?? "",
+                              message: _messageController.text,
+                              type: _selectedType.name,
+                            );
+                            setState(() {
+                              _messageController.clear();
+                            });
+                            chatProvider.createChat(chatDto);
+                          } else {
+                            chatProvider.sendMessage(
+                              chatId: widget.chat?.id ?? "",
+                              content: _messageController.text,
+                              responseType: _selectedType.name,
+                              contentType: "text",
+                              attachments: [],
+                              senderId: widget.chat?.userId ?? "",
+                              senderType: "user",
+                              receiverId: expert?.id ?? "",
+                            );
+      
+                            setState(() {
+                              _messageController.clear();
+                            });
+                          }
+                          
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Palette.primary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: config.sw(16),
                             vertical: config.sh(12),
                           ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide.none,
-                          ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.send, size: 18),
+                            YMargin(2),
+                            Text(
+                              "Pay",
+                              style: TextStyles.smallSemiBold.copyWith(color: Colors.white),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    XMargin(10),
-                    ElevatedButton(
-                      onPressed: () {
-                        if(messages.isEmpty) {
-                          var chatDto = CreateChatDto(
-                            expertId: expert?.id ?? "",
-                            message: _messageController.text,
-                            type: _selectedType.name,
-                          );
-                          setState(() {
-                            _messageController.clear();
-                          });
-                          chatProvider.createChat(chatDto);
-                        } else {
-                          chatProvider.sendMessage(
-                            chatId: widget.chat?.id ?? "",
-                            content: _messageController.text,
-                            responseType: _selectedType.name,
-                            attachments: [],
-                            senderId: widget.chat?.userId ?? "",
-                            senderType: "user",
-                            receiverId: expert?.id ?? "",
-                          );
-
-                          setState(() {
-                            _messageController.clear();
-                          });
-                        }
-                        
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Palette.primary,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: config.sw(16),
-                          vertical: config.sh(12),
+                    ],
+                  ),
+                  YMargin(8),
+                  Row(
+                    children: [
+                      XMargin(10),
+                      Icon(Icons.lock_outline, size: 14, color: secondaryTextColor),
+                      XMargin(6),
+                      Expanded(
+                        child: Text(
+                          isWaitingForExpertReply
+                              ? "Waiting for the expert’s reply before you can send another message."
+                              : "You will be charged \$30 when you send this request.",
+                          style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
                         ),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.send, size: 18),
-                          YMargin(2),
-                          Text(
-                            "Pay",
-                            style: TextStyles.smallSemiBold.copyWith(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                YMargin(8),
-                Row(
-                  children: [
-                    XMargin(10),
-                    Icon(Icons.lock_outline, size: 14, color: secondaryTextColor),
-                    XMargin(6),
-                    Expanded(
-                      child: Text(
-                        "You will be charged \$30 when you send this request.",
-                        style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
-                      ),
-                    ),
-                  ],
-                ),
-                YMargin(10),
-              ],
+                    ],
+                  ),
+                  YMargin(10),
+                ],
+              ),
             ),
-          ),
-          YMargin(MediaQuery.of(context).viewInsets.bottom > 0 ? 0 : 6),
-        ],
+            YMargin(MediaQuery.of(context).viewInsets.bottom > 0 ? 0 : 6),
+          ],
+        ),
       ),
     );
   }
@@ -392,7 +403,7 @@ class _AnswerTypeSelector extends StatelessWidget {
   }
 }
 
-class _ChatBubble extends StatelessWidget {
+class _ChatBubble extends StatefulWidget {
   const _ChatBubble({
     required this.message,
     required this.isUser,
@@ -406,24 +417,98 @@ class _ChatBubble extends StatelessWidget {
   final ExpertProfileModel? expert;
 
   @override
+  State<_ChatBubble> createState() => _ChatBubbleState();
+}
+
+class _ChatBubbleState extends State<_ChatBubble> {
+
+  final player = AudioPlayer();
+  Duration _total = Duration.zero;
+  Duration _position = Duration.zero;
+
+  bool _isPlaying = false;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _bindPlayerStreams();
+  }
+
+  void _bindPlayerStreams() {
+    // Duration updates
+    player.durationStream.listen((d) {
+      if (!mounted) return;
+      setState(() => _total = d ?? Duration.zero);
+    });
+    // Position updates
+    player.positionStream.listen((p) {
+      if (!mounted) return;
+      setState(() => _position = p);
+    });
+    // Completion / buffering / playing
+    player.playerStateStream.listen((state) {
+      if (!mounted) return;
+      final playing = state.playing;
+      final processing = state.processingState;
+      setState(() {
+        _isPlaying = playing && processing != ProcessingState.completed;
+        _isLoading = processing == ProcessingState.loading || processing == ProcessingState.buffering;
+      });
+      if (processing == ProcessingState.completed) {
+        // Reset to start on completion
+        player.pause();
+        player.seek(Duration.zero);
+        setState(() {
+          _position = Duration.zero;
+          _isPlaying = false;
+        });
+      }
+    });
+  }
+
+  Future<void> _toggle() async {
+    if (_isPlaying) {
+      await player.pause();
+      return;
+    }
+    if (player.processingState == ProcessingState.idle) {
+      setState(() => _isLoading = true);
+      // if(widget.message.contentType == "audio") {
+      //   await player.setAudioSource(AudioSource.file(widget.message.content ?? ""));
+      // } else {
+        await player.setAudioSource(LockCachingAudioSource(Uri.parse(widget.message.content ?? "")));
+      // }
+      await player.setLoopMode(LoopMode.off);
+    }
+    await player.play();
+  }
+
+  String _fmt(Duration d) {
+    final mm = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final ss = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return "$mm:$ss";
+  }
+  
+  @override
   Widget build(BuildContext context) {
-    final bubbleColor = isUser
+    final bubbleColor = widget.isUser
         ? Palette.primary
-        : (isDarkMode ? Palette.darkFillColor : Palette.lightFillColor);
-    final textColor = isUser ? Colors.white : (isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight);
-    final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
+        : (widget.isDarkMode ? Palette.darkFillColor : Palette.lightFillColor);
+    final textColor = widget.isUser ? Colors.white : (widget.isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight);
+    final secondaryTextColor = widget.isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: widget.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        if (!isUser)
+        if (!widget.isUser)
           CircleAvatar(
             radius: config.sw(16),
-            backgroundImage: expert?.user?.profilePicture != "" ? NetworkImage(expert?.user?.profilePicture ?? "") : null,
+            backgroundImage: widget.expert?.user?.profilePicture != "" ? NetworkImage(widget.expert?.user?.profilePicture ?? "") : null,
             backgroundColor: Palette.primary.withOpacity(0.2),
           ),
-        if (!isUser) XMargin(8),
+        if (!widget.isUser) XMargin(8),
         Flexible(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: config.sw(14), vertical: config.sh(12)),
@@ -434,31 +519,82 @@ class _ChatBubble extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (!isUser)
+                if (!widget.isUser)
                   Row(
                     children: [
                       Icon(
-                        _typeIcon(message.responseType == "audio" ? AnswerType.audio : message.responseType == "video" ? AnswerType.video : AnswerType.text),
+                        _typeIcon(widget.message.responseType == "audio" ? AnswerType.audio : widget.message.responseType == "video" ? AnswerType.video : AnswerType.text),
                         size: 14,
                         color: textColor,
                       ),
                       XMargin(6),
                       Text(
-                        _typeLabel(message.responseType == "audio" ? AnswerType.audio : message.responseType == "video" ? AnswerType.video : AnswerType.text),
+                        _typeLabel(widget.message.responseType == "audio" ? AnswerType.audio : widget.message.responseType == "video" ? AnswerType.video : AnswerType.text),
                         style: TextStyles.smallSemiBold.copyWith(color: textColor),
                       ),
                     ],
                   ),
-                if (!isUser) YMargin(6),
-                Text(
-                  message.content ?? "",
-                  style: TextStyles.mediumMedium.copyWith(color: textColor),
-                ),
+                if (!widget.isUser) YMargin(6),
+                if(widget.message.contentType == "audio") ...[
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          _isPlaying ? Icons.pause : Icons.play_arrow,
+                          color: textColor,
+                        ),
+                        onPressed: () {
+                          _toggle();
+                        },
+                      ),
+                      Expanded(
+                        child: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            trackHeight: 2,
+                            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                            overlayShape: SliderComponentShape.noOverlay,
+                            inactiveTrackColor: textColor.withOpacity(0.2),
+                            activeTrackColor: textColor,
+                            thumbColor: textColor,
+                          ),
+                          child: Slider(
+                            min: 0,
+                            max: _total.inMilliseconds.toDouble().clamp(0, double.infinity),
+                            value: _position.inMilliseconds.clamp(0, _total.inMilliseconds).toDouble(),
+                            onChanged: (v) {
+                              final target = Duration(milliseconds: v.toInt());
+                              player.seek(target);
+                            },
+                          ),
+                        ),
+                      ),
+                      XMargin(6),
+                      Text(
+                        _isPlaying ? "${_fmt(_position)} / ${_fmt(_total)}" : "00:00",
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: config.sp(11),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  )
+                ] else if(widget.message.contentType == "text")...[
+                  Text(
+                    widget.message.content ?? "",
+                    style: TextStyles.mediumMedium.copyWith(color: textColor),
+                  ),
+                ] else ...[
+                  Text(
+                    widget.message.content ?? "",
+                    style: TextStyles.mediumMedium.copyWith(color: textColor),
+                  ),
+                ],
                 YMargin(6),
                 Text(
-                  timeago.format(DateTime.parse(message.createdAt ?? "")),
+                  timeago.format(DateTime.parse(widget.message.createdAt ?? "")),
                   style: TextStyles.xSmallRegular.copyWith(
-                    color: isUser ? Colors.white70 : secondaryTextColor,
+                    color: widget.isUser ? Colors.white70 : secondaryTextColor,
                   ),
                 ),
               ],
@@ -490,18 +626,4 @@ class _ChatBubble extends StatelessWidget {
         return "Text reply";
     }
   }
-}
-
-class _ChatMessage {
-  const _ChatMessage({
-    required this.isUser,
-    required this.type,
-    required this.text,
-    required this.time,
-  });
-
-  final bool isUser;
-  final AnswerType type;
-  final String text;
-  final String time;
 }

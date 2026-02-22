@@ -47,6 +47,7 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
             userImageUrl: chat.expert?.user?.profilePicture ?? "", 
             userName: "${chat.expert?.user?.firstName ?? ""} ${chat.expert?.user?.lastName ?? ""}", 
             lastMessage: chat.lastMessage?.content ?? "", 
+            lastMessageType: chat.lastMessage?.contentType ?? "",
             isLastMessageByUser: chat.lastMessage?.senderId == chat.userId,
             time: timeago.format(DateTime.parse(chat.createdAt ?? "")), 
             isVerified: true, 
