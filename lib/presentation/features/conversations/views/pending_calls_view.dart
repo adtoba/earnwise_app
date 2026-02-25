@@ -7,7 +7,6 @@ import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
 
 class PendingCallsView extends ConsumerStatefulWidget {
   const PendingCallsView({super.key, this.isExpertView = false});
@@ -126,7 +125,7 @@ class _PendingCallsViewState extends ConsumerState<PendingCallsView> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          widget.isExpertView ?? false ? "Approval Required" : "Pending",
+                          widget.isExpertView ?? false ? "Pending" : "Pending",
                           style: TextStyles.smallSemiBold.copyWith(color: chipTextColor),
                         ),
                       ),
@@ -163,7 +162,7 @@ class _PendingCallsViewState extends ConsumerState<PendingCallsView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Description:",
+                        "Note:",
                         style: TextStyles.smallSemiBold.copyWith(
                           color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                         ),

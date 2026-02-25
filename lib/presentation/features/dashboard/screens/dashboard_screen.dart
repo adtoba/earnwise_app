@@ -5,6 +5,7 @@ import 'package:earnwise_app/presentation/features/settings/screens/settings_scr
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -27,6 +28,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _currentIndex = index;
     });
     _pageController.jumpToPage(index);
+  }
+  
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      OneSignal.Notifications.requestPermission(true);
+    });
+    super.initState();
   }
 
   @override

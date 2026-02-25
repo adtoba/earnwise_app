@@ -33,6 +33,9 @@ class CallProvider extends ChangeNotifier {
   List<CallModel> _expertCallHistory = [];
   List<CallModel> get expertCallHistory => _expertCallHistory;
 
+  List<CallModel> _pendingExpertCallHistory = [];
+  List<CallModel> get pendingExpertCallHistory => _pendingExpertCallHistory;
+
   Future<void> bookCall({
     required String expertId, 
     required String scheduledDate, 
@@ -102,6 +105,9 @@ class CallProvider extends ChangeNotifier {
       (success) {
         _isLoadingExpertCallHistory = false;
         _expertCallHistory = success;
+        if(status == "pending") {
+          _pendingExpertCallHistory = success;
+        }
         notifyListeners();
       },
       (failure) {

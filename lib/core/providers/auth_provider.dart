@@ -15,6 +15,7 @@ import 'package:earnwise_app/presentation/features/dashboard/screens/dashboard_s
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 final authNotifier = ChangeNotifierProvider((ref) => AuthProvider(ref));
 
@@ -104,6 +105,8 @@ class AuthProvider extends ChangeNotifier {
     await LocalStorageService.put(PrefKeys.refreshToken, loginResponse.data['data']['refresh_token']);
     await LocalStorageService.put(PrefKeys.userId, loginResponse.data['data']['user']['id']);
     await LocalStorageService.put(PrefKeys.profile, jsonEncode(UserProfileModel.fromJson(loginResponse.data['data']).toJson()));
+
+    OneSignal.login(loginResponse.data['data']['user']['id']);
 
     var profileModel = UserProfileModel.fromJson(loginResponse.data['data']);
     ref.read(profileNotifier).storeProfile(profileModel);

@@ -167,7 +167,7 @@ class _UpcomingCallsViewState extends ConsumerState<UpcomingCallsView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Description:",
+                      "Note:",
                       style: TextStyles.smallSemiBold.copyWith(
                         color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                       ),

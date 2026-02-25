@@ -1,8 +1,11 @@
+import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/providers/call_provider.dart';
 import 'package:earnwise_app/core/providers/expert_provider.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/home/views/expert_home_analytics_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/expert_home_wallet_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/expert_scheduled_calls.dart';
+import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +25,7 @@ class _ExpertHomeScreenState extends ConsumerState<ExpertHomeScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(expertNotifier).getExpertDashboard();
+      ref.read(callNotifier).getExpertCallHistory(status: "pending");
     });
     super.initState();
   }
@@ -29,8 +33,12 @@ class _ExpertHomeScreenState extends ConsumerState<ExpertHomeScreen> {
   Widget build(BuildContext context) {
     var expertDashboard = ref.watch(expertNotifier).expertDashboard;
     var isExpertDashboardLoading = ref.watch(expertNotifier).isExpertDashboardLoading;
+    var pendingCalls = ref.watch(callNotifier).pendingExpertCallHistory;
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
+    final pendingCount = pendingCalls.length;
+    final pendingBg = isDarkMode ? const Color(0x33F59E0B) : const Color(0x1AF59E0B);
+    final pendingText = isDarkMode ? const Color(0xFFFBBF24) : const Color(0xFFD97706);
 
     return Scaffold(
       appBar: AppBar(
@@ -63,6 +71,34 @@ class _ExpertHomeScreenState extends ConsumerState<ExpertHomeScreen> {
                 ),
               )
             ] else ...[
+              if (pendingCount > 0) ...[
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: config.sw(14), vertical: config.sh(12)),
+                    decoration: BoxDecoration(
+                      color: pendingBg,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isDarkMode ? Palette.borderDark : Palette.borderLight,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.warning_amber_rounded, color: pendingText, size: 20),
+                        XMargin(10),
+                        Expanded(
+                          child: Text(
+                            "You have $pendingCount pending call${pendingCount == 1 ? "" : "s"} to accept.",
+                            style: TextStyles.smallSemiBold.copyWith(color: pendingText),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                YMargin(16),
+              ],
               ExpertHomeWalletView(
                 wallet: expertDashboard?.wallet,
               ),

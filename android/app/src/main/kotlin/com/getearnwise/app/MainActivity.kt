@@ -1,4 +1,4 @@
-package com.example.earnwise_app
+package com.getearnwise.app
 
 import io.flutter.embedding.android.FlutterActivity
 
