@@ -9,6 +9,7 @@ import 'package:earnwise_app/domain/dto/update_expert_rate_dto.dart';
 import 'package:earnwise_app/domain/dto/update_expert_socials_dto.dart';
 import 'package:earnwise_app/domain/models/expert_dashboard_model.dart';
 import 'package:earnwise_app/domain/models/expert_profile_model.dart';
+import 'package:earnwise_app/domain/models/slot_model.dart';
 import 'package:earnwise_app/domain/repositories/expert_repository.dart';
 import 'package:earnwise_app/main.dart';
 import 'package:flutter/material.dart';
@@ -41,17 +42,26 @@ class ExpertProvider extends ChangeNotifier {
   bool _isCurrentExpertProfileLoading = false;
   bool get isCurrentExpertProfileLoading => _isCurrentExpertProfileLoading;
 
+  bool _isAvailableSlotsLoading = false;
+  bool get isAvailableSlotsLoading => _isAvailableSlotsLoading;
+
   List<ExpertProfileModel> _recommendedExperts = [];
   List<ExpertProfileModel> get recommendedExperts => _recommendedExperts;
 
   List<ExpertProfileModel> _savedExperts = [];
   List<ExpertProfileModel> get savedExperts => _savedExperts;
 
+  List<ExpertProfileModel> _searchedExperts = [];
+  List<ExpertProfileModel> get searchedExperts => _searchedExperts;
+
   ExpertProfileModel? _expertProfile;
   ExpertProfileModel? get expertProfile => _expertProfile;
 
   ExpertDashboardModel? _expertDashboard;
   ExpertDashboardModel? get expertDashboard => _expertDashboard;
+
+  List<SlotModel> _availableSlots = [];
+  List<SlotModel> get availableSlots => _availableSlots;
 
   CreateExpertProfileDto? createExpertProfileDto;
 
@@ -63,6 +73,11 @@ class ExpertProvider extends ChangeNotifier {
 
   void setCurrentSavedExpertSaved(bool value) {
     _isCurrentSavedExpertSaved = value;
+    notifyListeners();
+  }
+
+  void setSearchedExperts(List<ExpertProfileModel> value) {
+    _searchedExperts = value;
     notifyListeners();
   }
 
@@ -302,6 +317,49 @@ class ExpertProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         logger.e("Update expert profile failed: $failure");
+        showErrorToast(failure);
+      }
+    );
+  }
+
+  Future<void> searchExperts(String searchQuery) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.searchExperts(searchQuery: searchQuery);
+    result.fold(
+      (success) {
+        _isLoading = false;
+        _searchedExperts = success;
+        notifyListeners();
+      },
+      (failure) {
+        _isLoading = false;
+        _searchedExperts = [];
+        notifyListeners();
+        logger.e("Search experts failed: $failure");
+        showErrorToast(failure);
+      }
+    );
+  }
+
+  Future<void> getExpertAvailableSlots({required String expertId, required String? date, required int duration}) async {
+    _availableSlots = [];
+    _isAvailableSlotsLoading = true;
+    notifyListeners();
+
+    final result = await expertRepository.getExpertAvailableSlots(expertId: expertId, date: date, duration: duration);
+    result.fold(
+      (success) {
+        _isAvailableSlotsLoading = false;
+        _availableSlots = success;
+        notifyListeners();
+      },
+      (failure) {
+        _isAvailableSlotsLoading = false;
+        _availableSlots = [];
+        notifyListeners();
+        logger.e("Get expert available slots failed: $failure");
         showErrorToast(failure);
       }
     );

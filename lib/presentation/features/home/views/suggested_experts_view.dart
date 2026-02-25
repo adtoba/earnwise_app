@@ -50,6 +50,8 @@ class _SuggestedExpertsViewState extends ConsumerState<SuggestedExpertsView> {
     bool isDarkMode = brightness == Brightness.dark;
     
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: config.sw(16)),

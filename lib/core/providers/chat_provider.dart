@@ -7,6 +7,7 @@ import 'package:earnwise_app/domain/models/message_model.dart';
 import 'package:earnwise_app/domain/repositories/chat_repository.dart';
 import 'package:earnwise_app/main.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
@@ -41,6 +42,16 @@ class ChatProvider extends ChangeNotifier {
 
   bool _isExpertChatsLoading = false;
   bool get isExpertChatsLoading => _isExpertChatsLoading;
+
+  final ScrollController _scrollController = ScrollController();
+  ScrollController get scrollController => _scrollController;
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (!_scrollController.hasClients) return;
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    });
+  }
 
   Future<void> getUserChats() async {
     _isLoading = true;
@@ -124,6 +135,8 @@ class ChatProvider extends ChangeNotifier {
         _messages = success;
         _isMessagesLoading = false;
         notifyListeners();
+
+        _scrollToBottom();
       },
       (failure) {
         _isMessagesLoading = false;
@@ -186,6 +199,8 @@ class ChatProvider extends ChangeNotifier {
           createdAt: DateTime.now().toIso8601String(),
         ));
 
+        _scrollToBottom();
+
         if(senderType == "user") {
           final chatIndex = _chats.indexWhere((chat) => chat.id == chatId);
           if (chatIndex != -1) {
@@ -200,6 +215,7 @@ class ChatProvider extends ChangeNotifier {
               isResponseTo: isResponseTo,
               responseToId: responseToId,
               attachments: attachments,
+              createdAt: DateTime.now().toIso8601String(),
             );
             _promoteChatToTop(_chats, chatIndex);
           }
@@ -217,6 +233,7 @@ class ChatProvider extends ChangeNotifier {
               isResponseTo: isResponseTo,
               responseToId: responseToId,
               attachments: attachments,
+              createdAt: DateTime.now().toIso8601String(),
             );
             _promoteChatToTop(_expertChats, chatIndex);
           }

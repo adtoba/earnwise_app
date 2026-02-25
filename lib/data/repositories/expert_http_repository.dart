@@ -10,6 +10,7 @@ import 'package:earnwise_app/domain/dto/update_expert_rate_dto.dart';
 import 'package:earnwise_app/domain/dto/update_expert_socials_dto.dart';
 import 'package:earnwise_app/domain/models/expert_dashboard_model.dart';
 import 'package:earnwise_app/domain/models/expert_profile_model.dart';
+import 'package:earnwise_app/domain/models/slot_model.dart';
 import 'package:earnwise_app/domain/repositories/expert_repository.dart';
 
 class ExpertHttpRepository extends ApiService implements ExpertRepository {
@@ -176,6 +177,46 @@ class ExpertHttpRepository extends ApiService implements ExpertRepository {
         "expert_id": expertId,
       });
       return left(response);
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
+  }
+  
+  @override
+  Future<Either<List<ExpertProfileModel>, String>> searchExperts({required String searchQuery}) async {
+    try {
+      final response = await http.get("${Endpoints.experts}/search", queryParameters: {
+        "q": searchQuery,
+      });
+      if(response.data["data"] != null) {
+        return left((response.data["data"] as List<dynamic>).map((e) => ExpertProfileModel.fromJson(e)).toList());
+      } else {
+        return left([]);
+      }
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<List<SlotModel>, String>> getExpertAvailableSlots({required String expertId, required String? date, required int duration}) async {
+    try {
+      final response = await http.get("${Endpoints.experts}/$expertId/slots", queryParameters: {
+        "date": date,
+        "duration_mins": duration,
+      });
+
+      if(response.data["data"] != null) {
+        return left((response.data["data"] as List<dynamic>).map((e) => SlotModel.fromJson(e)).toList());
+      } else {
+        return left([]);
+      }
     } on DioException catch (e) {
       String error = ErrorUtil.parseDioError(e);
       return right(error);

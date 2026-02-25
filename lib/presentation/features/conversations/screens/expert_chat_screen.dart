@@ -33,6 +33,7 @@ class _ExpertChatScreenState extends ConsumerState<ExpertChatScreen> {
   int? _activeReplyIndex;
   String? _editingMessageId;
 
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -75,10 +76,10 @@ class _ExpertChatScreenState extends ConsumerState<ExpertChatScreen> {
                   color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
                 ),
               ),
-              Text(
-                "Last active 2h ago",
-                style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
-              ),
+              // Text(
+              //   "${user?.}",
+              //   style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
+              // ),
             ],
           ),
           actions: [
@@ -94,6 +95,7 @@ class _ExpertChatScreenState extends ConsumerState<ExpertChatScreen> {
               child: chatProvider.isMessagesLoading 
                 ? Center(child: CustomProgressIndicator()) 
                 : ListView.separated(
+                    controller: chatProvider.scrollController,
                     padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
                     itemBuilder: (context, index) {
                       final message = messages[index];
@@ -132,7 +134,7 @@ class _ExpertChatScreenState extends ConsumerState<ExpertChatScreen> {
                             : null,
                       );
                     },
-                    separatorBuilder: (_, __) => YMargin(12),
+                    separatorBuilder: (_, _) => YMargin(12),
                     itemCount: messages.length,
                   ),
             ),
@@ -266,6 +268,7 @@ class _ExpertChatScreenState extends ConsumerState<ExpertChatScreen> {
               }
               setState(() {
                 _messageController.clear();
+                _activeReplyIndex = null;
                 _editingMessageId = null;
               });
             }
@@ -860,15 +863,24 @@ class _ExpertConversationCardState extends State<_ExpertConversationCard> {
                         if(widget.message.contentType == "audio") ...[
                           Row(
                             children: [
-                              IconButton(
-                                icon: Icon(
-                                  _isPlaying ? Icons.pause : Icons.play_arrow,
-                                  color: responseTextColor,
-                                ),
-                                onPressed: () {
-                                  _toggle();
-                                },
-                              ),
+                              _isLoading
+                                  ? SizedBox(
+                                      width: config.sw(36),
+                                      height: config.sw(36),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(responseTextColor),
+                                      ),
+                                    )
+                                  : IconButton(
+                                      icon: Icon(
+                                        _isPlaying ? Icons.pause : Icons.play_arrow,
+                                        color: responseTextColor,
+                                      ),
+                                      onPressed: () {
+                                        _toggle();
+                                      },
+                                    ),
                               Expanded(
                                 child: SliderTheme(
                                   data: SliderTheme.of(context).copyWith(

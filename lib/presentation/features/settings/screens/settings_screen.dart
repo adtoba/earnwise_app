@@ -8,6 +8,7 @@ import 'package:earnwise_app/core/utils/toast.dart';
 import 'package:earnwise_app/presentation/features/expert/views/become_expert_modal.dart';
 import 'package:earnwise_app/presentation/features/profile/screens/profile_screen.dart';
 import 'package:earnwise_app/presentation/features/settings/screens/favorite_experts_screen.dart';
+import 'package:earnwise_app/presentation/features/transactions/screens/transactions_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/features/dashboard/screens/expert_dashboard_screen.dart';
@@ -83,12 +84,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           //   icon: Icons.account_balance_wallet_outlined,
           //   isDarkMode: isDarkMode,
           // ),
-          _SettingsTile(
+          SettingsTile(
             title: "Transactions",
             icon: Icons.receipt_long_outlined,
             isDarkMode: isDarkMode,
+            onTap: () => push(TransactionsScreen()),
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Saved Experts",
             icon: Icons.favorite_border,
             isDarkMode: isDarkMode,
@@ -103,7 +105,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               title: "Expert",
               isDarkMode: isDarkMode,
             ),
-            _SettingsTile(
+            SettingsTile(
               title: "Become an Expert",
               icon: Icons.workspace_premium_outlined,
               isDarkMode: isDarkMode,
@@ -128,7 +130,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               title: "Expert",
               isDarkMode: isDarkMode,
             ),
-            _SettingsTile(
+            SettingsTile(
               title: "Pending Verification",
               icon: Icons.pending_actions_outlined,
               isDarkMode: isDarkMode,
@@ -142,7 +144,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: "Preferences",
             isDarkMode: isDarkMode,
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Dark Mode",
             icon: Icons.dark_mode_outlined,
             isDarkMode: isDarkMode,
@@ -153,7 +155,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               },
             ),
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Notifications",
             icon: Icons.notifications_none_outlined,
             isDarkMode: isDarkMode,
@@ -161,7 +163,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               settingsProvider.goToNotifications();
             },
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Privacy & Security",
             icon: Icons.lock_outline,
             isDarkMode: isDarkMode,
@@ -169,7 +171,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               settingsProvider.goToPrivacyAndSecurity();
             },
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Help & Support",
             icon: Icons.support_agent_outlined,
             isDarkMode: isDarkMode,
@@ -183,7 +185,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: "Legal",
             isDarkMode: isDarkMode,
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Terms & Conditions",
             icon: Icons.description_outlined,
             isDarkMode: isDarkMode,
@@ -191,7 +193,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               settingsProvider.goToTermsAndConditions();
             },
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Privacy Policy",
             icon: Icons.privacy_tip_outlined,
             isDarkMode: isDarkMode,
@@ -218,8 +220,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 }
 
-class _SettingsTile extends StatelessWidget {
-  const _SettingsTile({
+class SettingsTile extends StatelessWidget {
+  const SettingsTile({
     required this.title,
     required this.icon,
     required this.isDarkMode,

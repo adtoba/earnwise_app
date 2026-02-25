@@ -9,12 +9,12 @@ import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/domain/models/chat_model.dart';
 import 'package:earnwise_app/domain/models/expert_profile_model.dart';
+import 'package:earnwise_app/presentation/features/conversations/screens/book_call_screen.dart';
 import 'package:earnwise_app/presentation/features/conversations/screens/chat_screen.dart';
 import 'package:earnwise_app/presentation/features/home/views/about_expert_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/expertise_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/faq_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/reviews_view.dart';
-import 'package:earnwise_app/presentation/features/home/views/similar_experts_view.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
@@ -121,9 +121,9 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
                     child: Image.network(
                       currentExpertProfile?.user?.profilePicture ?? _randomImageForIndex(0),
                       width: double.infinity,
-                      height: config.sh(300),
+                      height: config.sh(350),
                       fit: BoxFit.cover,
-                      alignment: Alignment.topCenter,
+                      alignment: Alignment.center,
                     ),
                   ),
                 ),
@@ -293,7 +293,9 @@ class _ExpertProfileScreenState extends ConsumerState<ExpertProfileScreen> {
                   subtitle: "\$${currentExpertProfile?.rates?.call ?? 0} / 15 min",
                   icon: Icons.video_call,
                   onPressed: () {
-                    print("Book a Call");
+                    push(BookCallScreen(
+                      expert: currentExpertProfile,
+                    ));
                   }
                 )
               )

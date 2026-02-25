@@ -1,5 +1,6 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/providers/settings_provider.dart';
+import 'package:earnwise_app/core/providers/theme_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/dashboard/screens/dashboard_screen.dart';
@@ -8,6 +9,8 @@ import 'package:earnwise_app/presentation/features/expert/screens/expert_socials
 import 'package:earnwise_app/presentation/features/expert/screens/set_rates_screen.dart';
 import 'package:earnwise_app/presentation/features/settings/screens/expert_details_screen.dart';
 import 'package:earnwise_app/presentation/features/settings/screens/expert_reviews_screen.dart';
+import 'package:earnwise_app/presentation/features/settings/screens/settings_screen.dart';
+import 'package:earnwise_app/presentation/features/transactions/screens/transactions_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/profile_details_widget.dart';
@@ -26,6 +29,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = ref.watch(themeNotifier);
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
 
@@ -64,7 +68,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
             title: "Expert",
             isDarkMode: isDarkMode,
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Expert Details",
             icon: Icons.person_outline,
             isDarkMode: isDarkMode,
@@ -72,7 +76,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
               push(ExpertDetailsScreen());
             },
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Your Rates",
             icon: Icons.sell_outlined,
             isDarkMode: isDarkMode,
@@ -80,7 +84,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
               push(SetRatesScreen());
             },
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Set Availability",
             icon: Icons.calendar_today_outlined,
             isDarkMode: isDarkMode,
@@ -91,7 +95,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
               ));
             },
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Linked Socials",
             icon: Icons.link_outlined,
             isDarkMode: isDarkMode,
@@ -102,7 +106,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
               ));
             },
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Ratings & Reviews",
             icon: Icons.star_border,
             isDarkMode: isDarkMode,
@@ -116,22 +120,34 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
             title: "Finance",
             isDarkMode: isDarkMode,
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Wallet",
             icon: Icons.account_balance_wallet_outlined,
             isDarkMode: isDarkMode,
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Transactions",
             icon: Icons.receipt_long_outlined,
             isDarkMode: isDarkMode,
+            onTap: () => push(TransactionsScreen()),
           ),
           YMargin(20),
           _SettingsSectionTitle(
             title: "Preferences",
             isDarkMode: isDarkMode,
           ),
-          _SettingsTile(
+          SettingsTile(
+            title: "Dark Mode",
+            icon: Icons.dark_mode_outlined,
+            isDarkMode: isDarkMode,
+            trailing: Switch(
+              value: themeProvider.currentTheme == ThemeMode.dark, 
+              onChanged: (value) {
+                themeProvider.toggleTheme(isDarkMode: value);
+              },
+            ),
+          ),
+          SettingsTile(
             title: "Notifications",
             icon: Icons.notifications_none_outlined,
             isDarkMode: isDarkMode,
@@ -139,7 +155,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
               settingsProvider.goToNotifications();
             },
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Privacy & Security",
             icon: Icons.lock_outline,
             isDarkMode: isDarkMode,
@@ -147,7 +163,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
               settingsProvider.goToPrivacyAndSecurity();
             },
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Help & Support",
             icon: Icons.support_agent_outlined,
             isDarkMode: isDarkMode,
@@ -161,7 +177,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
             title: "Legal",
             isDarkMode: isDarkMode,
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Terms & Conditions",
             icon: Icons.description_outlined,
             isDarkMode: isDarkMode,
@@ -169,7 +185,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
               settingsProvider.goToTermsAndConditions();
             },
           ),
-          _SettingsTile(
+          SettingsTile(
             title: "Privacy Policy",
             icon: Icons.privacy_tip_outlined,
             isDarkMode: isDarkMode,
@@ -191,58 +207,6 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _SettingsTile extends StatelessWidget {
-  const _SettingsTile({
-    required this.title,
-    required this.icon,
-    required this.isDarkMode,
-    this.showDivider = true,
-    this.onTap,
-  });
-
-  final String title;
-  final IconData icon;
-  final bool isDarkMode;
-  final bool showDivider;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final secondaryTextColor = isDarkMode ? Palette.textGreyscale700Dark : Palette.textGreyscale700Light;
-    final dividerColor = isDarkMode ? Palette.borderDark : Palette.borderLight;
-    final iconColor = _iconColor(icon, isDarkMode);
-
-    return Column(
-      children: [
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: Icon(
-            icon,
-            size: 20,
-            color: iconColor,
-          ),
-          title: Text(
-            title,
-            style: TextStyles.mediumSemiBold.copyWith(
-              color: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
-            ),
-          ),
-          trailing: Icon(
-            Icons.chevron_right,
-            color: secondaryTextColor,
-          ),
-          onTap: onTap,
-        ),
-        if (showDivider)
-          Divider(
-            height: config.sh(12),
-            color: dividerColor,
-          ),
-      ],
     );
   }
 }

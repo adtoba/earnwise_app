@@ -1,5 +1,6 @@
 class Endpoints {
-  static const String baseUrl = 'http://192.168.1.157:8080/api/v1';
+  static const String baseUrl = 'http://192.168.4.244:8080/api/v1';
+  // static const String baseUrl = 'https://api.getearnwise.com/api/v1';
 
   static const String login = '/auth/login';
   static const String register = '/auth/register';

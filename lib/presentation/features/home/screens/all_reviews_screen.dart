@@ -23,7 +23,7 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: true,
       ),
-      body: ListView.separated(
+      body: widget.reviews.isEmpty ? Center(child: Text("No reviews yet")) : ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: config.sw(16), vertical: config.sh(16)),
         itemBuilder: (c, i) => ReviewItem(
           fullName: widget.reviews[i].fullName ?? "",

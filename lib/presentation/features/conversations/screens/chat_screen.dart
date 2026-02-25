@@ -95,6 +95,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 : messages.isEmpty
                   ? _EmptyChatState(isDarkMode: isDarkMode)
                   : ListView.separated(
+                      controller: chatProvider.scrollController,
                       padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(16)),
                       itemBuilder: (context, index) {
                         final message = messages[index];
@@ -538,15 +539,24 @@ class _ChatBubbleState extends State<_ChatBubble> {
                 if(widget.message.contentType == "audio") ...[
                   Row(
                     children: [
-                      IconButton(
-                        icon: Icon(
-                          _isPlaying ? Icons.pause : Icons.play_arrow,
-                          color: textColor,
-                        ),
-                        onPressed: () {
-                          _toggle();
-                        },
-                      ),
+                      _isLoading
+                          ? SizedBox(
+                              width: config.sw(36),
+                              height: config.sw(36),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(textColor),
+                              ),
+                            )
+                          : IconButton(
+                              icon: Icon(
+                                _isPlaying ? Icons.pause : Icons.play_arrow,
+                                color: textColor,
+                              ),
+                              onPressed: () {
+                                _toggle();
+                              },
+                            ),
                       Expanded(
                         child: SliderTheme(
                           data: SliderTheme.of(context).copyWith(

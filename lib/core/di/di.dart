@@ -1,4 +1,5 @@
 import 'package:earnwise_app/data/repositories/auth_http_repository.dart';
+import 'package:earnwise_app/data/repositories/call_http_repository.dart';
 import 'package:earnwise_app/data/repositories/category_http_repository.dart';
 import 'package:earnwise_app/data/repositories/chat_http_repository.dart';
 import 'package:earnwise_app/data/repositories/expert_http_repository.dart';
@@ -6,6 +7,7 @@ import 'package:earnwise_app/data/repositories/post_http_repository.dart';
 import 'package:earnwise_app/data/repositories/profile_http_repository.dart';
 import 'package:earnwise_app/data/repositories/review_http_repository.dart';
 import 'package:earnwise_app/domain/repositories/auth_repository.dart';
+import 'package:earnwise_app/domain/repositories/call_repository.dart';
 import 'package:earnwise_app/domain/repositories/category_repository.dart';
 import 'package:earnwise_app/domain/repositories/chat_repository.dart';
 import 'package:earnwise_app/domain/repositories/expert_repository.dart';
@@ -24,4 +26,5 @@ void setupDI() {
   di.registerFactory<PostRepository>(() => PostHttpRepository());
   di.registerFactory<ReviewRepository>(() => ReviewHttpRepository());
   di.registerFactory<ChatRepository>(() => ChatHttpRepository());
+  di.registerFactory<CallRepository>(() => CallHttpRepository());
 }

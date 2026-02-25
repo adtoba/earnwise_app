@@ -1,6 +1,7 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/features/conversations/views/past_calls_view.dart';
+import 'package:earnwise_app/presentation/features/conversations/views/pending_calls_view.dart';
 import 'package:earnwise_app/presentation/features/conversations/views/upcoming_calls_view.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
@@ -15,10 +16,10 @@ class CallsView extends StatelessWidget {
     bool isDarkMode = brightness == Brightness.dark;
     
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Column(
         children: [
-          YMargin(30),
+          YMargin(20),
           Container(
             margin: EdgeInsets.symmetric(horizontal: config.sw(20)),
             padding: const EdgeInsets.all(4),
@@ -37,6 +38,7 @@ class CallsView extends StatelessWidget {
               unselectedLabelColor: isDarkMode ? Palette.textGeneralDark.withOpacity(0.7) : Palette.textGeneralLight.withOpacity(0.7),
               labelStyle: TextStyles.mediumSemiBold,
               tabs: const [
+                Tab(text: "Pending",),
                 Tab(text: "Upcoming"),
                 Tab(text: "Past"),
               ],
@@ -45,8 +47,14 @@ class CallsView extends StatelessWidget {
           YMargin(10),
           Expanded(
             child: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
               children: [
-                UpcomingCallsView(),
+                PendingCallsView(
+                  isExpertView: false,
+                ),
+                UpcomingCallsView(
+                  isExpertView: false,
+                ),
                 PastCallsView()
               ],
             ),

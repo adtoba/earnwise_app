@@ -49,7 +49,7 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
             lastMessage: chat.lastMessage?.content ?? "", 
             lastMessageType: chat.lastMessage?.contentType ?? "",
             isLastMessageByUser: chat.lastMessage?.senderId == chat.userId,
-            time: timeago.format(DateTime.parse(chat.createdAt ?? "")), 
+            time: timeago.format(DateTime.parse(chat.lastMessage?.createdAt ?? "")), 
             isVerified: true, 
             isRead: false,
             onTap: () {

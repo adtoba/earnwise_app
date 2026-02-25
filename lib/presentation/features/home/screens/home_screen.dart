@@ -2,6 +2,7 @@ import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/presentation/features/home/screens/search_experts_screen.dart';
 import 'package:earnwise_app/presentation/features/home/views/expert_feeds_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/suggested_experts_view.dart';
 import 'package:earnwise_app/presentation/features/profile/screens/profile_screen.dart';
@@ -20,6 +21,25 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final FocusNode _searchFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchFocusNode.addListener(() {
+      if (_searchFocusNode.hasFocus) {
+        _searchFocusNode.unfocus();
+        push(const SearchExpertsScreen());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var profile = ref.watch(profileNotifier).profile;
@@ -102,6 +122,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: SearchTextField(
                 hint: "Search Experts",
                 prefix: Icon(Icons.search),
+                focusNode: _searchFocusNode,
               ),
             ),    
             YMargin(10),        
