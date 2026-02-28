@@ -1,7 +1,9 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/providers/call_provider.dart';
 import 'package:earnwise_app/core/providers/expert_provider.dart';
+import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/presentation/features/conversations/screens/view_pending_calls_screen.dart';
 import 'package:earnwise_app/presentation/features/home/views/expert_home_analytics_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/expert_home_wallet_view.dart';
 import 'package:earnwise_app/presentation/features/home/views/expert_scheduled_calls.dart';
@@ -74,26 +76,31 @@ class _ExpertHomeScreenState extends ConsumerState<ExpertHomeScreen> {
               if (pendingCount > 0) ...[
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: config.sw(20)),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: config.sw(14), vertical: config.sh(12)),
-                    decoration: BoxDecoration(
-                      color: pendingBg,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: isDarkMode ? Palette.borderDark : Palette.borderLight,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.warning_amber_rounded, color: pendingText, size: 20),
-                        XMargin(10),
-                        Expanded(
-                          child: Text(
-                            "You have $pendingCount pending call${pendingCount == 1 ? "" : "s"} to accept.",
-                            style: TextStyles.smallSemiBold.copyWith(color: pendingText),
-                          ),
+                  child: GestureDetector(
+                    onTap: () {
+                      push(ViewPendingCallsScreen());
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: config.sw(14), vertical: config.sh(12)),
+                      decoration: BoxDecoration(
+                        color: pendingBg,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: isDarkMode ? Palette.borderDark : Palette.borderLight,
                         ),
-                      ],
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.warning_amber_rounded, color: pendingText, size: 20),
+                          XMargin(10),
+                          Expanded(
+                            child: Text(
+                              "You have $pendingCount pending call request${pendingCount == 1 ? "" : "s"}.",
+                              style: TextStyles.smallSemiBold.copyWith(color: pendingText),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

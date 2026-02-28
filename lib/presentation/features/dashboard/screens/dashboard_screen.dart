@@ -55,8 +55,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onPageChanged,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
         selectedLabelStyle: TextStyles.mediumRegular,
         unselectedLabelStyle: TextStyles.mediumRegular,
         items: [

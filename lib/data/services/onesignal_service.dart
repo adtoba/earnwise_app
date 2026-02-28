@@ -26,8 +26,8 @@ class OnesignalService {
 
 
     OneSignal.Notifications.addForegroundWillDisplayListener((event) {
-      /// Display Notification, preventDefault to not display
-      event.preventDefault();
+      // /// Display Notification, preventDefault to not display
+      // event.preventDefault();
       /// notification.display() to display after preventing default
       event.notification.display();
     });

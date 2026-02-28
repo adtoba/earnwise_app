@@ -1,8 +1,10 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/constants/pref_keys.dart';
 import 'package:earnwise_app/core/providers/settings_provider.dart';
 import 'package:earnwise_app/core/providers/theme_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
+import 'package:earnwise_app/data/services/local_storage_service.dart';
 import 'package:earnwise_app/presentation/features/dashboard/screens/dashboard_screen.dart';
 import 'package:earnwise_app/presentation/features/expert/screens/expert_set_availability_screen.dart';
 import 'package:earnwise_app/presentation/features/expert/screens/expert_socials_screen.dart';
@@ -26,6 +28,17 @@ class ExpertSettingsScreen extends ConsumerStatefulWidget {
 
 class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
   bool _expertMode = true;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var isExpertMode = await LocalStorageService.get(PrefKeys.isExpertMode);
+      if(isExpertMode != null) {
+        _expertMode = isExpertMode;
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +70,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
             onChanged: (value) {
               setState(() {
                 _expertMode = value;
+                LocalStorageService.put(PrefKeys.isExpertMode, value);
               });
               if (!value) {
                 pushAndRemoveUntil(const DashboardScreen());
@@ -129,6 +143,7 @@ class _ExpertSettingsScreenState extends ConsumerState<ExpertSettingsScreen> {
             title: "Transactions",
             icon: Icons.receipt_long_outlined,
             isDarkMode: isDarkMode,
+            showDivider: false,
             onTap: () => push(TransactionsScreen()),
           ),
           YMargin(20),

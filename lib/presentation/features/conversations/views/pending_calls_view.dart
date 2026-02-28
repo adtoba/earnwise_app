@@ -4,6 +4,8 @@ import 'package:earnwise_app/core/utils/helpers.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
+import 'package:earnwise_app/presentation/widgets/accept_button.dart';
+import 'package:earnwise_app/presentation/widgets/cancel_button.dart';
 import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,7 +68,7 @@ class _PendingCallsViewState extends ConsumerState<PendingCallsView> {
         dividerColor: Colors.transparent
       ),
       child: ListView.separated(
-        padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(20)),
+        padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(10)),
         itemBuilder: (c, i) {
           var call = callHistory[i];
           var scheduledDateTime = DateTime.parse(call.scheduledAt!).toLocal();
@@ -183,60 +185,28 @@ class _PendingCallsViewState extends ConsumerState<PendingCallsView> {
                       
                       if(widget.isExpertView ?? false) ...[
                         Expanded(
-                          child: OutlinedButton.icon(
+                          child: CancelButton(
                             onPressed: () {},
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: isDarkMode ? Colors.red.shade300 : Colors.red.shade400),
-                              foregroundColor: isDarkMode ? Colors.red.shade200 : Colors.red.shade600,
-                              backgroundColor: isDarkMode ? Colors.red.withOpacity(0.12) : Colors.red.withOpacity(0.08),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              padding: EdgeInsets.symmetric(vertical: config.sh(12)),
-                            ),
-                            label: Text(
-                              "Reject",
-                              style: TextStyles.mediumSemiBold.copyWith(
-                                color: isDarkMode ? Colors.red.shade200 : Colors.red.shade600,
-                              ),
-                            ),
-                            icon: Icon(Icons.close, size: 18),
-                          ),
+                            text: "Reject",
+                          )
                         ),
                         XMargin(12),
                         Expanded(
-                          child: ElevatedButton.icon(
+                          child: AcceptButton(
+                            text: "Accept",
                             onPressed: () {
                               callProvider.acceptCall(
                                 callId: call.id ?? "",
                               );
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Palette.primary,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              padding: EdgeInsets.symmetric(vertical: config.sh(12)),
-                            ),
-                            label: Text(
-                              "Accept",
-                              style: TextStyles.mediumSemiBold.copyWith(color: Colors.white),
-                            ),
-                            icon: const Icon(Icons.check_circle, size: 18),
-                          ),
+                          )
                         ),
                       ] else ...[
                         Expanded(
-                          child: OutlinedButton(
+                          child: CancelButton(
+                            text: "Cancel",
                             onPressed: () {},
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: isDarkMode ? Palette.borderDark : Palette.borderLight),
-                              foregroundColor: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              padding: EdgeInsets.symmetric(vertical: config.sh(12)),
-                            ),
-                            child: Text(
-                              "Cancel",
-                              style: TextStyles.mediumSemiBold,
-                            ),
-                          ),
+                          )
                         ),
                       ],
                       

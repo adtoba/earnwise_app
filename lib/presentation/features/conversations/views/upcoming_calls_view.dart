@@ -4,10 +4,11 @@ import 'package:earnwise_app/core/utils/helpers.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
+import 'package:earnwise_app/presentation/widgets/accept_button.dart';
+import 'package:earnwise_app/presentation/widgets/cancel_button.dart';
 import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
 
 class UpcomingCallsView extends ConsumerStatefulWidget {
   const UpcomingCallsView({super.key, this.isExpertView});
@@ -70,12 +71,36 @@ class _UpcomingCallsViewState extends ConsumerState<UpcomingCallsView> {
       child: ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: config.sw(20), vertical: config.sh(20)),
         itemBuilder: (c, i) {
-          var call = callHistory[i];
+          if (i == 0) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: chipBg,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Palette.primary.withOpacity(0.2)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.info_outline, size: 18, color: Palette.primary),
+                  XMargin(10),
+                  Expanded(
+                    child: Text(
+                      "You can join a call 5 minutes before the scheduled time and during the scheduled time.",
+                      style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          var call = callHistory[i - 1];
           var expert = call.expert;
           var user = call.user;
           var scheduledDateTime = DateTime.parse(call.scheduledAt!).toLocal();
           final now = DateTime.now();
-          final joinableFrom = scheduledDateTime.subtract(const Duration(minutes: 2));
+          final joinableFrom = scheduledDateTime.subtract(const Duration(minutes: 5));
           final joinableUntil = scheduledDateTime.add(Duration(minutes: call.durationMins ?? 0));
           bool isJoinable = !now.isBefore(joinableFrom) && !now.isAfter(joinableUntil);
       
@@ -185,44 +210,41 @@ class _UpcomingCallsViewState extends ConsumerState<UpcomingCallsView> {
                 Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton(
+                      child: CancelButton(
+                        text: "Cancel",
                         onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: isDarkMode ? Palette.borderDark : Palette.borderLight),
-                          foregroundColor: isDarkMode ? Palette.textGeneralDark : Palette.textGeneralLight,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          padding: EdgeInsets.symmetric(vertical: config.sh(12)),
-                        ),
-                        child: Text(
-                          "Cancel",
-                          style: TextStyles.mediumSemiBold,
-                        ),
-                      ),
+                      )
                     ),
                     XMargin(12),
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: isJoinable ? () {} : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Palette.primary,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          padding: EdgeInsets.symmetric(vertical: config.sh(12)),
-                        ),
-                        child: Text(
-                          isJoinable ? "Join" : "Join ${Jiffy.parse(joinableFrom.toIso8601String()).fromNow()}",
-                          style: TextStyles.mediumSemiBold.copyWith(color: Colors.white),
-                        ),
-                      ),
+                      child: AcceptButton(
+                        onPressed: isJoinable ?() {
+                          callProvider.generateCallToken(
+                            callId: call.id ?? "",
+                            isUser: widget.isExpertView == true ? false : true,
+                            expertId: expert?.id ?? "",
+                            scheduledAt: call.scheduledAt ?? "",
+                            durationMins: call.durationMins ?? 0,
+                            isExpert: widget.isExpertView ?? false,
+                            userName: "${user?.firstName ?? ""} ${user?.lastName ?? ""}",
+                            userId: expert?.user?.id ?? "",
+                            expertName: "${expert?.user?.firstName ?? ""} ${expert?.user?.lastName ?? ""}",
+                            expertAvatarUrl: expert?.user?.profilePicture ?? "",
+                          );
+                        } : null,
+                        text: "Join"
+                      )
+                      
                     ),
                   ],
                 ),
+                
               ],
             ),
           );
         }, 
-        separatorBuilder: (c, i) => YMargin(10), 
-        itemCount: callHistory.length
+        separatorBuilder: (c, i) => i == 0 ? YMargin(12) : YMargin(10), 
+        itemCount: callHistory.length + 1
       ),
     );
   }

@@ -1,10 +1,12 @@
 import 'package:earnwise_app/core/constants/constants.dart';
+import 'package:earnwise_app/core/constants/pref_keys.dart';
 import 'package:earnwise_app/core/providers/profile_provider.dart';
 import 'package:earnwise_app/core/providers/settings_provider.dart';
 import 'package:earnwise_app/core/providers/theme_provider.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/core/utils/toast.dart';
+import 'package:earnwise_app/data/services/local_storage_service.dart';
 import 'package:earnwise_app/presentation/features/expert/views/become_expert_modal.dart';
 import 'package:earnwise_app/presentation/features/profile/screens/profile_screen.dart';
 import 'package:earnwise_app/presentation/features/settings/screens/favorite_experts_screen.dart';
@@ -28,8 +30,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(profileNotifier).getProfile();
+      var isExpertMode = await LocalStorageService.get(PrefKeys.isExpertMode);
+      if(isExpertMode != null) {
+        _expertMode = isExpertMode;
+      }
     });
     super.initState();
   }
@@ -67,6 +73,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               onChanged: (value) {
                 setState(() {
                   _expertMode = value;
+                  LocalStorageService.put(PrefKeys.isExpertMode, value);
                 });
                 if (value) {
                   pushAndRemoveUntil(const ExpertDashboardScreen());

@@ -170,6 +170,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           if(messages.isEmpty) {
                             var chatDto = CreateChatDto(
                               expertId: expert?.id ?? "",
+                              expertUserId: expert?.user?.id ?? "",
                               message: _messageController.text,
                               type: _selectedType.name,
                             );

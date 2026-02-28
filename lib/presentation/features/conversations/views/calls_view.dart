@@ -55,7 +55,9 @@ class CallsView extends StatelessWidget {
                 UpcomingCallsView(
                   isExpertView: false,
                 ),
-                PastCallsView()
+                PastCallsView(
+                  isExpertView: false,
+                )
               ],
             ),
           ),

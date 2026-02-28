@@ -1,8 +1,10 @@
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:earnwise_app/core/di/di.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/toast.dart';
 import 'package:earnwise_app/domain/models/call_model.dart';
 import 'package:earnwise_app/domain/repositories/call_repository.dart';
+import 'package:earnwise_app/presentation/features/conversations/screens/video_call_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
@@ -24,6 +26,9 @@ class CallProvider extends ChangeNotifier {
   bool _isAcceptingCall = false;
   bool get isAcceptingCall => _isAcceptingCall;
 
+  bool _isGeneratingCallToken = false;
+  bool get isGeneratingCallToken => _isGeneratingCallToken;
+
   List<CallModel> _userCallHistory = [];
   List<CallModel> get userCallHistory => _userCallHistory;
 
@@ -32,6 +37,9 @@ class CallProvider extends ChangeNotifier {
 
   List<CallModel> _expertCallHistory = [];
   List<CallModel> get expertCallHistory => _expertCallHistory;
+
+  List<CallModel> _expertHomeCallHistory = [];
+  List<CallModel> get expertHomeCallHistory => _expertHomeCallHistory;
 
   List<CallModel> _pendingExpertCallHistory = [];
   List<CallModel> get pendingExpertCallHistory => _pendingExpertCallHistory;
@@ -108,6 +116,9 @@ class CallProvider extends ChangeNotifier {
         if(status == "pending") {
           _pendingExpertCallHistory = success;
         }
+        if(status == "accepted") {
+          _expertHomeCallHistory = success;
+        }
         notifyListeners();
       },
       (failure) {
@@ -132,6 +143,55 @@ class CallProvider extends ChangeNotifier {
       },
       (failure) {
         _isAcceptingCall = false;
+        notifyListeners();
+        showErrorToast(failure);
+      }
+    );
+  }
+
+  Future<void> generateCallToken({
+    required String callId, 
+    required bool isUser, 
+    required String expertId, 
+    required String scheduledAt, 
+    required int durationMins, 
+    required bool isExpert,
+    required String expertName,
+    required String userName,
+    required String userId,
+    required String expertAvatarUrl,
+  }) async {
+    _isGeneratingCallToken = true;
+    notifyListeners();
+
+    final result = await callRepository.generateCallToken(callId: callId, isUser: isUser, expertId: expertId);
+    result.fold(
+      (success) async {
+        _isGeneratingCallToken = false;
+        notifyListeners();
+        showSuccessToast("Call token generated successfully");
+
+        var channelName = success.data["data"]["channel"];
+        var token = success.data["data"]["token"];
+        var appId = success.data["data"]["appId"];
+
+        push(VideoCallScreen(
+          appId: appId, 
+          token: token, 
+          channel: channelName,
+          scheduledAt: DateTime.parse(scheduledAt),
+          durationMins: durationMins,
+          isExpert: isExpert,
+          expertName: expertName,
+          userName: userName,
+          expertAvatarUrl: expertAvatarUrl,
+          expertId: expertId,
+          userId: userId,
+        ));
+        
+      },
+      (failure) {
+        _isGeneratingCallToken = false;
         notifyListeners();
         showErrorToast(failure);
       }

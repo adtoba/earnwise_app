@@ -23,6 +23,6 @@ String formatSmartTime(DateTime scheduledDateTime) {
     return "Tomorrow by $timeLabel";
   }
 
-  final dateLabel = Jiffy.parse(scheduledDateTime.toIso8601String()).yMMMMd;
-  return "$dateLabel by $timeLabel";
+  final dateLabel = Jiffy.parse(scheduledDateTime.toIso8601String()).EEEE;
+  return "$dateLabel @ $timeLabel";
 }

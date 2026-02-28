@@ -43,8 +43,8 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onPageChanged,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
         selectedLabelStyle: TextStyles.mediumRegular,
         unselectedLabelStyle: TextStyles.mediumRegular,
         items: [

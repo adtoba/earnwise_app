@@ -83,6 +83,22 @@ class CallHttpRepository extends ApiService implements CallRepository {
     }
   }
 
+  @override
+  Future<Either<Response, String>> generateCallToken({required String callId, required bool isUser, required String expertId}) async {
+    try {
+      final response = await http.post("/calls/$callId/token", data: {
+        "is_user": isUser,
+        "expert_id": expertId,
+      });
+      return left(response);
+    } on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
+  }
+
   String toIsoNoOffset(String input) {
     final dt = DateTime.parse(input);
     String two(int v) => v.toString().padLeft(2, '0');

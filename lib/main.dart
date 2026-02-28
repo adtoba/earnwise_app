@@ -16,7 +16,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/web.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 final logger = Logger();
@@ -28,7 +27,7 @@ void main() async {
   await Hive.openBox(PrefKeys.appData);
 
   await dotenv.load(fileName: '.env');
-  
+
   OnesignalService.initialize();
 
   runApp(ProviderScope(child: const MyApp()));

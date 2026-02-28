@@ -27,3 +27,16 @@ void showSuccessToast(String message) {
     )
   );
 }
+
+void showWarningToast(String message) {
+  showToast(
+    message,
+    context: navigatorKey.currentContext,
+    position: StyledToastPosition.top,
+    duration: const Duration(seconds: 3),
+    backgroundColor: Colors.orange,
+    textStyle: const TextStyle(
+      color: Colors.white,
+    ),
+  );
+}

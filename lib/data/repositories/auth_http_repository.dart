@@ -54,4 +54,20 @@ class AuthHttpRepository extends ApiService implements AuthRepository {
       return right(e.toString());
     }
   }
+
+  @override
+  Future<Either<Response, String>> googleAuth({required String idToken}) async {
+    try {
+      final response = await http.post(Endpoints.googleAuth, data: {
+        "token": idToken,
+      });
+      return left(response);
+    }
+    on DioException catch (e) {
+      String error = ErrorUtil.parseDioError(e);
+      return right(error);
+    } catch (e) {
+      return right(e.toString());
+    }
+  }
 }

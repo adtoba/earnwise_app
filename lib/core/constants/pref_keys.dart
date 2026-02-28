@@ -7,6 +7,8 @@ class PrefKeys {
   static const String appData = 'app_data';
   static const String isLoggedIn = 'is_logged_in';
 
+  static const String isExpertMode = 'is_expert_mode';
+
   static const String theme = 'theme';
 
   static const String availableBalance = 'available_balance';

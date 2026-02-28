@@ -1,5 +1,6 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/constants/pref_keys.dart';
+import 'package:earnwise_app/core/providers/auth_provider.dart';
 import 'package:earnwise_app/core/utils/extensions.dart';
 import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
@@ -7,18 +8,20 @@ import 'package:earnwise_app/data/services/local_storage_service.dart';
 import 'package:earnwise_app/presentation/features/auth/screens/login_screen.dart';
 import 'package:earnwise_app/presentation/features/auth/widgets/auth_button.dart';
 import 'package:earnwise_app/presentation/features/dashboard/screens/dashboard_screen.dart';
+import 'package:earnwise_app/presentation/features/dashboard/screens/expert_dashboard_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -71,7 +74,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   onPressed: () async {
                     bool? isLoggedIn = await LocalStorageService.get(PrefKeys.isLoggedIn);
                     if(isLoggedIn == true) {
-                      pushAndRemoveUntil(const DashboardScreen());
+                      bool? isExpertMode = await LocalStorageService.get(PrefKeys.isExpertMode);
+                      if(isExpertMode == true) {
+                        pushAndRemoveUntil(const ExpertDashboardScreen());
+                      } else {
+                        pushAndRemoveUntil(const DashboardScreen());
+                      }
                     } else {
                       push(LoginScreen());
                     }
@@ -83,7 +91,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 YMargin(10),
                 AuthButton(
                   text: "Continue with Google",
-                  onPressed: () {},
+                  onPressed: () {
+                    ref.read(authNotifier).googleAuth();
+                  },
                   isLoading: false,
                   color: Colors.white,
                   prefixIcon: "google".png,

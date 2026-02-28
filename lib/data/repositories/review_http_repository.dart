@@ -19,7 +19,7 @@ class ReviewHttpRepository extends ApiService implements ReviewRepository {
   @override
   Future<Either<Response, String>> addReview({required String expertId, required String userId, required String comment, required String fullName, required double rating}) async {
     try {
-      final response = await http.post("/reviews", data: {
+      final response = await http.post("/reviews/", data: {
         "expert_id": expertId,
         "user_id": userId,
         "comment": comment,

@@ -1,4 +1,5 @@
 import 'package:earnwise_app/core/di/di.dart';
+import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/toast.dart';
 import 'package:earnwise_app/domain/models/review_model.dart';
 import 'package:earnwise_app/domain/repositories/review_repository.dart';
@@ -53,8 +54,8 @@ class ReviewProvider extends ChangeNotifier{
 
     final result = await reviewRepository.addReview(
       expertId: expertId, 
-      userId: userId, 
       comment: comment, 
+      userId: userId,
       fullName: fullName, 
       rating: rating
     );
@@ -63,6 +64,7 @@ class ReviewProvider extends ChangeNotifier{
         _isLoading = false;
         notifyListeners();
         showSuccessToast("Review added successfully");
+        pop();
       },
       (failure) {
         _isLoading = false;

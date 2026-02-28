@@ -11,6 +11,7 @@ abstract class CallRepository {
     required String duration,
   });
   Future<Either<Response, String>> acceptCall({required String callId});
+  Future<Either<Response, String>> generateCallToken({required String callId, required bool isUser, required String expertId});
   Future<Either<List<CallModel>, String>> getUserCallHistory({String? status});
   Future<Either<List<CallModel>, String>> getExpertCallHistory({String? status});
 }

@@ -1,8 +1,10 @@
 import 'package:earnwise_app/core/constants/constants.dart';
 import 'package:earnwise_app/core/providers/call_provider.dart';
 import 'package:earnwise_app/core/utils/helpers.dart';
+import 'package:earnwise_app/core/utils/navigator.dart';
 import 'package:earnwise_app/core/utils/spacer.dart';
 import 'package:earnwise_app/domain/models/call_model.dart';
+import 'package:earnwise_app/presentation/features/conversations/screens/view_upcoming_calls_screen.dart';
 import 'package:earnwise_app/presentation/styles/palette.dart';
 import 'package:earnwise_app/presentation/styles/textstyle.dart';
 import 'package:earnwise_app/presentation/widgets/custom_progress_indicator.dart';
@@ -32,7 +34,7 @@ class _ExpertScheduledCallsViewState extends ConsumerState<ExpertScheduledCallsV
   @override
   Widget build(BuildContext context) {
     var callProvider = ref.watch(callNotifier);
-    var expertCallHistory = callProvider.expertCallHistory;
+    var expertCallHistory = callProvider.expertHomeCallHistory;
     var isLoadingExpertCallHistory = callProvider.isLoadingExpertCallHistory;
     var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
@@ -55,9 +57,14 @@ class _ExpertScheduledCallsViewState extends ConsumerState<ExpertScheduledCallsV
                 ),
               ),
               Spacer(),
-              Text(
-                "See All",
-                style: TextStyles.smallRegular.copyWith(color: secondaryTextColor),
+              GestureDetector(
+                onTap: () {
+                  push(ViewUpcomingCallsScreen());
+                },
+                child: Text(
+                  "See All",
+                  style: TextStyles.mediumSemiBold.copyWith(color: secondaryTextColor),
+                ),
               ),
             ],
           ),
@@ -73,18 +80,23 @@ class _ExpertScheduledCallsViewState extends ConsumerState<ExpertScheduledCallsV
             
             ? Center(child: CustomProgressIndicator()) : 
             
-            expertCallHistory.isEmpty ? Center(child: Text("No upcoming calls")) : Column(
-              children: [
-                for (int i = 0; i < expertCallHistory.length; i++) ...[
-                  _ScheduledCallRow(
-                    call: expertCallHistory[i],
-                    isDarkMode: isDarkMode,
-                  ),
-                  if (i != expertCallHistory.length - 1)
-                    Divider(height: config.sh(20), color: borderColor),
-                ],
-              ],
-            ),
+            expertCallHistory.isEmpty 
+              ? Center(child: Text("No upcoming calls")) 
+              : ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (c, i) {
+                    return _ScheduledCallRow(
+                      call: expertCallHistory[i],
+                      isDarkMode: isDarkMode,
+                    );
+                  }, 
+                  separatorBuilder: (c, i) => Divider(
+                    height: config.sh(20),
+                    color: borderColor,
+                  ), 
+                  itemCount: expertCallHistory.take(5).length
+                )
           ),
           YMargin(10),
         ],
